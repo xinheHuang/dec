@@ -1,0 +1,18 @@
+div, h1, h2, html, body, p, ul, li {
+  margin: 0px;
+  padding: 0px;
+}
+*{
+  font-family: 'Arvo', Helvetica, Tahoma, Arial, "Microsoft YaHei";
+}
+a{
+  text-decoration: none;
+  color: inherit;
+}
+li{
+  list-style-type: none;
+}
+body{
+  background: #ecf0f5;
+  font-size: 16px;
+}
