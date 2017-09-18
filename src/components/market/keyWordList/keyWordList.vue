@@ -11,7 +11,12 @@
     <div class="items">
       <div v-for="item in keyWordList.items"
            class="item">
-        <div class="item-title">{{item.title}}</div>
+        <div
+          @click="openModal(item)"
+          class="item-title"><p>{{
+          item.title.length <= 24 ? item.title :
+          item.title.slice(0, 23) + ' ...'}}
+        </p></div>
         <div class="divider"></div>
         <div style="display: flex;justify-content: space-around">
           <div class="item-detail">
@@ -38,11 +43,24 @@
 
 <script>
   import '../../../assets/font/calendar/style.css'
+  import EventBus from '../../../eventBus';
+
   export default {
     props: {
       keyWordList: {
         type: Object,
         required: true,
+      }
+    },
+    data() {
+      return {
+        showModal: false,
+      }
+    },
+    methods: {
+      openModal(item) {
+        console.log(item)
+        EventBus.$emit('modal', item);
       }
     },
   }
@@ -70,13 +88,11 @@
   }
 
   .item-title {
-    /*white-space: nowrap;*/
-    overflow: hidden;
-    text-overflow: ellipsis;
-    -webkit-line-clamp: 2;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
+    line-height: 25px;
+    /*overflow: hidden;*/
+    /*text-overflow: ellipsis;*/
     margin-bottom: 10px;
+    cursor: pointer;
   }
 
   .divider {
@@ -86,16 +102,16 @@
   }
 
   .item-detail > * {
-    width:50px;
+    width: 50px;
     margin-top: 10px;
     text-align: center;
-    font-size:14px;
+    font-size: 14px;
     line-height: 14px;
     vertical-align: middle;
   }
 
-  .item-detail .icon{
-    color:#e2dddd;
+  .item-detail .icon {
+    color: #e2dddd;
 
   }
 </style>

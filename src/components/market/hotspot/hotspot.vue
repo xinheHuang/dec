@@ -40,14 +40,13 @@
         <span class="icon-angle icon-angle-left"
               @click="onLeft"></span>
 
-        <transition-group tag="div"
-                          name="list"
-                          class="items">
+        <slick class="slick" ref="slick" :options="slickOptions" style="width:
+        900px">
           <key-word-list :key="keyWordList.key"
-                         v-for="keyWordList in shownList"
+                         v-for="keyWordList in data.keyWordLists"
                          class="list-item"
                          :keyWordList="keyWordList"></key-word-list>
-        </transition-group>
+        </slick>
 
         <span class="icon-angle icon-angle-right"
               @click="onRight"></span>
@@ -59,6 +58,7 @@
 <script>
   import conclusion from '../conclusion/conclusion.vue'
   import keyWordList from '../keyWordList/keyWordList.vue'
+  import Slick from 'vue-slick'
 
   export default {
     data() {
@@ -103,13 +103,13 @@
               readNumber: 2585,
               items: [
                 {
-                  title: '这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题',
+                  title: '这是标题标题这是标题标题这！！！！！！是标题标题这是标题标题这是标题标题这是标题标题这是标题标题',
                   date: '9月5日',
                   readNumber: 2239,
                   like: 34
                 },
                 {
-                  title: '这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题',
+                  title: '这是标题标题这是标题标题这是标题标！！题这是标题标题这是标题标题这是标题标题这是标题标题',
                   date: '9月5日',
                   readNumber: 2239,
                   like: 34
@@ -145,7 +145,8 @@
                   like: 34
                 }
               ]
-            }, {
+            },
+            {
               key: 'AAAA',
               readNumber: 2585,
               items: [
@@ -168,7 +169,8 @@
                   like: 34
                 }
               ]
-            }, {
+            },
+            {
               key: 'BBBB',
               readNumber: 2585,
               items: [
@@ -194,16 +196,16 @@
             }]
         },
         selectedChartType: '全部',
-        currentStartKey: 0,  //起始关键字索引
-        shownList: []
+        slickOptions: {
+          slidesToShow: 3,
+          draggable:false,
+          arrows:false,
+          infinite:false,
+          touchMove:false,
+          // Any other options that can be got from plugin documentation
+        },
       }
     },
-//    computed: {
-//      shownList() {
-////        return this.data.keyWordLists
-//        return this.data.keyWordLists.slice(this.currentStartKey, this.currentStartKey + 3)
-//      }
-//    },
     methods: {
       changeChartType(type) {
         this.selectedChartType = type
@@ -211,28 +213,16 @@
         //这里根据类型发起ajax 请求，刷新图表
       },
       onLeft() {  //左箭头点击
-        if (this.currentStartKey > 0) {
-          this.currentStartKey--
-          this.shownList.pop()
-          this.shownList.unshift(this.data.keyWordLists[this.currentStartKey])
-        }
-
+        this.$refs.slick.prev();
       },
       onRight() {  //右箭头点击
-        if (this.currentStartKey + 3 < this.data.keyWordLists.length) {
-          this.currentStartKey++;
-          this.shownList.shift()
-          this.shownList.push(this.data.keyWordLists[this.currentStartKey+2])
-        }
+        this.$refs.slick.next();
       }
-    },
-    created() {
-      this.currentStartKey = 0
-      this.shownList = this.data.keyWordLists.slice(0, 3)
     },
     components: {
       conclusion,
-      keyWordList
+      keyWordList,
+      Slick
     }
   }
 </script>
@@ -242,7 +232,7 @@
   .section {
     background: white;
     border: 2px solid #e2dddd;
-    margin-top: 20px;
+    margin: 20px;
     padding: 20px 60px;
   }
 
@@ -290,30 +280,19 @@
     color: #6b6868;
   }
 
-  .items {
-    white-space: nowrap;
-    /*overflow: hidden;*/
+  .slick {
+    overflow: hidden;
     width: 900px;
-    /*transition: all 1s;*/
-    /*transform: translate(-300px, 0);*/
   }
-
   .list-item {
     display: inline-block;
     vertical-align: top;
+    outline: none;
   }
 
-  @keyframes slide {
-    100% {
-      left: 0;
-    }
-  }
 
   .icon-angle {
     cursor: pointer;
   }
 
-  .list-move {
-    transition: transform 1s;
-  }
 </style>

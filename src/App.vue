@@ -6,6 +6,9 @@
     </div>
     <fixed-tools></fixed-tools>
     <footer class="footer"></footer>
+    <modal v-if="showModal"
+           @close="showModal = false">
+    </modal>
   </div>
 </template>
 
@@ -14,7 +17,8 @@
   import fixedTools from './components/fixedTools/fixedTools.vue'
   import news from './components/news/news.vue'
   import market from './components/market/market.vue'
-
+  import modal from './components/market/modal/modal.vue'
+  import EventBus from './eventBus'
   export default {
     data() {
       return {
@@ -33,6 +37,7 @@
           }
         ],
         currentView: 'news',
+        showModal:false
       }
     },
     methods:{
@@ -40,12 +45,20 @@
         this.currentView=nav.key;
       }
     },
+    created(){
+      EventBus.$on('modal', item => {
+        console.log('modal',item);
+        this.showModal=true;
+      });
+    },
     components: {
       navMenu,
       fixedTools,
       news,
       market,
       calendar:news, //后续开发出日历页面需要将这里替换掉
+
+      modal
     },
   }
 </script>
