@@ -5,11 +5,13 @@
       <div class="modal-wrapper">
         <div class="modal-container">
           <div class="modal-header">
+            <div class="close">
+            <a class="icon-close icon-circle-with-cross"
+               @click="$emit('close')"></a>
+            </div>
             <div style="text-align: center">
-              <h3 style="color:black">
+              <h3 style="color:black;">
                 {{article.title}}
-                <a class="icon-close icon-circle-with-cross close"
-                   @click="$emit('close')"></a>
               </h3>
             </div>
             <div class="info">
@@ -51,11 +53,13 @@
 <style scoped>
 
   .close {
-    float: right;
+    display: flex;
+    flex-direction: row-reverse;
     font-size: 18px;
     color: #6b6868;
     cursor: pointer;
-    top: 0
+    top: 0;
+    margin-bottom: 5px
   }
 
   .info {

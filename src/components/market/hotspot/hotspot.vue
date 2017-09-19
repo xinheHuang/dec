@@ -39,10 +39,12 @@
     <div class="section">
       <div class="list">
         <span class="icon-angle icon-angle-left"
+              :class="{'disable':slickLeftDisable}"
               @click="onLeft"></span>
 
         <slick class="slick"
                ref="slick"
+               v-on:afterChange="changeSlick"
                :options="slickOptions"
                style="width:
         900px">
@@ -53,6 +55,7 @@
         </slick>
 
         <span class="icon-angle icon-angle-right"
+              :class="{'disable':slickRightDisable}"
               @click="onRight"></span>
       </div>
     </div>
@@ -233,13 +236,15 @@
         selectedChartType: '全部',
         slickOptions: {  // 滑动部分配置
           slidesToShow: 3,
-          accessibility:false,
+          accessibility: false,
           draggable: false,
           arrows: false,
           infinite: false,
           touchMove: false,
           // Any other options that can be got from plugin documentation
         },
+        slickLeftDisable: true,
+        slickRightDisable: false,
       }
     },
     methods: {
@@ -253,6 +258,10 @@
       },
       onRight() {  //右箭头点击
         this.$refs.slick.next()
+      },
+      changeSlick: function (event, slick, slide) {
+        this.slickRightDisable = slide >= this.data.keyWordLists.length - 3
+        this.slickLeftDisable = slide <= 0
       }
     },
     components: {
@@ -330,5 +339,11 @@
   .icon-angle {
     cursor: pointer;
   }
+
+
+  .icon-angle.disable {
+    color: #e2dddd;
+  }
+
 
 </style>

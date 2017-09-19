@@ -16,7 +16,7 @@
           @click="openModal(item)"
           class="item-title"><p>{{
           item.title.length <= 24 ? item.title :
-            item.title.slice(0, 23) + ' ...'}}
+            item.title.slice(0, 24) + ' ...'}}
         </p></div>
         <div class="divider" style="margin: 0 10px"></div>
         <div style="display: flex;justify-content: space-around">
@@ -56,7 +56,7 @@
       }
     },
     methods: {
-      openModal(item) {  //文章弹窗
+      openModal(item) {  //
         EventBus.$emit('articleModal', item)
       }
     },

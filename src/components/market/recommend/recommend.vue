@@ -12,11 +12,13 @@
                    :enableSearch="false"></content-nav>
       <div class="list">
         <span class="icon-angle icon-angle-left"
+              :class="{'disable':companySlickLeftDisable}"
               @click="onLeft($refs.companySlick)"></span>
         <!--{{data.companyList[currentTab]}}-->
         <slick class="slick"
                ref="companySlick"
                :options="slickOptions"
+               v-on:afterChange="changeCompanySlick"
                style="width:
         900px">
           <company-list v-for="companyList in data.companyList[currentTab]"
@@ -30,19 +32,25 @@
         </slick>
 
         <span class="icon-angle icon-angle-right"
+              :class="{'disable':companySlickRightDisable}"
               @click="onRight($refs.companySlick)"></span>
       </div>
     </div>
 
     <!--第三部分-->
     <div class="section">
+      <div v-if="currentSelect">
+        <h3>{{currentSelect.team}}：{{currentSelect.group}}</h3>
+      </div>
       <div class="list">
         <span class="icon-angle icon-angle-left"
+              :class="{'disable':slickLeftDisable}"
               @click="onLeft($refs.slick)"></span>
 
         <slick class="slick"
                ref="slick"
                :options="dateSlickOptions"
+               v-on:afterChange="changeSlick"
                style="width:900px">
           <date-list v-for="dateList in data.dateList"
                      class="list-item"
@@ -55,6 +63,7 @@
         </slick>
 
         <span class="icon-angle icon-angle-right"
+              :class="{'disable':slickRightDisable}"
               @click="onRight($refs.slick)"></span>
       </div>
     </div>
@@ -107,22 +116,22 @@
                 group: 'XX公司YY组',
                 item: [
                   {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
+                    title: '这是标题标题标12312321321312321312321321题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
                     date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
+                    plus: 'AAAA、BBBB、CCCC、EEEE、FFFF、GGGG',
                     minus: 'DDDD'
                   },
                   {
                     title: '这是标题标题标题',
                     date: '9月4日',
                     plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
+                    minus: 'DDDD、DDDD、EEEE、ZXY'
                   },
                   {
                     title: '这是标题标题标题这是是标题标题标题',
                     date: '9月3日',
                     plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
+                    minus: 'DDDD、EEEE、FFFF、GGGG'
                   },
                   {
                     title: '这是标题标题标题这是是标题标题标题',
@@ -232,7 +241,7 @@
                     title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
                     date: '9月5日',
                     plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
+                    minus: 'DDDD',
                   },
                   {
                     title: '这是标题标题标题',
@@ -1166,13 +1175,19 @@
         currentTab: 'general',
         currentSelect: null,
         currentSelectDateItem: null,
+        companySlickLeftDisable: true,
+        companySlickRightDisable: false,
+        slickLeftDisable: true,
+        slickRightDisable: false,
       }
     },
     methods: {
       switchTab(tab) {
         this.currentTab = tab.key
         //在这里获取后台数据
-        this.$refs.companySlick.reSlick();
+        this.$refs.companySlick.reSlick()
+        this.companySlickLeftDisable = true
+        this.companySlickRightDisable = false
       },
       onLeft(ref) {  //左箭头点击
         ref.prev()
@@ -1184,12 +1199,24 @@
         console.log(company)
         this.currentSelect = company
         //刷新第三部分数据ajax 现在都用固定的数据
-        this.currentSelectDateItem = null;
-        this.$refs.slick.reSlick();
-        window.scrollTo(0,document.body.scrollHeight);
+        //重置第三部分
+        this.currentSelectDateItem = null
+        this.$refs.slick.reSlick()
+        this.slickLeftDisable = true
+        this.slickRightDisable = false
+        window.scrollTo(0, document.body.scrollHeight)
       },
       selectDateItem(item) {  //选择日期下某一个条目
         this.currentSelectDateItem = item
+      },
+      changeCompanySlick: function (event, slick, slide) {
+        this.companySlickRightDisable = slide >= this.data.companyList[this.currentTab].length - 3
+        this.companySlickLeftDisable = slide <= 0
+      },
+
+      changeSlick: function (event, slick, slide) {
+        this.slickRightDisable = slide >= this.data.dateList.length - 5
+        this.slickLeftDisable = slide <= 0
       }
 
     },
@@ -1205,6 +1232,11 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+
+  .icon-angle.disable {
+    color: #e2dddd;
+  }
+
   .section {
     background: white;
     border: 2px solid #e2dddd;
