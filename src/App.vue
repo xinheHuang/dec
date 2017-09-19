@@ -1,14 +1,16 @@
 <template>
   <div id="app">
-    <nav-menu :navs="navs" @switchNav="changeNav"></nav-menu>
+    <nav-menu :navs="navs"
+              @switchNav="changeNav"></nav-menu>
     <div class="content">
       <component :is="currentView"></component>
     </div>
     <fixed-tools></fixed-tools>
     <footer class="footer"></footer>
-    <modal v-if="showModal"
-           @close="showModal = false">
-    </modal>
+    <article-modal v-if="showModal"
+                   :article="article"
+                   @close="showModal = false">
+    </article-modal>
   </div>
 </template>
 
@@ -17,54 +19,55 @@
   import fixedTools from './components/fixedTools/fixedTools.vue'
   import news from './components/news/news.vue'
   import market from './components/market/market.vue'
-  import modal from './components/market/modal/modal.vue'
+  import articleModal from './components/market/modal/modal.vue'
   import EventBus from './eventBus'
+
   export default {
     data() {
       return {
-        navs:[
+        navs: [
           {
-            key:'news',
-            name:'新闻'
+            key: 'news',
+            name: '新闻'
           },
           {
-            key:'calendar',
-            name:'日历'
+            key: 'calendar',
+            name: '日历'
           },
           {
-            key:'market',
-            name:'市场'
+            key: 'market',
+            name: '市场'
           }
         ],
         currentView: 'news',
-        showModal:false
+        showModal: false,
+        article:null,
       }
     },
-    methods:{
-      changeNav(nav){
-        this.currentView=nav.key;
+    methods: {
+      changeNav(nav) {
+        this.currentView = nav.key
       }
     },
-    created(){
-      EventBus.$on('modal', item => {
-        console.log('modal',item);
-        this.showModal=true;
-      });
+    created() {
+      EventBus.$on('articleModal', article => {
+        this.showModal = true
+        this.article=article;
+      })
     },
     components: {
       navMenu,
       fixedTools,
       news,
       market,
-      calendar:news, //后续开发出日历页面需要将这里替换掉
-
-      modal
+      calendar: news, //后续开发出日历页面需要将这里替换掉
+      articleModal
     },
   }
 </script>
 
 <style scoped="">
-  .content{
+  .content {
     /*background: #f6f6f6;*/
     width: 73rem;
     height: 45rem;

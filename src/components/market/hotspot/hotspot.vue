@@ -1,3 +1,4 @@
+<!--关注热点-->
 <template>
   <div>
     <!--结论部分-->
@@ -40,7 +41,10 @@
         <span class="icon-angle icon-angle-left"
               @click="onLeft"></span>
 
-        <slick class="slick" ref="slick" :options="slickOptions" style="width:
+        <slick class="slick"
+               ref="slick"
+               :options="slickOptions"
+               style="width:
         900px">
           <key-word-list :key="keyWordList.key"
                          v-for="keyWordList in data.keyWordLists"
@@ -57,7 +61,7 @@
 
 <script>
   import conclusion from '../conclusion/conclusion.vue'
-  import keyWordList from '../keyWordList/keyWordList.vue'
+  import keyWordList from './keyWordList/keyWordList.vue'
   import Slick from 'vue-slick'
 
   export default {
@@ -80,21 +84,27 @@
               items: [
                 {
                   title: '这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题',
+                  author: 'author',
                   date: '9月5日',
                   readNumber: 2239,
-                  like: 34
+                  like: 34,
+                  content: '这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容'
                 },
                 {
                   title: '这标题',
                   date: '9月5日',
+                  author: 'author',
                   readNumber: 2239,
+                  content: '这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容',
                   like: 34
                 },
                 {
                   title: '这是标题标题',
                   date: '9月5日',
+                  author: 'author',
                   readNumber: 2239,
-                  like: 34
+                  like: 34,
+                  content: '这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容'
                 }
               ]
             },
@@ -103,22 +113,36 @@
               readNumber: 2585,
               items: [
                 {
-                  title: '这是标题标题这是标题标题这！！！！！！是标题标题这是标题标题这是标题标题这是标题标题这是标题标题',
-                  date: '9月5日',
-                  readNumber: 2239,
-                  like: 34
-                },
-                {
-                  title: '这是标题标题这是标题标题这是标题标！！题这是标题标题这是标题标题这是标题标题这是标题标题',
-                  date: '9月5日',
-                  readNumber: 2239,
-                  like: 34
-                },
-                {
                   title: '这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题',
+                  author: 'author',
                   date: '9月5日',
                   readNumber: 2239,
+                  like: 34,
+                  content: '这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容'
+                },
+                {
+                  title: '这标题',
+                  date: '9月5日',
+                  author: 'author',
+                  readNumber: 2239,
+                  content: '这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容',
                   like: 34
+                },
+                {
+                  title: '这是标题标题',
+                  date: '9月5日',
+                  author: 'author',
+                  readNumber: 2239,
+                  like: 34,
+                  content: '这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容'
+                },
+                {
+                  title: '这是标题标题',
+                  date: '9月5日',
+                  author: 'author',
+                  readNumber: 2239,
+                  like: 34,
+                  content: '这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容'
                 }
               ]
             },
@@ -128,21 +152,27 @@
               items: [
                 {
                   title: '这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题',
+                  author: 'author',
                   date: '9月5日',
                   readNumber: 2239,
+                  like: 34,
+                  content: '这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容'
+                },
+                {
+                  title: '这标题',
+                  date: '9月5日',
+                  author: 'author',
+                  readNumber: 2239,
+                  content: '这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容',
                   like: 34
                 },
                 {
-                  title: '这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题',
+                  title: '这是标题标题',
                   date: '9月5日',
+                  author: 'author',
                   readNumber: 2239,
-                  like: 34
-                },
-                {
-                  title: '这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题',
-                  date: '9月5日',
-                  readNumber: 2239,
-                  like: 34
+                  like: 34,
+                  content: '这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容'
                 }
               ]
             },
@@ -152,21 +182,27 @@
               items: [
                 {
                   title: '这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题',
+                  author: 'author',
                   date: '9月5日',
                   readNumber: 2239,
+                  like: 34,
+                  content: '这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容'
+                },
+                {
+                  title: '这标题',
+                  date: '9月5日',
+                  author: 'author',
+                  readNumber: 2239,
+                  content: '这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容',
                   like: 34
                 },
                 {
-                  title: '这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题',
+                  title: '这是标题标题',
                   date: '9月5日',
+                  author: 'author',
                   readNumber: 2239,
-                  like: 34
-                },
-                {
-                  title: '这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题',
-                  date: '9月5日',
-                  readNumber: 2239,
-                  like: 34
+                  like: 34,
+                  content: '这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容'
                 }
               ]
             },
@@ -176,32 +212,32 @@
               items: [
                 {
                   title: '这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题',
+                  author: 'author',
                   date: '9月5日',
                   readNumber: 2239,
-                  like: 34
+                  like: 34,
+                  content: '这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容'
                 },
                 {
-                  title: '这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题',
+                  title: '这是标题标题',
                   date: '9月5日',
+                  author: 'author',
                   readNumber: 2239,
-                  like: 34
-                },
-                {
-                  title: '这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题',
-                  date: '9月5日',
-                  readNumber: 2239,
-                  like: 34
+                  like: 34,
+                  content: '这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容'
                 }
               ]
-            }]
+            },
+          ]
         },
         selectedChartType: '全部',
-        slickOptions: {
+        slickOptions: {  // 滑动部分配置
           slidesToShow: 3,
-          draggable:false,
-          arrows:false,
-          infinite:false,
-          touchMove:false,
+          accessibility:false,
+          draggable: false,
+          arrows: false,
+          infinite: false,
+          touchMove: false,
           // Any other options that can be got from plugin documentation
         },
       }
@@ -213,10 +249,10 @@
         //这里根据类型发起ajax 请求，刷新图表
       },
       onLeft() {  //左箭头点击
-        this.$refs.slick.prev();
+        this.$refs.slick.prev()
       },
       onRight() {  //右箭头点击
-        this.$refs.slick.next();
+        this.$refs.slick.next()
       }
     },
     components: {
@@ -284,12 +320,12 @@
     overflow: hidden;
     width: 900px;
   }
+
   .list-item {
     display: inline-block;
     vertical-align: top;
     outline: none;
   }
-
 
   .icon-angle {
     cursor: pointer;

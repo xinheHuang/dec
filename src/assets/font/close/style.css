@@ -1,0 +1,29 @@
+@font-face {
+  font-family: 'iconclose';
+  src:  url('fonts/icomoon.eot?521dgu');
+  src:  url('fonts/icomoon.eot?521dgu#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?521dgu') format('truetype'),
+    url('fonts/icomoon.woff?521dgu') format('woff'),
+    url('fonts/icomoon.svg?521dgu#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.icon-close {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'iconclose' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-circle-with-cross:before {
+  content: "\e902";
+}

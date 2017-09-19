@@ -1,3 +1,4 @@
+<!--结论组件-->
 <template>
   <div class="conclusion">
     <h2>

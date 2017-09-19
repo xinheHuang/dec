@@ -1,3 +1,4 @@
+<!--关键字文章列表-->
 <template>
   <div style="width:200px;padding: 16px 50px 0">
     <div class="key">
@@ -15,9 +16,9 @@
           @click="openModal(item)"
           class="item-title"><p>{{
           item.title.length <= 24 ? item.title :
-          item.title.slice(0, 23) + ' ...'}}
+            item.title.slice(0, 23) + ' ...'}}
         </p></div>
-        <div class="divider"></div>
+        <div class="divider" style="margin: 0 10px"></div>
         <div style="display: flex;justify-content: space-around">
           <div class="item-detail">
             <div class="icon iconcalendar icon-calendar-o"></div>
@@ -25,7 +26,8 @@
           </div>
 
           <div class="item-detail">
-            <div class="icon iconcalendar icon-eye"></div>
+            <div class="icon iconcalendar icon-eye"
+                 style="font-size: 20px"></div>
             <div>{{item.readNumber}}</div>
           </div>
 
@@ -42,8 +44,9 @@
 </template>
 
 <script>
-  import '../../../assets/font/calendar/style.css'
-  import EventBus from '../../../eventBus';
+  import Vue from 'vue'
+  import '../../../../assets/font/calendar/style.css'
+  import EventBus from '../../../../eventBus'
 
   export default {
     props: {
@@ -52,15 +55,9 @@
         required: true,
       }
     },
-    data() {
-      return {
-        showModal: false,
-      }
-    },
     methods: {
-      openModal(item) {
-        console.log(item)
-        EventBus.$emit('modal', item);
+      openModal(item) {  //文章弹窗
+        EventBus.$emit('articleModal', item)
       }
     },
   }
@@ -93,12 +90,6 @@
     /*text-overflow: ellipsis;*/
     margin-bottom: 10px;
     cursor: pointer;
-  }
-
-  .divider {
-    height: 1px;
-    background-color: #e2dddd;
-    margin: 0 10px;
   }
 
   .item-detail > * {

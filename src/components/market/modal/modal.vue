@@ -1,30 +1,31 @@
+<!--文章弹窗-->
 <template>
   <transition name="modal">
     <div class="modal-mask">
       <div class="modal-wrapper">
         <div class="modal-container">
-
           <div class="modal-header">
-            <slot name="header">
-              default header
-            </slot>
+            <div style="text-align: center">
+              <h3 style="color:black">
+                {{article.title}}
+                <a class="icon-close icon-circle-with-cross close"
+                   @click="$emit('close')"></a>
+              </h3>
+            </div>
+            <div class="info">
+              <span><span class="icon-calendar-o iconcalendar" />{{article.date}}</span>
+              <span><span class="iconfont icon-personal" />{{article.author}}</span>
+              <span><span class="iconcalendar icon-eye" />{{article.readNumber}}</span>
+              <span><span style="font-size: 12px"
+                          class="iconfont icon-like" />{{article.like}}</span>
+            </div>
+            <div class="divider"></div>
           </div>
 
           <div class="modal-body">
-            <slot name="body">
-              default body
-            </slot>
+              {{article.content}}
           </div>
 
-          <div class="modal-footer">
-            <slot name="footer">
-              default footer
-              <button class="modal-default-button"
-                      @click="$emit('close')">
-                OK
-              </button>
-            </slot>
-          </div>
         </div>
       </div>
     </div>
@@ -33,21 +34,43 @@
 
 <script>
   import '../../../assets/font/calendar/style.css'
+  import '../../../assets/font/close/style.css'
 
   export default {
     props: {
-      article: {
+      article: {  //弹窗文章的属性
         type: Object,
         required: true,
       }
     },
-    methods: {
-    }
+    methods: {}
   }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+
+  .close {
+    float: right;
+    font-size: 18px;
+    color: #6b6868;
+    cursor: pointer;
+    top: 0
+  }
+
+  .info {
+    display: flex;
+    justify-content: center;
+    color: #6b6868;
+    font-size: 14px;
+  }
+
+  .info span {
+    padding: 10px;
+    line-height: 20px;
+    vertical-align: bottom;
+  }
+
   .modal-mask {
     position: fixed;
     z-index: 9998;
@@ -66,7 +89,7 @@
   }
 
   .modal-container {
-    width: 300px;
+    width: 900px;
     margin: 0px auto;
     padding: 20px 30px;
     background-color: #fff;
@@ -88,6 +111,7 @@
   .modal-default-button {
     float: right;
   }
+
   .modal-enter {
     opacity: 0;
   }
