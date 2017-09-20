@@ -14,8 +14,8 @@
            class="item">
         <div
           @click="openModal(item)"
-          class="item-title"><p>{{
-          dotString(item.title, 47)
+          class="item-title"><p ref="title">{{
+          item.title
           }}
         </p></div>
         <div class="divider"
@@ -48,8 +48,8 @@
   import Vue from 'vue'
   import '../../../../assets/font/calendar/style.css'
   import EventBus from '../../../../eventBus'
-  import { dotString, dateFormat } from '../../../../utils'
-  //  console.log(dotString);
+  import {  dateFormat } from '../../../../utils'
+  import '../../../../utils/clamp.min'
   export default {
     props: {
       keyWordList: {
@@ -61,9 +61,13 @@
       openModal(item) {  //
         EventBus.$emit('articleModal', item)
       },
-      dotString,
       dateFormat
     },
+    mounted(){
+      this.$refs.title.forEach((el) => {
+        $clamp(el, {clamp: 2})
+      })
+    }
   }
 </script>
 

@@ -114,7 +114,6 @@
       Slick
     },
     mounted() {
-
       this.$http.get('/api/market/articles')
         .then(res => {
           const articleData = {}

@@ -13,21 +13,16 @@
               :class="{'disable':companySlickLeftDisable}"
               @click="onLeft($refs.companySlick)"></span>
         <!--{{data.companyList[currentTab]}}-->
-        {{companyLists.length}}
-
-
-
         <slick class="slick"
+               v-if="companyLists.length>0"
                ref="companySlick"
                :options="slickOptions"
                v-on:afterChange="changeCompanySlick"
-               style="width:        900px">
-
+               style="width: 900px">
           <company-list v-for="companyList in companyLists"
                         @companySelect="companySelect"
                         :selected="currentSelect==companyList"
                         class="list-item"
-                        :key="companyList.group"
                         :companyList="companyList">
 
 
@@ -186,35 +181,47 @@
     methods: {
       switchTab(menu) {
         this.currentTab = menu.CID
-        this.$http.get(`/api/market/industry/${menu.name}/articles`)
-          .then(res => {
-//            console.log(menu.name,res.data)
-            const companies = {}
-            res.data.forEach(article => {
-              if (!companies[article.company]) {
-                companies[article.company] = []
-              }
-              article.date = new Date(article.riqi)
-              companies[article.company].push(article)
-            })
-            this.companyLists = Object.keys(companies)
-              .map((company) => ({
-                group: `${company}公司${menu.name}组`,
-                item: companies[company]
-              }))
-            this.$nextTick(() => {
-//              console.log('reslick ',this.$refs.companySlick)
-              this.$nextTick(()=>{
-                this.$refs.companySlick.reSlick()
-              })
+        Promise.all(
+          [this.$http.get(`/api/market/industry/${menu.name}/articles`),
+           this.$http.get(`/api/market/industry/${menu.name}/people`)])
+               .then(([articleRes, peopleRes]) => {
+                 console.log(menu.name, articleRes.data, peopleRes.data)
+                 const companies = {}
+                 articleRes.data.forEach(article => {
+                   if (!companies[article.company]) {
+                     companies[article.company] = {
+                       articles:[],
+                       people:[],
+                     }
+                   }
+                   article.date = new Date(article.riqi)
+                   companies[article.company].articles.push(article)
+                 })
 
-            })
-            console.log(this.companyLists)
-          })
+                 peopleRes.data.forEach(people=>{
+                   if (!companies[people.company]) {
+                     companies[people.company] = {
+                       articles:[],
+                       people:[],
+                     }
+                   }
+                   companies[people.company].people.push(people)
+                 })
+                 console.log(companies)
+                 this.companyLists = Object.keys(companies)
+                                           .map((company) => ({
+                                             group: `${company}公司${menu.name}组`,
+                                             articles: companies[company].articles,
+                                             people: companies[company].people
+                                           }))
+                 this.$nextTick(() => {
+                   if (this.$refs.companySlick)
+                     this.$refs.companySlick.reSlick()
 
-        this.$refs.companySlick.reSlick()
-        this.companySlickLeftDisable = true
-        this.companySlickRightDisable = false
+                 })
+                 this.changeCompanySlick(null, null, 0)
+               })
+
       },
       onLeft(ref) {  //左箭头点击
         ref.prev()
@@ -237,7 +244,7 @@
         this.currentSelectDateItem = item
       },
       changeCompanySlick: function (event, slick, slide) {
-        this.companySlickRightDisable = slide >= this.data.companyList[this.currentTab].length - 3
+        this.companySlickRightDisable = slide >= this.companyLists.length - 3
         this.companySlickLeftDisable = slide <= 0
       },
 
@@ -256,14 +263,14 @@
     },
     mounted() {
       this.$http.get('/api/market/conclusion')
-        .then(res => {
-          this.conclusions = res.data.content2
-        })
+          .then(res => {
+            this.conclusions = res.data.content2
+          })
       this.$http.get('/api/market/categories')
-        .then(res => {
-          this.menu = res.data
-          console.log(this.menu)
-        })
+          .then(res => {
+            this.menu = res.data
+            console.log(this.menu)
+          })
     }
   }
 </script>
