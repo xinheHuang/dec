@@ -6,8 +6,8 @@
         <div class="modal-container">
           <div class="modal-header">
             <div class="close">
-            <a class="icon-close icon-circle-with-cross"
-               @click="$emit('close')"></a>
+              <a class="icon-close icon-circle-with-cross"
+                 @click="$emit('close')"></a>
             </div>
             <div style="text-align: center">
               <h3 style="color:black;">
@@ -15,17 +15,17 @@
               </h3>
             </div>
             <div class="info">
-              <span><span class="icon-calendar-o iconcalendar" />{{article.date}}</span>
+              <span><span class="icon-calendar-o iconcalendar" />{{dateFormat(article.date)}}</span>
               <span><span class="iconfont icon-personal" />{{article.author}}</span>
-              <span><span class="iconcalendar icon-eye" />{{article.readNumber}}</span>
+              <span><span class="iconcalendar icon-eye" />{{article.num_read}}</span>
               <span><span style="font-size: 12px"
-                          class="iconfont icon-like" />{{article.like}}</span>
+                          class="iconfont icon-like" />{{article.num_like}}</span>
             </div>
             <div class="divider"></div>
           </div>
 
           <div class="modal-body">
-              {{article.content}}
+            {{article.content}}
           </div>
 
         </div>
@@ -37,6 +37,7 @@
 <script>
   import '../../../assets/font/calendar/style.css'
   import '../../../assets/font/close/style.css'
+  import { dateFormat } from '../../../utils'
 
   export default {
     props: {
@@ -45,7 +46,9 @@
         required: true,
       }
     },
-    methods: {}
+    methods: {
+      dateFormat
+    }
   }
 </script>
 

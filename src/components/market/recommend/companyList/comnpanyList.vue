@@ -5,9 +5,6 @@
          :class="{'selected':selected}"
     >
       <div>
-        {{companyList.team}}
-      </div>
-      <div>
         {{companyList.group}}
       </div>
     </div>
@@ -25,16 +22,16 @@
           <div style="display: flex;align-items: center">
             <span class="iconplus icon-plus-circle">     </span>
             <span style="margin-left: 20px">
-              {{ item.plus.length <= 18 ? item.plus :
-              item.plus.slice(0, 17) + ' ...'}}
+              <!--{{ item.plus.length <= 18 ? item.plus :-->
+              <!--item.plus.slice(0, 17) + ' ...'}}-->
             </span>
           </div>
 
           <div style="display: flex;align-items: center">
             <span class="iconplus icon-minus-circle">     </span>
             <span style="margin-left: 20px">
-              {{ item.minus.length <= 18 ? item.minus :
-              item.minus.slice(0, 17) + ' ...'}}
+              <!--{{ item.minus.length <= 18 ? item.minus :-->
+              <!--item.minus.slice(0, 17) + ' ...'}}-->
             </span>
           </div>
 
@@ -48,6 +45,7 @@
   import Vue from 'vue'
   import '../../../../assets/font/plus/style.css'
   import EventBus from '../../../../eventBus'
+  import { dateFormat, dotString } from '../../../../utils'
 
   export default {
     props: {
@@ -62,9 +60,9 @@
     },
     methods: {
       getTitle(item) {
-        const title = `${item.date}：${item.title}`
-        return title.length <= 24 ? title :
-          title.slice(0, 23) + ' ...'
+        const title = `${dateFormat(item.date)}：${item.title}`
+        console.log('title',title);
+        return dotString(title, 47)
       },
       openModal(item) {  //文章弹窗
         EventBus.$emit('articleModal', {  //这里正常是从数据中拿到的文章信息
@@ -113,6 +111,7 @@
     line-height: 25px;
     cursor: pointer;
     margin-bottom: 10px;
+    word-break: break-all;
   }
 
   .item-detail > * {

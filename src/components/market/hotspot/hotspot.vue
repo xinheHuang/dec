@@ -3,7 +3,7 @@
   <div>
     <!--结论部分-->
     <div class="section">
-      <conclusion :conclusions="data.conclusions"></conclusion>
+      <conclusion :conclusions="conclusions"></conclusion>
     </div>
 
     <!--图表部分-->
@@ -49,7 +49,7 @@
                style="width:
         900px">
           <key-word-list :key="keyWordList.key"
-                         v-for="keyWordList in data.keyWordLists"
+                         v-for="keyWordList in articleData"
                          class="list-item"
                          :keyWordList="keyWordList"></key-word-list>
         </slick>
@@ -71,168 +71,12 @@
     data() {
       return {
         data: {   //关注热点静态数据， 后期需要通过ajax 获取数据
-          conclusions: [
-            '结论111111111111111',
-            '结论2222222222222222222',
-            '结论333333333333333333333333333333',
-            '结论444444444444444444444444444444444444'
-          ],
           chartTypes: [
             '全部', '科技', '消费', '周期', '能源', '金融',
           ],
-          keyWordLists: [
-            {
-              key: 'XXXX',
-              readNumber: 2585,
-              items: [
-                {
-                  title: '这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题',
-                  author: 'author',
-                  date: '9月5日',
-                  readNumber: 2239,
-                  like: 34,
-                  content: '这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容'
-                },
-                {
-                  title: '这标题',
-                  date: '9月5日',
-                  author: 'author',
-                  readNumber: 2239,
-                  content: '这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容',
-                  like: 34
-                },
-                {
-                  title: '这是标题标题',
-                  date: '9月5日',
-                  author: 'author',
-                  readNumber: 2239,
-                  like: 34,
-                  content: '这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容'
-                }
-              ]
-            },
-            {
-              key: 'YYYY',
-              readNumber: 2585,
-              items: [
-                {
-                  title: '这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题',
-                  author: 'author',
-                  date: '9月5日',
-                  readNumber: 2239,
-                  like: 34,
-                  content: '这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容'
-                },
-                {
-                  title: '这标题',
-                  date: '9月5日',
-                  author: 'author',
-                  readNumber: 2239,
-                  content: '这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容',
-                  like: 34
-                },
-                {
-                  title: '这是标题标题',
-                  date: '9月5日',
-                  author: 'author',
-                  readNumber: 2239,
-                  like: 34,
-                  content: '这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容'
-                },
-                {
-                  title: '这是标题标题',
-                  date: '9月5日',
-                  author: 'author',
-                  readNumber: 2239,
-                  like: 34,
-                  content: '这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容'
-                }
-              ]
-            },
-            {
-              key: 'ZZZZ',
-              readNumber: 2585,
-              items: [
-                {
-                  title: '这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题',
-                  author: 'author',
-                  date: '9月5日',
-                  readNumber: 2239,
-                  like: 34,
-                  content: '这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容'
-                },
-                {
-                  title: '这标题',
-                  date: '9月5日',
-                  author: 'author',
-                  readNumber: 2239,
-                  content: '这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容',
-                  like: 34
-                },
-                {
-                  title: '这是标题标题',
-                  date: '9月5日',
-                  author: 'author',
-                  readNumber: 2239,
-                  like: 34,
-                  content: '这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容'
-                }
-              ]
-            },
-            {
-              key: 'AAAA',
-              readNumber: 2585,
-              items: [
-                {
-                  title: '这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题',
-                  author: 'author',
-                  date: '9月5日',
-                  readNumber: 2239,
-                  like: 34,
-                  content: '这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容'
-                },
-                {
-                  title: '这标题',
-                  date: '9月5日',
-                  author: 'author',
-                  readNumber: 2239,
-                  content: '这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容',
-                  like: 34
-                },
-                {
-                  title: '这是标题标题',
-                  date: '9月5日',
-                  author: 'author',
-                  readNumber: 2239,
-                  like: 34,
-                  content: '这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容'
-                }
-              ]
-            },
-            {
-              key: 'BBBB',
-              readNumber: 2585,
-              items: [
-                {
-                  title: '这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题这是标题标题',
-                  author: 'author',
-                  date: '9月5日',
-                  readNumber: 2239,
-                  like: 34,
-                  content: '这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容'
-                },
-                {
-                  title: '这是标题标题',
-                  date: '9月5日',
-                  author: 'author',
-                  readNumber: 2239,
-                  like: 34,
-                  content: '这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容'
-                }
-              ]
-            },
-          ]
         },
+        conclusions: [],
+        articleData: {},
         selectedChartType: '全部',
         slickOptions: {  // 滑动部分配置
           slidesToShow: 3,
@@ -260,7 +104,7 @@
         this.$refs.slick.next()
       },
       changeSlick: function (event, slick, slide) {
-        this.slickRightDisable = slide >= this.data.keyWordLists.length - 3
+        this.slickRightDisable = slide >= this.articleData.length - 3
         this.slickLeftDisable = slide <= 0
       }
     },
@@ -268,6 +112,41 @@
       conclusion,
       keyWordList,
       Slick
+    },
+    mounted() {
+
+      this.$http.get('/api/market/articles')
+        .then(res => {
+          const articleData = {}
+          res.data.forEach((article) => {
+            if (!articleData[article.topic]) {
+              articleData[article.topic] = []
+            }
+            article.date = new Date(article.riqi)
+            articleData[article.topic].push(article)
+          })
+          this.articleData = Object.keys(articleData)
+            .map((topic) => {
+              const articles = articleData[topic]
+              const readNumber = articles.reduce((prev, article) => prev + article.num_read, 0)
+              articles.sort((a, b) => a.date > b.date ? -11 : 1)
+              return {
+                key: topic,
+                readNumber,
+                items: articles
+              }
+            })
+          console.log(this.articleData)
+          this.$nextTick(() => {
+            console.log('reslick')
+            this.$refs.slick.reSlick()
+          })
+        })
+
+      this.$http.get('/api/market/conclusion')
+        .then(res => {
+          this.conclusions = res.data.content1
+        })
     }
   }
 </script>
@@ -339,7 +218,6 @@
   .icon-angle {
     cursor: pointer;
   }
-
 
   .icon-angle.disable {
     color: #e2dddd;

@@ -15,25 +15,26 @@
         <div
           @click="openModal(item)"
           class="item-title"><p>{{
-          item.title.length <= 24 ? item.title :
-            item.title.slice(0, 24) + ' ...'}}
+          dotString(item.title, 47)
+          }}
         </p></div>
-        <div class="divider" style="margin: 0 10px"></div>
+        <div class="divider"
+             style="margin: 0 10px"></div>
         <div style="display: flex;justify-content: space-around">
           <div class="item-detail">
             <div class="icon iconcalendar icon-calendar-o"></div>
-            <div>{{item.date}}</div>
+            <div>{{dateFormat(item.date)}}</div>
           </div>
 
           <div class="item-detail">
             <div class="icon iconcalendar icon-eye"
                  style="font-size: 20px"></div>
-            <div>{{item.readNumber}}</div>
+            <div>{{item.num_read}}</div>
           </div>
 
           <div class="item-detail">
             <div class=" icon icon-like iconfont"></div>
-            <div>{{item.like}}</div>
+            <div>{{item.num_like}}</div>
           </div>
 
 
@@ -47,7 +48,8 @@
   import Vue from 'vue'
   import '../../../../assets/font/calendar/style.css'
   import EventBus from '../../../../eventBus'
-
+  import { dotString, dateFormat } from '../../../../utils'
+  //  console.log(dotString);
   export default {
     props: {
       keyWordList: {
@@ -58,7 +60,9 @@
     methods: {
       openModal(item) {  //
         EventBus.$emit('articleModal', item)
-      }
+      },
+      dotString,
+      dateFormat
     },
   }
 </script>
@@ -89,11 +93,13 @@
     /*overflow: hidden;*/
     /*text-overflow: ellipsis;*/
     margin-bottom: 10px;
+    word-wrap: break-word;
+    word-break: break-all;
     cursor: pointer;
   }
 
   .item-detail > * {
-    width: 50px;
+    width: 60px;
     margin-top: 10px;
     text-align: center;
     font-size: 14px;

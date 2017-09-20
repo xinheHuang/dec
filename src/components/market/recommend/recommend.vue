@@ -2,29 +2,32 @@
   <div>
     <!--结论部分-->
     <div class="section">
-      <conclusion :conclusions="data.conclusions"></conclusion>
+      <conclusion :conclusions="conclusions"></conclusion>
     </div>
 
     <!--列表部分-->
     <div class="section">
-      <content-nav :menus="data.menu"
-                   @switchTab="switchTab"
-                   :enableSearch="false"></content-nav>
+      <category-menu @switchTab="switchTab"></category-menu>
       <div class="list">
         <span class="icon-angle icon-angle-left"
               :class="{'disable':companySlickLeftDisable}"
               @click="onLeft($refs.companySlick)"></span>
         <!--{{data.companyList[currentTab]}}-->
+        {{companyLists.length}}
+
+
+
         <slick class="slick"
                ref="companySlick"
                :options="slickOptions"
                v-on:afterChange="changeCompanySlick"
-               style="width:
-        900px">
-          <company-list v-for="companyList in data.companyList[currentTab]"
+               style="width:        900px">
+
+          <company-list v-for="companyList in companyLists"
                         @companySelect="companySelect"
                         :selected="currentSelect==companyList"
                         class="list-item"
+                        :key="companyList.group"
                         :companyList="companyList">
 
 
@@ -38,8 +41,9 @@
     </div>
 
     <!--第三部分-->
-    <div class="section">
-      <div v-if="currentSelect">
+    <div class="section"
+         v-if="currentSelect">
+      <div>
         <h3>{{currentSelect.team}}：{{currentSelect.group}}</h3>
       </div>
       <div class="list">
@@ -74,1086 +78,84 @@
   import conclusion from '../conclusion/conclusion.vue'
   import companyList from './companyList/comnpanyList.vue'
   import Slick from 'vue-slick'
-  import contentNav from '../../contentNav/contentNav.vue'
+  import CategoryMenu from './menu/menu.vue'
   import dateList from './dateList/dateList.vue'
 
   export default {
     data() {
       return {
         data: {   //核心推荐静态数据， 后期需要通过ajax 获取数据
-          conclusions: [
-            '结论111111111111111',
-            '结论2222222222222222222',
-            '结论333333333333333333333333333333',
-            '结论444444444444444444444444444444444444'
-          ],
-          menu: [
-            { key: 'general', name: '综合' },
-            {
-              key: 'social', name: '社会', subMenu: [
-              {
-                key: 'social__house',
-                name: '房价',
-              },
-              {
-                key: 'social__env',
-                name: '环境',
-              },
-              {
-                key: 'social__food',
-                name: '食品安全',
-              }
-            ]
-            },
-            { key: 'entertainment', name: '娱乐' },
-            { key: 'car', name: '汽车' },
-            { key: 'technical', name: '科技' },
-          ],
-          companyList: {
-            'general': [
-              {
-                team: 'ZZZ团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标12312321321312321312321321题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC、EEEE、FFFF、GGGG',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD、DDDD、EEEE、ZXY'
-                  },
-                  {
-                    title: '这是标题标题标题这是是标题标题标题',
-                    date: '9月3日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD、EEEE、FFFF、GGGG'
-                  },
-                  {
-                    title: '这是标题标题标题这是是标题标题标题',
-                    date: '9月1日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  }
-                ]
-              },
-              {
-                team: 'ZZZZ团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月3日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  }
-                ]
-              },
-              {
-                team: 'ZZZZZZ团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                ]
-              },
-              {
-                team: 'ZZZZZZZZZ团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月3日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  }
-                ]
-              },
-              {
-                team: 'ZZZZZZZZZZ团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月3日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  }
-                ]
-              }
-            ],
-            'social': [
-              {
-                team: 'ZZZsocial团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD',
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题这是是标题标题标题',
-                    date: '9月3日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题这是是标题标题标题',
-                    date: '9月1日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  }
-                ]
-              },
-              {
-                team: 'ZZZZsocial团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月3日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  }
-                ]
-              },
-              {
-                team: 'ZZZZZZsocial团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                ]
-              },
-              {
-                team: 'ZZZZZZZZZsocial团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月3日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  }
-                ]
-              },
-              {
-                team: 'ZZZZZZZZZZsocial团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月3日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  }
-                ]
-              }
-            ],
-            'entertainment': [
-              {
-                team: 'ZZZentertainment团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题这是是标题标题标题',
-                    date: '9月3日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题这是是标题标题标题',
-                    date: '9月1日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  }
-                ]
-              },
-              {
-                team: 'ZZZZentertainment团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月3日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  }
-                ]
-              },
-              {
-                team: 'ZZZZZZentertainment团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                ]
-              },
-              {
-                team: 'ZZZZZZZZZentertainment团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月3日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  }
-                ]
-              },
-              {
-                team: 'ZZZZZZZZZZentertainment团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月3日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  }
-                ]
-              }
-            ],
-            'car': [
-              {
-                team: 'ZZZcar团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题这是是标题标题标题',
-                    date: '9月3日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题这是是标题标题标题',
-                    date: '9月1日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  }
-                ]
-              },
-              {
-                team: 'ZZZcarZ团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月3日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  }
-                ]
-              },
-              {
-                team: 'ZZZZZcarZ团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                ]
-              },
-              {
-                team: 'ZZZZZcarZZZZ团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月3日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  }
-                ]
-              },
-              {
-                team: 'ZZZZZZZZZZ团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月3日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  }
-                ]
-              }
-            ],
-            'technical': [
-              {
-                team: 'ZZZ团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题这是是标题标题标题',
-                    date: '9月3日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题这是是标题标题标题',
-                    date: '9月1日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  }
-                ]
-              },
-              {
-                team: 'ZZZZ团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月3日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  }
-                ]
-              },
-              {
-                team: 'ZZZZZZ团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                ]
-              },
-              {
-                team: 'ZZZZZZZZZ团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月3日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  }
-                ]
-              },
-              {
-                team: 'ZZZZZZZZZZ团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月3日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  }
-                ]
-              }
-            ],
-            'social__house': [
-              {
-                team: 'ZZZsocial__house团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题这是是标题标题标题',
-                    date: '9月3日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题这是是标题标题标题',
-                    date: '9月1日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  }
-                ]
-              },
-              {
-                team: 'ZZZZsocial__house团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月3日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  }
-                ]
-              },
-              {
-                team: 'ZZZZZZ团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                ]
-              },
-              {
-                team: 'ZZZZZZZZZ团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月3日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  }
-                ]
-              },
-              {
-                team: 'ZZZZZZZZZZ团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月3日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  }
-                ]
-              }
-            ],
-            'social__env': [
-              {
-                team: 'ZZsocial__envZ团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题这是是标题标题标题',
-                    date: '9月3日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题这是是标题标题标题',
-                    date: '9月1日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  }
-                ]
-              },
-              {
-                team: 'ZZZZsocial__env团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月3日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  }
-                ]
-              },
-              {
-                team: 'ZZZZZZsocial__env团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                ]
-              },
-              {
-                team: 'ZZZZZZZZZsocial__env团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月3日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  }
-                ]
-              },
-              {
-                team: 'ZZZZZZZZZZsocial__env团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月3日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  }
-                ]
-              }
-            ],
-            'social__food': [
-              {
-                team: 'ZZZsocial__food团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题这是是标题标题标题',
-                    date: '9月3日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题这是是标题标题标题',
-                    date: '9月1日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  }
-                ]
-              },
-              {
-                team: 'ZZZZsocial__food团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月3日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  }
-                ]
-              },
-              {
-                team: 'ZZZZZZsocial__food团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                ]
-              },
-              {
-                team: 'ZZZZZZZZZsocial__food团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月3日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  }
-                ]
-              },
-              {
-                team: 'ZZZZZZZZZZ团队',
-                group: 'XX公司YY组',
-                item: [
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月5日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题',
-                    date: '9月4日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  },
-                  {
-                    title: '这是标题标题标题这是标题标题标题这是标题标题标题',
-                    date: '9月3日',
-                    plus: 'AAAA、BBBB、CCCC',
-                    minus: 'DDDD'
-                  }
-                ]
-              }
-            ]
-          },
-          dateList: [
-            {
-              date: '9月1日',
-              items: [
-                'AAAA',
-                'BBBB',
-                'CCCC',
-                'DDDD',
-                'EEEE',
-              ]
-            },
-            {
-              date: '9月3日',
-              items: [
-                'AAAA',
-                'BBBB',
-                'DDDD',
-                'FFFF',
-              ]
-            },
-            {
-              date: '9月7日',
-              items: [
-                'AAAA',
-                'BBBB',
-                'DDDD',
-                'FFFF',
-                'GGGG',
-              ]
-            },
-            {
-              date: '9月10日',
-              items: [
-                'BBBB',
-                'DDDD',
-                'FFFF',
-                'GGGG',
-                'CCCC',
-              ]
-            },
-            {
-              date: '9月15日',
-              items: [
-                'BBBB',
-                'DDDD',
-                'FFFF',
-                'GGGG',
-                'CCCC',
-              ]
-            },
-            {
-              date: '9月16日',
-              items: [
-                'AAAA',
-                'BBBB',
-                'CCCC',
-              ]
-            },
-            {
-              date: '9月22日',
-              items: [
-                'QQQQ',
-                'CCCC',
-              ]
-            },
-          ]
+//          dateList: [
+//            {
+//              date: '9月1日',
+//              items: [
+//                'AAAA',
+//                'BBBB',
+//                'CCCC',
+//                'DDDD',
+//                'EEEE',
+//              ]
+//            },
+//            {
+//              date: '9月3日',
+//              items: [
+//                'AAAA',
+//                'BBBB',
+//                'DDDD',
+//                FFFF',
+//              ]
+//            },
+//            {
+//              date: '9月7日',
+//              items: [
+//                'AAAA',
+//                'BBBB',
+//                'DDDD',
+//                'FFFF',
+//                'GGGG',
+//              ]
+//            },
+//            {
+//              date: '9月10日',
+//              items: [
+//                'BBBB',
+//                'DDDD',
+//                'FFFF',
+//                'GGGG',
+//                'CCCC',
+//              ]
+//            },
+//            {
+//              date: '9月15日',
+//              items: [
+//                'BBBB',
+//                'DDDD',
+//                'FFFF',
+//                'GGGG',
+//                'CCCC',
+//              ]
+//            },
+//            {
+//              date: '9月16日',
+//              items: [
+//                'AAAA',
+//                'BBBB',
+//                'CCCC',
+//              ]
+//            },
+//            {
+//              date: '9月22日',
+//              items: [
+//                'QQQQ',
+//                'CCCC',
+//              ]
+//            },
+//          ]
         },
+
+        conclusions: [],
+        companyLists: [],
+
         slickOptions: {
           accessibility: false,
           slidesToShow: 3,
@@ -1172,7 +174,7 @@
           touchMove: false,
           // Any other options that can be got from plugin documentation
         },
-        currentTab: 'general',
+        currentTab: null,
         currentSelect: null,
         currentSelectDateItem: null,
         companySlickLeftDisable: true,
@@ -1182,9 +184,34 @@
       }
     },
     methods: {
-      switchTab(tab) {
-        this.currentTab = tab.key
-        //在这里获取后台数据
+      switchTab(menu) {
+        this.currentTab = menu.CID
+        this.$http.get(`/api/market/industry/${menu.name}/articles`)
+          .then(res => {
+//            console.log(menu.name,res.data)
+            const companies = {}
+            res.data.forEach(article => {
+              if (!companies[article.company]) {
+                companies[article.company] = []
+              }
+              article.date = new Date(article.riqi)
+              companies[article.company].push(article)
+            })
+            this.companyLists = Object.keys(companies)
+              .map((company) => ({
+                group: `${company}公司${menu.name}组`,
+                item: companies[company]
+              }))
+            this.$nextTick(() => {
+//              console.log('reslick ',this.$refs.companySlick)
+              this.$nextTick(()=>{
+                this.$refs.companySlick.reSlick()
+              })
+
+            })
+            console.log(this.companyLists)
+          })
+
         this.$refs.companySlick.reSlick()
         this.companySlickLeftDisable = true
         this.companySlickRightDisable = false
@@ -1224,8 +251,19 @@
       conclusion,
       companyList,
       Slick,
-      contentNav,
+      CategoryMenu,
       dateList
+    },
+    mounted() {
+      this.$http.get('/api/market/conclusion')
+        .then(res => {
+          this.conclusions = res.data.content2
+        })
+      this.$http.get('/api/market/categories')
+        .then(res => {
+          this.menu = res.data
+          console.log(this.menu)
+        })
     }
   }
 </script>

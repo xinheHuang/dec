@@ -6,7 +6,7 @@
     </h2>
     <ul>
       <li v-for="(conclusion,index) in conclusions">
-        <span style="margin-right: 12px">{{`${index + 1}.`}}</span>{{conclusion}}
+       {{conclusion}}
       </li>
     </ul>
   </div>
