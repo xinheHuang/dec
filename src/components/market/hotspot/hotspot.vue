@@ -66,7 +66,6 @@
   import conclusion from '../conclusion/conclusion.vue'
   import keyWordList from './keyWordList/keyWordList.vue'
   import Slick from 'vue-slick'
-
   export default {
     data() {
       return {
@@ -88,7 +87,7 @@
           // Any other options that can be got from plugin documentation
         },
         slickLeftDisable: true,
-        slickRightDisable: false,
+        slickRightDisable: true,
       }
     },
     methods: {
@@ -104,6 +103,7 @@
         this.$refs.slick.next()
       },
       changeSlick: function (event, slick, slide) {
+        console.log('change slick')
         this.slickRightDisable = slide >= this.articleData.length - 3
         this.slickLeftDisable = slide <= 0
       }
@@ -135,18 +135,32 @@
                 items: articles
               }
             })
-          console.log(this.articleData)
+
+
           this.$nextTick(() => {
-            console.log('reslick')
             this.$refs.slick.reSlick()
+            this.changeSlick(null, null, 0)
           })
+
         })
 
       this.$http.get('/api/market/conclusion')
         .then(res => {
           this.conclusions = res.data.content1
         })
-    }
+    },
+//    beforeUpdate() {
+//      if (this.$refs.slick) {
+//        this.$refs.slick.destroy();
+//      }
+//
+//    },
+//    updated() {
+//      if (this.$refs.slick && !this.$refs.slick.$el.classList.contains('slick-initialized')) {
+//        this.$refs.slick.create();
+//        this.changeSlick(null,null,0);
+//      }
+//    },
   }
 </script>
 

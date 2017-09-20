@@ -14,13 +14,14 @@
               @click="onLeft($refs.companySlick)"></span>
         <!--{{data.companyList[currentTab]}}-->
         <slick class="slick"
-               v-if="companyLists.length>0"
                ref="companySlick"
+               v-if="companyLists.length>0"
                :options="slickOptions"
                v-on:afterChange="changeCompanySlick"
                style="width: 900px">
           <company-list v-for="companyList in companyLists"
                         @companySelect="companySelect"
+                        :key="companyList.group"
                         :selected="currentSelect==companyList"
                         class="list-item"
                         :companyList="companyList">
@@ -39,23 +40,24 @@
     <div class="section"
          v-if="currentSelect">
       <div>
-        <h3>{{currentSelect.team}}：{{currentSelect.group}}</h3>
+        <h3>{{currentSelect.group}}</h3>
       </div>
       <div class="list">
         <span class="icon-angle icon-angle-left"
               :class="{'disable':slickLeftDisable}"
               @click="onLeft($refs.slick)"></span>
-
         <slick class="slick"
                ref="slick"
+               v-if="selectDateList.length>0"
                :options="dateSlickOptions"
+               @destroy="destroy"
                v-on:afterChange="changeSlick"
                style="width:900px">
-          <date-list v-for="dateList in data.dateList"
+          <date-list v-for="dateList in selectDateList"
                      class="list-item"
-                     :key="dateList.date"
+                     :key="currentSelect.group+dateList.date"
                      @select="selectDateItem"
-                     :selected="currentSelectDateItem"
+                     :selected="currentSelectRecommend"
                      :dateList="dateList">
 
           </date-list>
@@ -75,79 +77,11 @@
   import Slick from 'vue-slick'
   import CategoryMenu from './menu/menu.vue'
   import dateList from './dateList/dateList.vue'
+  import { dateFormat } from '../../../utils'
 
   export default {
     data() {
       return {
-        data: {   //核心推荐静态数据， 后期需要通过ajax 获取数据
-//          dateList: [
-//            {
-//              date: '9月1日',
-//              items: [
-//                'AAAA',
-//                'BBBB',
-//                'CCCC',
-//                'DDDD',
-//                'EEEE',
-//              ]
-//            },
-//            {
-//              date: '9月3日',
-//              items: [
-//                'AAAA',
-//                'BBBB',
-//                'DDDD',
-//                FFFF',
-//              ]
-//            },
-//            {
-//              date: '9月7日',
-//              items: [
-//                'AAAA',
-//                'BBBB',
-//                'DDDD',
-//                'FFFF',
-//                'GGGG',
-//              ]
-//            },
-//            {
-//              date: '9月10日',
-//              items: [
-//                'BBBB',
-//                'DDDD',
-//                'FFFF',
-//                'GGGG',
-//                'CCCC',
-//              ]
-//            },
-//            {
-//              date: '9月15日',
-//              items: [
-//                'BBBB',
-//                'DDDD',
-//                'FFFF',
-//                'GGGG',
-//                'CCCC',
-//              ]
-//            },
-//            {
-//              date: '9月16日',
-//              items: [
-//                'AAAA',
-//                'BBBB',
-//                'CCCC',
-//              ]
-//            },
-//            {
-//              date: '9月22日',
-//              items: [
-//                'QQQQ',
-//                'CCCC',
-//              ]
-//            },
-//          ]
-        },
-
         conclusions: [],
         companyLists: [],
 
@@ -170,8 +104,11 @@
           // Any other options that can be got from plugin documentation
         },
         currentTab: null,
+
         currentSelect: null,
-        currentSelectDateItem: null,
+        currentSelectRecommend: null,
+        selectDateList: null,
+
         companySlickLeftDisable: true,
         companySlickRightDisable: false,
         slickLeftDisable: true,
@@ -179,48 +116,59 @@
       }
     },
     methods: {
+
+      destroy(){
+        console.log('destroy')
+      },
       switchTab(menu) {
+        if (this.currentTab === menu.CID)
+          return
         this.currentTab = menu.CID
+        this.currentSelect = null
         Promise.all(
           [this.$http.get(`/api/market/industry/${menu.name}/articles`),
-           this.$http.get(`/api/market/industry/${menu.name}/people`)])
-               .then(([articleRes, peopleRes]) => {
-                 console.log(menu.name, articleRes.data, peopleRes.data)
-                 const companies = {}
-                 articleRes.data.forEach(article => {
-                   if (!companies[article.company]) {
-                     companies[article.company] = {
-                       articles:[],
-                       people:[],
-                     }
-                   }
-                   article.date = new Date(article.riqi)
-                   companies[article.company].articles.push(article)
-                 })
+            this.$http.get(`/api/market/industry/${menu.name}/people`)])
+          .then(([articleRes, peopleRes]) => {
+            console.log(menu.name, articleRes.data, peopleRes.data)
+            const companies = {}
+            articleRes.data.forEach(article => {
+              if (!companies[article.company]) {
+                companies[article.company] = {
+                  articles: [],
+                  people: [],
+                }
+              }
+              article.date = new Date(article.riqi)
+              companies[article.company].articles.push(article)
+            })
 
-                 peopleRes.data.forEach(people=>{
-                   if (!companies[people.company]) {
-                     companies[people.company] = {
-                       articles:[],
-                       people:[],
-                     }
-                   }
-                   companies[people.company].people.push(people)
-                 })
-                 console.log(companies)
-                 this.companyLists = Object.keys(companies)
-                                           .map((company) => ({
-                                             group: `${company}公司${menu.name}组`,
-                                             articles: companies[company].articles,
-                                             people: companies[company].people
-                                           }))
-                 this.$nextTick(() => {
-                   if (this.$refs.companySlick)
-                     this.$refs.companySlick.reSlick()
+            peopleRes.data.forEach(people => {
+              if (!companies[people.company]) {
+                companies[people.company] = {
+                  articles: [],
+                  people: [],
+                }
+              }
+              companies[people.company].people.push(people)
+            })
+            console.log(companies)
+            this.companyLists = [];
+            this.$nextTick(() => {
+              this.companyLists = Object.keys(companies)
+                .map((company) => ({
+                  group: `${company}公司${menu.name}组`,
+                  articles: companies[company].articles,
+                  people: companies[company].people
+                }))
+              this.$nextTick(()=>{
+                if (this.$refs.slick)
+                  this.$refs.companySlick.reSlick()
+                this.changeCompanySlick(null, null, 0)
+              })
+            })
 
-                 })
-                 this.changeCompanySlick(null, null, 0)
-               })
+
+          })
 
       },
       onLeft(ref) {  //左箭头点击
@@ -231,17 +179,41 @@
       },
       companySelect(company) {  //选择行业类别
         console.log(company)
+        if (company === this.currentSelect)
+          return
         this.currentSelect = company
-        //刷新第三部分数据ajax 现在都用固定的数据
-        //重置第三部分
-        this.currentSelectDateItem = null
-        this.$refs.slick.reSlick()
-        this.slickLeftDisable = true
-        this.slickRightDisable = false
-        window.scrollTo(0, document.body.scrollHeight)
+        this.currentSelectRecommend = null
+        const selectDateList = {}
+        company.articles.forEach((article) => {
+          if (!selectDateList[dateFormat(article.date)]) {
+            selectDateList[dateFormat(article.date)] = new Set()
+          }
+          article.recommends.forEach(recommend => {
+            selectDateList[dateFormat(article.date)].add(recommend)
+          })
+        })
+        console.log(selectDateList)
+        this.selectDateList = [];
+
+        this.$nextTick(() => {
+          this.selectDateList=Object.keys(selectDateList)
+            .map(date => {
+              return {
+                date,
+                recommends: [...selectDateList[date]]
+              }
+            });
+          this.$nextTick(()=>{
+            if (this.$refs.slick)
+              this.$refs.slick.reSlick()
+            this.changeSlick(null, null, 0)
+            window.scrollTo(0, document.body.scrollHeight)
+          })
+        })
+
       },
       selectDateItem(item) {  //选择日期下某一个条目
-        this.currentSelectDateItem = item
+        this.currentSelectRecommend = item
       },
       changeCompanySlick: function (event, slick, slide) {
         this.companySlickRightDisable = slide >= this.companyLists.length - 3
@@ -249,7 +221,7 @@
       },
 
       changeSlick: function (event, slick, slide) {
-        this.slickRightDisable = slide >= this.data.dateList.length - 5
+        this.slickRightDisable = slide >= this.selectDateList.length - 5
         this.slickLeftDisable = slide <= 0
       }
 
@@ -263,15 +235,34 @@
     },
     mounted() {
       this.$http.get('/api/market/conclusion')
-          .then(res => {
-            this.conclusions = res.data.content2
-          })
+        .then(res => {
+          this.conclusions = res.data.content2
+        })
       this.$http.get('/api/market/categories')
-          .then(res => {
-            this.menu = res.data
-            console.log(this.menu)
-          })
-    }
+        .then(res => {
+          this.menu = res.data
+          console.log(this.menu)
+        })
+    },
+    beforeUpdate() {
+//      if (this.$refs.slick) {
+//        this.$refs.slick.destroy();
+//      }
+//
+//      if (this.$refs.companySlick) {
+//        this.$refs.companySlick.destroy();
+//      }
+
+    },
+//    updated() {
+//      if (this.$refs.slick && !this.$refs.slick.$el.classList.contains('slick-initialized')) {
+////        this.$refs.slick.reSlick();
+//      }
+//
+//      if (this.$refs.companySlick && !this.$refs.companySlick.$el.classList.contains('slick-initialized')) {
+//        this.$refs.companySlick.reSlick();
+//      }
+//    },
   }
 </script>
 

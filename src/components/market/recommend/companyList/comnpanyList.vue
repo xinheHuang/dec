@@ -11,7 +11,7 @@
     </div>
 
     <div class="items">
-      <div v-for="article in companyList.articles"
+      <div v-for="(article,index) in companyList.articles"
            class="item">
         <div class="item-title"
              @click="openModal(article)">
@@ -23,19 +23,16 @@
         <div>
           <div style="display: flex;align-items: center">
             <span class="iconplus icon-plus-circle">     </span>
-            <span style="margin-left: 20px">
-              {{article.recommends}}
-              <!--{{ item.plus.length <= 18 ? item.plus :-->
-              <!--item.plus.slice(0, 17) + ' ...'}}-->
+            <span style="margin-left: 20px;flex-grow: 1;word-break: break-all" ref="title">
+              {{getDiffRecommends(article,index).plus}}
             </span>
           </div>
 
           <div style="display: flex;align-items: center">
             <span class="iconplus icon-minus-circle">     </span>
-            <span style="margin-left: 20px">
-              <!--{{ item.minus.length <= 18 ? item.minus :-->
-              <!--item.minus.slice(0, 17) + ' ...'}}-->
-            </span>
+            <p style="margin-left: 20px;flex-grow: 1;word-break: break-all" ref="title">
+             {{getDiffRecommends(article,index).minus}}
+            </p>
           </div>
 
         </div>
@@ -48,7 +45,7 @@
   import Vue from 'vue'
   import '../../../../assets/font/plus/style.css'
   import EventBus from '../../../../eventBus'
-  import {dateFormat, dotString} from '../../../../utils'
+  import { dateFormat, dotString } from '../../../../utils'
   import '../../../../utils/clamp.min'
   import VTooltip from 'v-tooltip'
 
@@ -72,30 +69,38 @@
           border-right: solid 1px
           black">
           ${this.companyList.people.reduce(
-          (prev, people) => `${prev}<div style="padding: 5px">${people.name}</div>`,
+          (prev, people) => `${prev}<div style="height: 30px;line-height: 30px;vertical-align: middle">${people.name}</div>`,
           '')}
           </div>
 
           <div style=" margin:10px;">
          ${this.companyList.people.reduce(
           (prev, people) =>
-            `${prev}<div  styl e="padding: 5px">${people.mobile}</div>`,
+            `${prev}<div style="height: 30px;line-height: 30px;vertical-align: middle">${people.mobile}</div>`,
           '')}
         </div>
 
           </div>`
-      }
+      },
     },
     methods: {
       dateFormat,
       openModal(article) {  //文章弹窗
         EventBus.$emit('articleModal', article)
+      },
+      getDiffRecommends: function (article, index) {
+        const currentSet = new Set(article.recommends.map((recommend) => recommend.recommend))
+        const prevSet = index === this.companyList.articles.length - 1 ? new Set() : new Set(this.companyList.articles[index + 1].recommends.map((recommend) => recommend.recommend))
+        return {
+          plus: [...currentSet].filter(x => !prevSet.has(x)).reduce((prev,x)=> `${prev}${prev && ','}${x}`,''),
+          minus: [...prevSet].filter(x => !currentSet.has(x)).reduce((prev,x)=> `${prev}${prev && ','}${x}`,'')
+        }
       }
     },
     mounted() {
 //      console.log(this.$refs.title)
       this.$refs.title.forEach((el) => {
-        $clamp(el, {clamp: 2})
+        $clamp(el, { clamp: 2 })
       })
     },
   }

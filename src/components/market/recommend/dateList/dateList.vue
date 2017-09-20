@@ -7,11 +7,11 @@
       </div>
     </div>
     <div class="items">
-      <div v-for="item in dateList.items"
-           @click="$emit('select',item)"
+      <div v-for="item in dateList.recommends"
+           @click="$emit('select',item.recommend)"
            class="item"
-           :class="{'selected':selected==item}">
-        {{item}}
+           :class="{'selected':selected==item.recommend}">
+        {{item.recommend}}
       </div>
     </div>
   </div>
