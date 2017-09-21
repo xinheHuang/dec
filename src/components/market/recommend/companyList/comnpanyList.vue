@@ -11,7 +11,7 @@
     </div>
 
     <div class="items">
-      <div v-for="(article,index) in companyList.articles"
+      <div v-for="article in companyList.articles"
            class="item">
         <div class="item-title"
              @click="openModal(article)">
@@ -23,15 +23,16 @@
         <div>
           <div style="display: flex;align-items: center">
             <span class="iconplus icon-plus-circle">     </span>
-            <span style="margin-left: 20px;flex-grow: 1;word-break: break-all" ref="title">
-              {{getDiffRecommends(article,index).plus}}
+            <span style="margin-left: 20px;flex-grow: 1;word-break: break-all"
+                  ref="title">
+              {{article.plus}}
             </span>
           </div>
-
           <div style="display: flex;align-items: center">
             <span class="iconplus icon-minus-circle">     </span>
-            <p style="margin-left: 20px;flex-grow: 1;word-break: break-all" ref="title">
-             {{getDiffRecommends(article,index).minus}}
+            <p style="margin-left: 20px;flex-grow: 1;word-break: break-all"
+               ref="title">
+              {{article.minus}}
             </p>
           </div>
 
@@ -62,6 +63,21 @@
       }
     },
     computed: {
+      diffArticles() {
+        return this.companyList.articles.map((article, index, arr) => {
+          const currentSet = new Set(article.recommends.map((recommend) => recommend.recommend))
+          const prevSet = index === arr.length - 1 ? new Set() : new Set(arr[index + 1].recommends.map((recommend) => recommend.recommend))
+          return {
+            ...article,
+            plus: [...currentSet].filter(x => !prevSet.has(x))
+              .reduce((prev, x) => `${prev}${prev && ','}${x}`, ''),
+            minus: [...prevSet].filter(x => !currentSet.has(x))
+              .reduce((prev, x) => `${prev}${prev && ','}${x}`, '')
+          }
+        })
+          .filter((article) => article.plus || article.minus)
+      },
+
       toolTipText() {
         console.log(this.companyList.people)
         return `<div style="display: flex;justify-content: space-around;align-items: center">
@@ -92,16 +108,19 @@
         const currentSet = new Set(article.recommends.map((recommend) => recommend.recommend))
         const prevSet = index === this.companyList.articles.length - 1 ? new Set() : new Set(this.companyList.articles[index + 1].recommends.map((recommend) => recommend.recommend))
         return {
-          plus: [...currentSet].filter(x => !prevSet.has(x)).reduce((prev,x)=> `${prev}${prev && ','}${x}`,''),
-          minus: [...prevSet].filter(x => !currentSet.has(x)).reduce((prev,x)=> `${prev}${prev && ','}${x}`,'')
+          plus: [...currentSet].filter(x => !prevSet.has(x))
+            .reduce((prev, x) => `${prev}${prev && ','}${x}`, ''),
+          minus: [...prevSet].filter(x => !currentSet.has(x))
+            .reduce((prev, x) => `${prev}${prev && ','}${x}`, '')
         }
       }
     },
     mounted() {
-//      console.log(this.$refs.title)
-      this.$refs.title.forEach((el) => {
-        $clamp(el, { clamp: 2 })
-      })
+      if (this.$refs.title) {
+        this.$refs.title.forEach((el) => {
+          $clamp(el, { clamp: 2 })
+        })
+      }
     },
   }
 </script>

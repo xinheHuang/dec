@@ -134,8 +134,7 @@
                 readNumber,
                 items: articles
               }
-            })
-
+            }).sort((a,b)=> b.readNumber - a.readNumber)
 
           this.$nextTick(() => {
             this.$refs.slick.reSlick()

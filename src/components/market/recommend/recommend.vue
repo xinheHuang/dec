@@ -157,7 +157,7 @@
               this.companyLists = Object.keys(companies)
                 .map((company) => ({
                   group: `${company}公司${menu.name}组`,
-                  articles: companies[company].articles,
+                  articles: this.getDiffArticles(companies[company].articles),
                   people: companies[company].people
                 }))
               this.$nextTick(()=>{
@@ -171,6 +171,22 @@
           })
 
       },
+
+      getDiffArticles(articles) {
+        return articles.map((article, index, arr) => {
+          const currentSet = new Set(article.recommends.map((recommend) => recommend.recommend))
+          const prevSet = index === arr.length - 1 ? new Set() : new Set(arr[index + 1].recommends.map((recommend) => recommend.recommend))
+          return {
+            ...article,
+            plus: [...currentSet].filter(x => !prevSet.has(x))
+              .reduce((prev, x) => `${prev}${prev && ','}${x}`, ''),
+            minus: [...prevSet].filter(x => !currentSet.has(x))
+              .reduce((prev, x) => `${prev}${prev && ','}${x}`, '')
+          }
+        })
+          .filter((article) => article.plus || article.minus)
+      },
+
       onLeft(ref) {  //左箭头点击
         ref.prev()
       },
@@ -244,25 +260,7 @@
           console.log(this.menu)
         })
     },
-    beforeUpdate() {
-//      if (this.$refs.slick) {
-//        this.$refs.slick.destroy();
-//      }
-//
-//      if (this.$refs.companySlick) {
-//        this.$refs.companySlick.destroy();
-//      }
 
-    },
-//    updated() {
-//      if (this.$refs.slick && !this.$refs.slick.$el.classList.contains('slick-initialized')) {
-////        this.$refs.slick.reSlick();
-//      }
-//
-//      if (this.$refs.companySlick && !this.$refs.companySlick.$el.classList.contains('slick-initialized')) {
-//        this.$refs.companySlick.reSlick();
-//      }
-//    },
   }
 </script>
 
