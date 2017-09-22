@@ -18,6 +18,7 @@
   import navMenu from './components/nav/nav.vue'
   import fixedTools from './components/fixedTools/fixedTools.vue'
   import news from './components/news/news.vue'
+  import calendar from './components/calendar/calendar.vue'
   import market from './components/market/market.vue'
   import articleModal from './components/market/modal/modal.vue'
   import EventBus from './eventBus'
@@ -60,7 +61,7 @@
       fixedTools,
       news,
       market,
-      calendar: news, //后续开发出日历页面需要将这里替换掉
+      calendar,
       articleModal
     },
   }
