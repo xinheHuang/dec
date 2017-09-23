@@ -9,19 +9,22 @@
     <!--图表部分-->
     <div class="section">
       <div class="charts-type">
-       <span v-for="type in data.chartTypes"
-             :class="{'selected':selectedChartType==type}"
-             @click="changeChartType(type)">
-         {{type}}
+       <span v-for="type in chartTypes"
+             :class="{'selected':selectedChartType==type.name}"
+             @click="changeChartType(type.name)">
+         {{type.name}}
        </span>
       </div>
       <div class="charts">
         <div>
-          <div class="chart-title">
-            {{selectedChartType}}标题1
-          </div>
+          <!--<div class="chart-title">-->
+          <!--{{selectedChartType}}标题1-->
+          <!--</div>-->
           <div style="width: 100%;text-align: center;vertical-align: middle">
-            <barchart :data="data.barChartData" :height="300" :width="400"></barchart>
+            <barchart :data="barChartData"
+                      y-label="总阅读数"
+                      :height="300"
+                      :width="400"></barchart>
           </div>
         </div>
         <div>
@@ -67,122 +70,14 @@
   import keyWordList from './keyWordList/keyWordList.vue'
   import Slick from 'vue-slick'
   import barchart from './barchart/barchart.vue'
+
   export default {
     data() {
       return {
-        data: {   //关注热点静态数据， 后期需要通过ajax 获取数据
-          chartTypes: [
-            '全部', '科技', '消费', '周期', '能源', '金融',
-          ],
-          barChartData:[
-            {
-              "x": "A",
-              "y": 0.08167
-            },
-            {
-              "x": "B",
-              "y": 0.01492
-            },
-            {
-              "x": "C",
-              "y": 0.02782
-            },
-            {
-              "x": "D",
-              "y": 0.04253
-            },
-            {
-              "x": "E",
-              "y": 0.12702
-            },
-            {
-              "x": "F",
-              "y": 0.02288
-            },
-            {
-              "x": "G",
-              "y": 0.02015
-            },
-            {
-              "x": "H",
-              "y": 0.06094
-            },
-            {
-              "x": "I",
-              "y": 0.06966
-            },
-            {
-              "x": "J",
-              "y": 0.00153
-            },
-            {
-              "x": "K",
-              "y": 0.00772
-            },
-            {
-              "x": "L",
-              "y": 0.04025
-            },
-            {
-              "x": "M",
-              "y": 0.02406
-            },
-            {
-              "x": "N",
-              "y": 0.06749
-            },
-            {
-              "x": "O",
-              "y": 0.07507
-            },
-            {
-              "x": "P",
-              "y": 0.01929
-            },
-            {
-              "x": "Q",
-              "y": 0.00095
-            },
-            {
-              "x": "R",
-              "y": 0.05987
-            },
-            {
-              "x": "S",
-              "y": 0.06327
-            },
-            {
-              "x": "T",
-              "y": 0.09056
-            },
-            {
-              "x": "U",
-              "y": 0.02758
-            },
-            {
-              "x": "V",
-              "y": 0.00978
-            },
-            {
-              "x": "W",
-              "y": 0.0236
-            },
-            {
-              "x": "X",
-              "y": 0.0015
-            },
-            {
-              "x": "Y",
-              "y": 0.01974
-            },
-            {
-              "x": "Z",
-              "y": 0.00074
-            }
-          ]
-        },
+        categories: [],
         conclusions: [],
         articleData: {},
+        barChartData: [],
         selectedChartType: '全部',
         slickOptions: {  // 滑动部分配置
           slidesToShow: 3,
@@ -197,11 +92,28 @@
         slickRightDisable: true,
       }
     },
+    computed: {
+      chartTypes() {
+        return [{name: '全部'}, ...this.categories]
+      }
+    },
     methods: {
       changeChartType(type) {
+        if (type===this.selectedChartType) return;
         this.selectedChartType = type
+        if (type==='全部'){
+          this.$http.get('/api/market/readNumbers')  //获取过去7天阅读总量 根据topic
+              .then(res => {
+                this.barChartData = res.data.map((d) => {
+                  return {
+                    x: d['relation.name'],
+                    y: Number(d['sum'])
+                  }
+                })
+              })
+        }
 
-        //这里根据类型发起ajax 请求，刷新图表
+        //todo check readnumbers by category
       },
       onLeft() {  //左箭头点击
         this.$refs.slick.prev()
@@ -213,6 +125,9 @@
         console.log('change slick')
         this.slickRightDisable = slide >= this.articleData.length - 3
         this.slickLeftDisable = slide <= 0
+      },
+      getAllReadNumbers(){
+
       }
     },
     components: {
@@ -223,51 +138,50 @@
     },
     mounted() {
       this.$http.get('/api/market/articles')
-        .then(res => {
-          const articleData = {}
-          res.data.forEach((article) => {
-            if (!articleData[article.topic]) {
-              articleData[article.topic] = []
-            }
-            article.date = new Date(article.riqi)
-            articleData[article.topic].push(article)
-          })
-          this.articleData = Object.keys(articleData)
-            .map((topic) => {
-              const articles = articleData[topic]
-              const readNumber = articles.reduce((prev, article) => prev + article.num_read, 0)
-              articles.sort((a, b) => a.date > b.date ? -11 : 1)
-              return {
-                key: topic,
-                readNumber,
-                items: articles
+          .then(res => {
+            const articleData = {}
+            res.data.forEach((article) => {
+              if (!articleData[article.topic]) {
+                articleData[article.topic] = []
               }
-            }).sort((a,b)=> b.readNumber - a.readNumber)
+              article.date = new Date(article.riqi)
+              articleData[article.topic].push(article)
+            })
+            this.articleData = Object.keys(articleData)
+                                     .map((topic) => {
+                                       const articles = articleData[topic]
+                                       const readNumber = articles.reduce(
+                                         (prev, article) => prev + article.num_read,
+                                         0)
+                                       articles.sort(
+                                         (a, b) => a.date > b.date ? -11 : 1)
+                                       return {
+                                         key: topic,
+                                         readNumber,
+                                         items: articles
+                                       }
+                                     })
+                                     .sort(
+                                       (a, b) => b.readNumber - a.readNumber)
 
-          this.$nextTick(() => {
-            this.$refs.slick.reSlick()
-            this.changeSlick(null, null, 0)
+            this.$nextTick(() => {
+              this.$refs.slick.reSlick()
+              this.changeSlick(null, null, 0)
+            })
+
           })
-
-        })
 
       this.$http.get('/api/market/conclusion')
-        .then(res => {
-          this.conclusions = res.data.content1
-        })
+          .then(res => {
+            this.conclusions = res.data.content1
+          })
+
+      this.$http.get('/api/market/categories') //所有行业
+          .then(res => {
+            this.categories = res.data
+          })
+      this.changeChartType('全部')
     },
-//    beforeUpdate() {
-//      if (this.$refs.slick) {
-//        this.$refs.slick.destroy();
-//      }
-//
-//    },
-//    updated() {
-//      if (this.$refs.slick && !this.$refs.slick.$el.classList.contains('slick-initialized')) {
-//        this.$refs.slick.create();
-//        this.changeSlick(null,null,0);
-//      }
-//    },
   }
 </script>
 

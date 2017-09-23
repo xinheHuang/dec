@@ -42,10 +42,6 @@ module.exports = {
         options: vueLoaderConfig
       },
       {
-        test: /\.(c|d|t)sv$/, // load all .csv, .dsv, .tsv files with dsv-loader
-        use: ['dsv-loader'] // or dsv-loader?delimiter=,
-      },
-      {
         test: /\.less$/,
         loader: 'style-loader!css-loader!less-loader'
       },
