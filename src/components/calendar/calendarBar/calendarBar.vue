@@ -21,7 +21,7 @@
     data(){
       return{
         calendarType:'day',
-        currentWeekStartDate:
+//        currentWeekStartDate:
       }
     },
     methods:{

@@ -3,7 +3,7 @@ var utils = require('./utils')
 var config = require('../config')
 var vueLoaderConfig = require('./vue-loader.conf')
 
-function resolve (dir) {
+function resolve(dir) {
   return path.join(__dirname, '..', dir)
 }
 
@@ -40,6 +40,10 @@ module.exports = {
         test: /\.vue$/,
         loader: 'vue-loader',
         options: vueLoaderConfig
+      },
+      {
+        test: /\.(c|d|t)sv$/, // load all .csv, .dsv, .tsv files with dsv-loader
+        use: ['dsv-loader'] // or dsv-loader?delimiter=,
       },
       {
         test: /\.less$/,

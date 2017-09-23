@@ -21,7 +21,7 @@
             {{selectedChartType}}标题1
           </div>
           <div style="width: 100%;height:300px;text-align: center;vertical-align: middle;line-height: 300px">
-            图表1
+            <barchart></barchart>
           </div>
         </div>
         <div>
@@ -66,6 +66,7 @@
   import conclusion from '../conclusion/conclusion.vue'
   import keyWordList from './keyWordList/keyWordList.vue'
   import Slick from 'vue-slick'
+  import barchart from './barchart/barchart.vue'
   export default {
     data() {
       return {
@@ -111,7 +112,8 @@
     components: {
       conclusion,
       keyWordList,
-      Slick
+      Slick,
+      barchart
     },
     mounted() {
       this.$http.get('/api/market/articles')
