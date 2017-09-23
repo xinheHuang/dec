@@ -38,28 +38,61 @@
       const svg = d3.select(this.$el) //svg 容器
       const chartWidth = width - left - right
       const chartHeight = height - top - bottom
+      const barWidth=chartWidth/5;
+      const scaleWidth=barWidth*data.length;
       const x = d3.scaleBand()
-        .rangeRound([0, chartWidth])
-        .padding(0.1)  //x scale
+        .range([0, scaleWidth])
+        .padding(0.3)  //x scale
+
       const y = d3.scaleLinear()
         .rangeRound([chartHeight, 0])  //y scale
 
       const chart = svg.append('g')  //chart
         .attr('transform', `translate(${left},${top})`)
 
+
       //set domain
       x.domain(data.map(d => d.x))
       y.domain([0, d3.max(data, (d) => (d.y))])
 
-      chart.append('g')
-        .attr('class', 'axis axis--x')
+      const xAxis = d3.axisBottom(x)
+      const yAxis = d3.axisLeft(y)
+        .ticks(10, '%')
+
+      const defs = svg.append("defs")
+
+      //Append a clipPath element to the defs element, and a Shape
+      // to define the cliping area
+      defs.append("clipPath")
+        .attr('id', 'my-clip-path')
+        .append('rect')
+        .attr('width', chartWidth) //Set the width of the clipping area
+        .attr('height', chartHeight) // set the height of the clipping area
+
+      //clip path for x axis
+      defs.append("clipPath")
+        .attr('id', 'x-clip-path')
+        .append('rect')
+        .attr('width', chartWidth) //Set the width of the clipping area
+        .attr('height', chartHeight + bottom) // set the height of the clipping area
+
+
+      const barsGroup = chart.append('g')
+      barsGroup.attr('clip-path', 'url(#my-clip-path)')
+
+
+      const xAxisGroup = chart.append("g")
+        .attr('class', 'x-axis')
+      xAxisGroup.append('g')
+        .attr('class', 'x axis')
         .attr('transform', 'translate(0,' + chartHeight + ')')
-        .call(d3.axisBottom(x))
+        .call(xAxis)
+
+      xAxisGroup.attr('clip-path', 'url(#x-clip-path)')
 
       chart.append('g')
-        .attr('class', 'axis axis--y')
-        .call(d3.axisLeft(y)
-          .ticks(10, '%'))
+        .attr('class', 'y axis')
+        .call(yAxis)
         .append('text')
         .attr('transform', 'rotate(-90)')
         .attr('y', 6)
@@ -67,7 +100,8 @@
         .attr('text-anchor', 'end')
         .text('Frequency')
 
-      chart.selectAll('.bar')
+
+      const bars = barsGroup.selectAll('.bar')
         .data(data)
         .enter()
         .append('rect')
@@ -77,25 +111,22 @@
         .attr('width', x.bandwidth())
         .attr('height', d => chartHeight - y(d.y))
 
+      svg.append("rect")
+        .attr("class", "zoom")
+        .attr("width", chartWidth)
+        .attr("height", chartHeight+bottom)
+        .attr("transform", `translate(${left},${top})`)
+        .call(d3.zoom().scaleExtent([1, 1]).translateExtent([[0, 0], [scaleWidth+barWidth, chartHeight]]).on("zoom", zoom));
 
-      //create brush function redraw scatterplot with selection
-      function brushed() {
-        if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
-        var s = d3.event.selection || x2.range();
-        x.domain(s.map(x2.invert, x2));
-        focus.selectAll(".message")
-          .attr("cx", function(d) { return x(d.sent_time); })
-          .attr("cy", function(d) { return y(d.messages_sent_in_day); });
-        focus.select(".x-axis").call(xAxis);
-        svg.select(".zoom").call(zoom.transform, d3.zoomIdentity
-          .scale(width / (s[1] - s[0]))
-          .translate(-s[0], 0));
+      function zoom() {
+        const transform = d3.event.transform
+        bars.attr("transform", `translate(${transform.x},0)scale(${transform.k},1)`)
+        chart.select(".x.axis")
+          .attr("transform", `translate(${transform.x},${chartHeight})`)
+          .call(xAxis.scale(x.rangeRound([0, scaleWidth * transform.k], .1 * transform.k)))
+        chart.select(".y.axis")
+          .call(yAxis)
       }
-
-      //brush
-      const brush = d3.brushX()
-        .extent([[0, 0], [chartWidth, chartHeight]])
-        .on("brush", brushed);
     }
   }
 </script>
@@ -112,5 +143,11 @@
     .axis--x path {
       display: none;
     }
+    .zoom {
+      cursor: move;
+      fill: none;
+      pointer-events: all;
+    }
+
   }
 </style>
