@@ -20,15 +20,15 @@
           <div class="chart-title">
             {{selectedChartType}}标题1
           </div>
-          <div style="width: 100%;height:300px;text-align: center;vertical-align: middle;line-height: 300px">
-            <barchart></barchart>
+          <div style="width: 100%;text-align: center;vertical-align: middle">
+            <barchart :data="data.barChartData" :height="300" :width="400"></barchart>
           </div>
         </div>
         <div>
           <div class="chart-title">
             {{selectedChartType}}标题2
           </div>
-          <div style="width: 100%;height:300px;text-align: center;vertical-align: middle;line-height: 300px">
+          <div style="width: 100%;text-align: center;vertical-align: middle">
             图表2
           </div>
         </div>
@@ -74,6 +74,112 @@
           chartTypes: [
             '全部', '科技', '消费', '周期', '能源', '金融',
           ],
+          barChartData:[
+            {
+              "x": "A",
+              "y": 0.08167
+            },
+            {
+              "x": "B",
+              "y": 0.01492
+            },
+            {
+              "x": "C",
+              "y": 0.02782
+            },
+            {
+              "x": "D",
+              "y": 0.04253
+            },
+            {
+              "x": "E",
+              "y": 0.12702
+            },
+            {
+              "x": "F",
+              "y": 0.02288
+            },
+            {
+              "x": "G",
+              "y": 0.02015
+            },
+            {
+              "x": "H",
+              "y": 0.06094
+            },
+            {
+              "x": "I",
+              "y": 0.06966
+            },
+            {
+              "x": "J",
+              "y": 0.00153
+            },
+            {
+              "x": "K",
+              "y": 0.00772
+            },
+            {
+              "x": "L",
+              "y": 0.04025
+            },
+            {
+              "x": "M",
+              "y": 0.02406
+            },
+            {
+              "x": "N",
+              "y": 0.06749
+            },
+            {
+              "x": "O",
+              "y": 0.07507
+            },
+            {
+              "x": "P",
+              "y": 0.01929
+            },
+            {
+              "x": "Q",
+              "y": 0.00095
+            },
+            {
+              "x": "R",
+              "y": 0.05987
+            },
+            {
+              "x": "S",
+              "y": 0.06327
+            },
+            {
+              "x": "T",
+              "y": 0.09056
+            },
+            {
+              "x": "U",
+              "y": 0.02758
+            },
+            {
+              "x": "V",
+              "y": 0.00978
+            },
+            {
+              "x": "W",
+              "y": 0.0236
+            },
+            {
+              "x": "X",
+              "y": 0.0015
+            },
+            {
+              "x": "Y",
+              "y": 0.01974
+            },
+            {
+              "x": "Z",
+              "y": 0.00074
+            }
+          ]
         },
         conclusions: [],
         articleData: {},
