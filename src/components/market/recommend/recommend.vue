@@ -77,7 +77,7 @@
   import Slick from 'vue-slick'
   import CategoryMenu from './menu/menu.vue'
   import dateList from './dateList/dateList.vue'
-  import { dateFormat } from '../../../utils'
+  import {dateFormat} from '../../../utils'
 
   export default {
     data() {
@@ -117,7 +117,7 @@
     },
     methods: {
 
-      destroy(){
+      destroy() {
         console.log('destroy')
       },
       switchTab(menu) {
@@ -127,64 +127,63 @@
         this.currentSelect = null
         Promise.all(
           [this.$http.get(`/api/market/industry/${menu.name}/articles`),
-            this.$http.get(`/api/market/industry/${menu.name}/people`)])
-          .then(([articleRes, peopleRes]) => {
-            console.log(menu.name, articleRes.data, peopleRes.data)
-            const companies = {}
-            articleRes.data.forEach(article => {
-              if (!companies[article.company]) {
-                companies[article.company] = {
-                  articles: [],
-                  people: [],
-                }
-              }
-              article.date = new Date(article.riqi)
-              companies[article.company].articles.push(article)
-            })
+           this.$http.get(`/api/market/industry/${menu.name}/people`)])
+               .then(([articleRes, peopleRes]) => {
+                 console.log(menu.name, articleRes.data, peopleRes.data)
+                 const companies = {}
+                 articleRes.data.forEach(article => {
+                   if (!companies[article.broker]) {
+                     companies[article.broker] = {
+                       articles: [],
+                       people: [],
+                     }
+                   }
+                   article.date = new Date(article.riqi)
+                   companies[article.broker].articles.push(article)
+                 })
 
-            peopleRes.data.forEach(people => {
-              if (!companies[people.company]) {
-                companies[people.company] = {
-                  articles: [],
-                  people: [],
-                }
-              }
-              companies[people.company].people.push(people)
-            })
-            console.log(companies)
-            this.companyLists = [];
-            this.$nextTick(() => {
-              this.companyLists = Object.keys(companies)
-                .map((company) => ({
-                  group: `${company}公司${menu.name}组`,
-                  articles: this.getDiffArticles(companies[company].articles),
-                  people: companies[company].people
-                }))
-              this.$nextTick(()=>{
-                if (this.$refs.slick)
-                  this.$refs.companySlick.reSlick()
-                this.changeCompanySlick(null, null, 0)
-              })
-            })
+                 peopleRes.data.forEach(people => {
+                   if (!companies[people.broker]) {
+                     companies[people.broker] = {
+                       articles: [],
+                       people: [],
+                     }
+                   }
+                   companies[people.broker].people.push(people)
+                 })
+                 this.companyLists = []
+                 this.$nextTick(() => {
+                   this.companyLists = Object.keys(companies)
+                                             .map((company) => ({
+                                               group: `${company}公司${menu.name}组`,
+                                               articles: this.getDiffArticles(companies[company].articles),
+                                               people: companies[company].people
+                                             }))
+                   this.$nextTick(() => {
+                     if (this.$refs.slick)
+                       this.$refs.companySlick.reSlick()
+                     this.changeCompanySlick(null, null, 0)
+                   })
+                 })
 
 
-          })
+               })
 
       },
 
       getDiffArticles(articles) {
         return articles.map((article, index, arr) => {
-          const currentSet = new Set(article.recommends.map((recommend) => recommend.recommend))
-          const prevSet = index === arr.length - 1 ? new Set() : new Set(arr[index + 1].recommends.map((recommend) => recommend.recommend))
+          const currentSet = new Set(article.recommends.map((recommend) => recommend.relation.name))
+          const prevSet = index === arr.length - 1 ? new Set() : new Set(arr[index + 1].recommends.map((recommend) => recommend.relation.name))
           return {
             ...article,
             plus: [...currentSet].filter(x => !prevSet.has(x))
-              .reduce((prev, x) => `${prev}${prev && ','}${x}`, ''),
+                                 .reduce((prev, x) => `${prev}${prev && ','}${x}`, ''),
             minus: [...prevSet].filter(x => !currentSet.has(x))
-              .reduce((prev, x) => `${prev}${prev && ','}${x}`, '')
+                               .reduce((prev, x) => `${prev}${prev && ','}${x}`, '')
           }
         })
-          .filter((article) => article.plus || article.minus)
+                       .filter((article) => article.plus || article.minus)
       },
 
       onLeft(ref) {  //左箭头点击
@@ -194,7 +193,6 @@
         ref.next()
       },
       companySelect(company) {  //选择行业类别
-        console.log(company)
         if (company === this.currentSelect)
           return
         this.currentSelect = company
@@ -208,18 +206,17 @@
             selectDateList[dateFormat(article.date)].add(recommend)
           })
         })
-        console.log(selectDateList)
-        this.selectDateList = [];
+        this.selectDateList = []
 
         this.$nextTick(() => {
-          this.selectDateList=Object.keys(selectDateList)
-            .map(date => {
-              return {
-                date,
-                recommends: [...selectDateList[date]]
-              }
-            });
-          this.$nextTick(()=>{
+          this.selectDateList = Object.keys(selectDateList)
+                                      .map(date => {
+                                        return {
+                                          date,
+                                          recommends: [...selectDateList[date]]
+                                        }
+                                      })
+          this.$nextTick(() => {
             if (this.$refs.slick)
               this.$refs.slick.reSlick()
             this.changeSlick(null, null, 0)
@@ -251,14 +248,13 @@
     },
     mounted() {
       this.$http.get('/api/market/conclusion')
-        .then(res => {
-          this.conclusions = res.data.content2
-        })
+          .then(res => {
+            this.conclusions = res.data.content2
+          })
       this.$http.get('/api/market/categories')
-        .then(res => {
-          this.menu = res.data
-          console.log(this.menu)
-        })
+          .then(res => {
+            this.menu = res.data
+          })
     },
 
   }

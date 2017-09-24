@@ -8,10 +8,10 @@
     </div>
     <div class="items">
       <div v-for="item in dateList.recommends"
-           @click="$emit('select',item.recommend)"
+           @click="$emit('select',item.relation.name)"
            class="item"
-           :class="{'selected':selected==item.recommend}">
-        {{item.recommend}}
+           :class="{'selected':selected==item.relation.name}">
+        {{item.relation.name}}
       </div>
     </div>
   </div>

@@ -46,7 +46,7 @@
   import Vue from 'vue'
   import '../../../../assets/font/plus/style.css'
   import EventBus from '../../../../eventBus'
-  import { dateFormat, dotString } from '../../../../utils'
+  import {dateFormat, dotString} from '../../../../utils'
   import '../../../../utils/clamp.min'
   import VTooltip from 'v-tooltip'
 
@@ -65,17 +65,20 @@
     computed: {
       diffArticles() {
         return this.companyList.articles.map((article, index, arr) => {
-          const currentSet = new Set(article.recommends.map((recommend) => recommend.recommend))
-          const prevSet = index === arr.length - 1 ? new Set() : new Set(arr[index + 1].recommends.map((recommend) => recommend.recommend))
+          const currentSet = new Set(article.recommends.map((recommend) => recommend.relatoin.name))
+          const prevSet = index === arr.length - 1 ? new Set() :
+                          new Set(arr[index + 1].recommends.map((recommend) => recommend.relatoin.name))
           return {
             ...article,
             plus: [...currentSet].filter(x => !prevSet.has(x))
-              .reduce((prev, x) => `${prev}${prev && ','}${x}`, ''),
+                                 .reduce(
+                                   (prev, x) => `${prev}${prev && ','}${x}`,
+                                   ''),
             minus: [...prevSet].filter(x => !currentSet.has(x))
-              .reduce((prev, x) => `${prev}${prev && ','}${x}`, '')
+                               .reduce((prev, x) => `${prev}${prev && ','}${x}`,
+                                       '')
           }
-        })
-          .filter((article) => article.plus || article.minus)
+        }).filter((article) => article.plus || article.minus)
       },
 
       toolTipText() {
@@ -105,20 +108,23 @@
         EventBus.$emit('articleModal', article)
       },
       getDiffRecommends: function (article, index) {
-        const currentSet = new Set(article.recommends.map((recommend) => recommend.recommend))
-        const prevSet = index === this.companyList.articles.length - 1 ? new Set() : new Set(this.companyList.articles[index + 1].recommends.map((recommend) => recommend.recommend))
+        const currentSet = new Set(article.recommends.map((recommend) => recommend.relatoin.name))
+        const prevSet = index === this.companyList.articles.length - 1 ? new Set() :
+                        new Set(this.companyList.articles[index + 1].recommends.map((recommend) => recommend.relatoin.name))
         return {
           plus: [...currentSet].filter(x => !prevSet.has(x))
-            .reduce((prev, x) => `${prev}${prev && ','}${x}`, ''),
+                               .reduce((prev, x) => `${prev}${prev && ','}${x}`,
+                                       ''),
           minus: [...prevSet].filter(x => !currentSet.has(x))
-            .reduce((prev, x) => `${prev}${prev && ','}${x}`, '')
+                             .reduce((prev, x) => `${prev}${prev && ','}${x}`,
+                                     '')
         }
       }
     },
     mounted() {
       if (this.$refs.title) {
         this.$refs.title.forEach((el) => {
-          $clamp(el, { clamp: 2 })
+          $clamp(el, {clamp: 2})
         })
       }
     },

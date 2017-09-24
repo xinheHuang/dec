@@ -150,6 +150,15 @@
               .on("zoom", zoom))
         }
 
+//        bars.attr("transform",
+//                  `translate(${scaleWidth + barWidth},0)scale(${transform.k},1)`)
+//        labels.attr("transform",
+//                    `translate(${scaleWidth + barWidth},0)scale(${transform.k},1)`)
+//        chart.select(".x.axis")
+//             .attr("transform", `translate(${scaleWidth + barWidth},${chartHeight})`)
+//             .call(xAxis.scale(
+//               x.rangeRound([0, scaleWidth * transform.k], .1 * transform.k)))
+
         function zoom() {
           const transform = d3.event.transform
           bars.attr("transform",
