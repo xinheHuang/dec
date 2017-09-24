@@ -29,7 +29,7 @@
       margin: {
         type: Object,
         default: () => ({
-          top: 30,
+          top: 40,
           right: 20,
           bottom: 30,
           left: 40
@@ -103,12 +103,24 @@
           .call(yAxis)
           .append('text')
           .attr('transform', 'rotate(0) ')
-          .attr('y', -10)
-          .attr('x', -yLabel.length * 12 + 10)
+          .attr('y', -22)
+          .attr('x', -yLabel.length * 12 )
           .attr('text-anchor', 'start')
           .attr('fill', 'black')
           .attr('font-size', 12)
-          .text(yLabel)
+          .text(yLabel[0])
+
+        chart.append('g')
+          .attr('class', 'y axis')
+          .call(yAxis)
+          .append('text')
+          .attr('transform', 'rotate(0) ')
+          .attr('y', -10)
+          .attr('x', -yLabel.length * 12 )
+          .attr('text-anchor', 'start')
+          .attr('fill', 'black')
+          .attr('font-size', 12)
+          .text(yLabel[1])
 
         const barsGroup = chart.append('g')
         barsGroup.attr('clip-path', 'url(#my-clip-path)')

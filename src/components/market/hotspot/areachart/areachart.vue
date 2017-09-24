@@ -28,8 +28,8 @@
       margin: {
         type: Object,
         default: () => ({
-          top: 30,
-          right: 20,
+          top: 40,
+          right: 0,
           bottom: 30,
           left: 40
         }),
