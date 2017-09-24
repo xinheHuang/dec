@@ -56,7 +56,7 @@
     data() {
       return {
         showUserMenu: false,
-        currentNav:'new',
+        currentNav:'news',
         userInfo: {
           'userid': 1,
           'username': '小明',
