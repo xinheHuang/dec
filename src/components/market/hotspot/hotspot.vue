@@ -38,8 +38,8 @@
                        v-show="areaChartData.length>0"
                        y-label="阅读比例"
                        :height="300"
-                       :width="400"></areachart>
-              <legends :keys="areaChartKeys"></legends>
+                       :width="350"></areachart>
+              <legends :keys="areaChartKeys" style="margin-left: 20px"></legends>
             </div>
           </div>
         </div>
@@ -129,14 +129,12 @@
             x: d['relation.name'],
             y: Number(d['sum'])
           }
-        })
+        }).sort((a,b)=>b.y-a.y)
 
       },
       changeAreaChart(type) {
         let category
-        console.log(this.subCategory)
         category = (type.name === '全部' ? this.categories : type.subCategories).map((c) => c.name)
-        console.log(category, this.articleRelations)
         let data
         data = Object.keys(this.articleRelations)
                      .map((key) => {
@@ -160,13 +158,14 @@
         const  parseTime=d3.timeParse("%Y-%m-%d")
         this.areaChartData = data.map((d) => {
           const total=Object.values(d.group).reduce((prev,s)=>prev+s,0)
+
           return {
             date:parseTime(d.date),
             ...Object.keys(d.group)
                      .reduce((prev, key) => {
                        return {
                          ...prev,
-                         [key]: d.group[key]/total
+                         [key]:total===0?1/Object.keys(d.group).length: d.group[key]/total
                        }
                      }, {})
           }
