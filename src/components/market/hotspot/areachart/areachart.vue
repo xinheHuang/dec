@@ -3,7 +3,7 @@
 */
 <template>
 
-  <svg class="barChart"
+  <svg class="aearChart"
        :width="width"
        :height="height">
   </svg>
@@ -38,11 +38,16 @@
       data: {
         type: Array,
         required: true,
+      },
+      keys:{
+        type:Array,
+        required:true
       }
     },
     methods: {
       renderChart() {
-        const { margin, width, height, data, yLabel } = this
+        const { margin, width, height, data, yLabel,keys } = this
+        console.log(data);
         const { top, right, bottom, left } = margin
         const svg = d3.select(this.$el) //svg 容器
         svg.selectAll('*')
@@ -50,43 +55,66 @@
         const chartWidth = width - left - right
         const chartHeight = height - top - bottom
         const barWidth = chartWidth / 5
-        const scaleWidth = barWidth * data.length
-        const x = d3.scaleBand()
-          .range([0, scaleWidth])
-          .padding(0.3)  //x scale
+        const scaleWidth = chartWidth*2;
+        const x = d3.scaleTime()
+          .range([0, scaleWidth*2])
 
         const y = d3.scaleLinear()
           .rangeRound([chartHeight, 0])  //y scale
 
+        const z = d3.scaleOrdinal(d3.schemeCategory10);
         const chart = svg.append('g')  //chart
           .attr('transform', `translate(${left},${top})`)
 
+        const stack = d3.stack();
+
+        const area = d3.area()
+          .x(function(d, i) { return x(d.data.date); })
+          .y0(function(d) { return y(d[0]); })
+          .y1(function(d) { return y(d[1]); });
+
 
         //set domain
-        x.domain(data.map(d => d.x))
-        y.domain([0, d3.max(data, (d) => (d.y))])
+        x.domain(d3.extent(data,d => d.date))
+        z.domain(keys)
+        stack.keys(keys)
+
 
         const xAxis = d3.axisBottom(x)
         const yAxis = d3.axisLeft(y)
 
         const defs = svg.append("defs")
 
-        //Append a clipPath element to the defs element, and a Shape
-        // to define the cliping area
         defs.append("clipPath")
           .attr('id', 'my-clip-path')
           .append('rect')
           .attr('transform', `translate(0,-${top})`)
           .attr('width', chartWidth) //Set the width of the clipping area
           .attr('height', chartHeight + top)
-        // set the height of the clipping area
 
-        //clip path for x axis
         defs.append("clipPath")
           .attr('id', 'x-clip-path')
           .append('rect')
           .attr('width', chartWidth) //Set the width of the clipping area
           .attr('height', chartHeight + bottom) // set the height of the clipping area
+
+
+        const layersGroup = chart.append('g')
+        layersGroup.attr('clip-path', 'url(#my-clip-path)')
+
+
+        const layers = layersGroup.selectAll(".layer")
+          .data(stack(data))
+          .enter().append("g")
+          .attr("class", "layer");
+
+        layers.append("path")
+          .attr("class", "area")
+          .style("fill", function(d) { return z(d.key); })
+          .attr("d", area);
+
+        layers.filter(function(d) { return d[d.length - 1][1] - d[d.length - 1][0] > 0.01; })
+
 
 
         const xAxisGroup = chart.append("g")
@@ -110,51 +138,22 @@
           .attr('font-size', 12)
           .text(yLabel)
 
-        const barsGroup = chart.append('g')
-        barsGroup.attr('clip-path', 'url(#my-clip-path)')
 
-        const bars = barsGroup.selectAll('.bar')
-          .data(data)
-          .enter()
-          .append('rect')
-          .attr('class', 'bar')
-          .attr('x', d => x(d.x))
-          .attr('y', d => y(d.y))
-          .attr('width', x.bandwidth())
-          .attr('height', d => {
-            return chartHeight - y(d.y)
-          })
+        svg.append("rect")
+          .attr("class", "zoom")
+          .attr("width", chartWidth)
+          .attr("height", chartHeight + bottom)
+          .attr("transform", `translate(${left},${top})`)
+          .call(d3.zoom()
+            .scaleExtent([1, 1])
+            .translateExtent(
+              [[0, 0], [scaleWidth, chartHeight]])
+            .on("zoom", zoom))
 
-        const labels = barsGroup.selectAll(".text")
-          .data(data)
-          .enter()
-          .append("text")
-          .attr("class", "label")
-          .attr("x",
-            d => x(d.x) + x.bandwidth() / 2 - String(
-              d.y).length / 2 * 10)
-          .attr("y", d => y(d.y) - 20)
-          .attr("dy", ".75em")
-          .text(d => d.y)
-
-        if (data.length >5) {
-          svg.append("rect")
-            .attr("class", "zoom")
-            .attr("width", chartWidth)
-            .attr("height", chartHeight + bottom)
-            .attr("transform", `translate(${left},${top})`)
-            .call(d3.zoom()
-              .scaleExtent([1, 1])
-              .translateExtent(
-                [[0, 0], [scaleWidth + barWidth, chartHeight]])
-              .on("zoom", zoom))
-        }
 
         function zoom() {
           const transform = d3.event.transform
-          bars.attr("transform",
-            `translate(${transform.x},0)scale(${transform.k},1)`)
-          labels.attr("transform",
+          layers.attr("transform",
             `translate(${transform.x},0)scale(${transform.k},1)`)
           chart.select(".x.axis")
             .attr("transform", `translate(${transform.x},${chartHeight})`)
@@ -163,6 +162,7 @@
           chart.select(".y.axis")
             .call(yAxis)
         }
+
       }
     },
     watch: {
@@ -176,15 +176,7 @@
   }
 </script>
 <style lang="less">
-  .barChart {
-    .bar {
-      fill: steelblue;
-    }
-
-    /*.bar:hover {*/
-      /*fill: brown;*/
-    /*}*/
-
+  .aearChart {
     .axis.x path {
       /*display: none;*/
     }
