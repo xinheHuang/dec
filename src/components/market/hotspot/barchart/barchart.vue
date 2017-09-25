@@ -23,7 +23,7 @@
         default: 500
       },
       yLabel: {
-        type: String,
+        type: Array,
         default: '',
       },
       margin: {

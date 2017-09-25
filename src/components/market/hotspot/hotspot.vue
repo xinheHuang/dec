@@ -39,7 +39,7 @@
                 y-label="阅读比例"
                 :height="300"
                 :width="400"></areachart>
-              <legends :keys="areaChartKeys" style="margin-left: 10px"></legends>
+              <legends :keys="areaChartKeys" style="margin-left: 10px;flex-shrink: 0"></legends>
             </div>
           </div>
         </div>
@@ -143,9 +143,9 @@
               ...prev,
               [c]: 0
             }), {})
-            articles.forEach((article) => {
-              const industry = type.name === '全部' ? this.subCategory[article.relation.industry].name :
-                article.relation.industry
+            articles.filter((article)=>article.industry).forEach((article) => {
+              const industry = type.name === '全部' ? this.subCategory[article.industry].name :
+                article.industry
               if (category.includes(industry)) {
                 group[industry]+=article.num_read  //统计该分类下那一周的阅读量
               }
@@ -203,7 +203,7 @@
       this.$http.get('/api/market/articles')  //获取所有文章
         .then(res => {
           const articleData = {}
-          res.data.forEach((article) => {
+          res.data.filter(article=>article.relation).forEach((article) => {
             if (!articleData[article.relation.name]) {
               articleData[article.relation.name] = []
             }

@@ -131,7 +131,7 @@
                .then(([articleRes, peopleRes]) => {
                  console.log(menu.name, articleRes.data, peopleRes.data)
                  const companies = {}
-                 articleRes.data.forEach(article => {
+                 articleRes.data.filter((article)=>article.broker).forEach(article => {
                    if (!companies[article.broker]) {
                      companies[article.broker] = {
                        articles: [],

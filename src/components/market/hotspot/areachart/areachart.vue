@@ -46,7 +46,6 @@
     methods: {
       renderChart() {
         const {margin, width, height, data, yLabel, keys} = this
-        console.log(data)
         const {top, right, bottom, left} = margin
         const svg = d3.select(this.$el) //svg 容器
         svg.selectAll('*')
@@ -175,13 +174,11 @@
            .attr("height", chartHeight + bottom)
            .attr("transform", `translate(${left},${top})`)
            .call(zoomListener)
-        console.log(scaleWidth+barWidth)
 
         zoomListener.translateBy(zoomRect,-scaleWidth+barWidth*4, 0)
 
         function zoom() {
           const transform = d3.event.transform
-          console.log(transform);
           layers.attr("transform",
                       `translate(${transform.x},0)`)
 //          points.attr("transform",
