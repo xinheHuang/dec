@@ -70,7 +70,7 @@
 <style scoped="">
   .content {
     /*background: #f6f6f6;*/
-    width: 90rem;
+    width: 1280px;
     height: 45rem;
     margin: 0 auto;
     margin-top: .6rem;

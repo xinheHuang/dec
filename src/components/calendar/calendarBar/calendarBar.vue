@@ -27,7 +27,7 @@
   </div>
 </template>
 <script>
-  import {weekDayFormat} from '../../../utils'
+  import {weekDayFormat,checkDateEqual} from '../../../utils'
   import '../../../assets/font/arrow/style.css'
 
   export default {
@@ -73,12 +73,11 @@
         this.weekFirstDay = new Date(this.selectedDate.getTime() - 60 * 60 * 24 * (day === 0 ? 6 : (day - 1)) * 1000) // will return firstday (i.e. Monday) of the week
       },
       weekDayFormat,
-      checkDateEqual(date1, date2) {
-        return new Date(date1.toDateString()).valueOf() == new Date(date2.toDateString()).valueOf()
-      }
+      checkDateEqual
     },
     mounted() {
-      this.selectType('day')
+//      this.selectType('day')
+      this.selectType('week') //test
       this.toToday()
     }
   }
