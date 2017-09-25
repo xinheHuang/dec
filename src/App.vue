@@ -40,7 +40,7 @@
             name: '市场'
           }
         ],
-        currentView: 'news',
+        currentView: 'calendar',
         showModal: false,
         article:null,
       }
@@ -70,7 +70,7 @@
 <style scoped="">
   .content {
     /*background: #f6f6f6;*/
-    width: 73rem;
+    width: 90rem;
     height: 45rem;
     margin: 0 auto;
     margin-top: .6rem;

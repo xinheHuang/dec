@@ -81,6 +81,7 @@
   import areachart from './areachart/areachart.vue'
   import legends from './legend/legend.vue'
   import * as d3 from 'd3'
+  import {dateString} from '../../../utils'
 
   export default {
     data() {
@@ -252,8 +253,7 @@
             const day = date.getDay()
             const sunday = new Date(date.getTime() + (day === 0 ? 0 :
               (7 - day)) * 60 * 60 * 24 * 1000)
-            const stringSunday = sunday.toISOString()
-              .split('T')[0]  //计算那一周的周日
+            const stringSunday = dateString(sunday)  //计算那一周的周日
             if (!data[stringSunday]) {
               data[stringSunday] = []
             }

@@ -37,7 +37,18 @@ const dotString = (s, maxLen) => {
 
 
 const dateFormat=(date)=>{
-  return `${date.getMonth() + 1}月${date.getDate()}日`;
+  return `${date.getMonth() + 1}月${date.getDate()}日`
 }
 
-export { dotString ,dateFormat}
+const twoDigitNumber=(number)=> ('0' + number).slice(-2)
+
+const weekDayFormat=(date)=>{
+  const weekDay={
+    0:'日',1:'一',2:'二',3:'三',4:'四',5:'五',6:'六',
+  }
+  return `周${weekDay[date.getDay()]}${twoDigitNumber(date.getMonth()+1)}/${twoDigitNumber(date.getDate())}`
+}
+
+const dateString=(date)=> date.toISOString()
+                              .split('T')[0]
+export { dotString ,dateFormat,weekDayFormat,dateString,twoDigitNumber}

@@ -1,61 +1,134 @@
 <template>
   <div class="bar">
     <div class="week">
-
+      <div @click="prevWeek()"><span class="iconarrow icon-chevron-circle-left"></span><span>上一周</span></div>
+      <div v-for="weekDay in getDateWeek"
+           class="weekDay"
+           @click="selectDate(weekDay)"
+           :class="{'selected':checkDateEqual(selectedDate,weekDay)}">
+        {{weekDayFormat(weekDay)}}
+      </div>
+      <div @click="nextWeek()"><span class="iconarrow icon-chevron-circle-right"></span><span>下一周</span></div>
     </div>
     <div class="button-group">
-      <span @click="selectType('day')" :class="{selected:calendarType=='day'}">
+      <span @click="selectType('day')"
+            :class="{selected:calendarType=='day'}">
         日历
       </span>
-      <span @click="selectType('week')" :class="{selected:calendarType=='week'}">
+      <span @click="selectType('week')"
+            :class="{selected:calendarType=='week'}">
         周历
       </span>
-      <span class="today">
+      <span class="today"
+            @click="toToday()">
         回到今日
       </span>
     </div>
   </div>
 </template>
 <script>
+  import {weekDayFormat} from '../../../utils'
+  import '../../../assets/font/arrow/style.css'
+
   export default {
-    data(){
-      return{
-        calendarType:'day',
-//        currentWeekStartDate:
+    data() {
+      return {
+        calendarType: null,
+        selectedDate: null,
+        weekFirstDay: null,
       }
     },
-    methods:{
-      selectType(type){
-        this.calendarType=type;
-      },
-      getDateWeek(date){
-        const day = date.getDay();
-        const firstday = new Date(date.getTime() - 60*60*24* day*1000); // will return firstday (i.e. Sunday) of the week
-        const lastday = new Date(date.getTime() + 60 * 60 *24 * 6 * 1000); // adding (60*60*6*24*1000) means adding six days to the firstday which results in lastday (Saturday) of the week
+    computed: {
+      getDateWeek() {
+        if (!this.weekFirstDay) return []
+        const week = []
+        let weekDay = this.weekFirstDay
+        for (let i = 0; i < 7; i++) {
+          week.push(weekDay)
+          weekDay = new Date(weekDay.getTime() + 60 * 60 * 24 * 1000)
+        }
+        return week
       }
+    },
+    methods: {
+      selectType(type) {
+        if (type === this.calendarType) return
+        this.calendarType = type
+        this.$emit('typeChange', type)
+      },
+      selectDate(date) {
+        if (this.checkDateEqualdate, this.selectecDate) return
+        this.selectedDate = date
+        this.$emit('dateChange', date)
+      },
+      prevWeek() {
+        this.weekFirstDay = new Date(this.weekFirstDay.getTime() - 7 * 60 * 60 * 24 * 1000)
+      },
+      nextWeek() {
+        this.weekFirstDay = new Date(this.weekFirstDay.getTime() + 7 * 60 * 60 * 24 * 1000)
+      },
+      toToday() {
+        this.selectDate(new Date('2017-03-15')) //test
+        const day = this.selectedDate.getDay()
+        this.weekFirstDay = new Date(this.selectedDate.getTime() - 60 * 60 * 24 * (day === 0 ? 6 : (day - 1)) * 1000) // will return firstday (i.e. Monday) of the week
+      },
+      weekDayFormat,
+      checkDateEqual(date1, date2) {
+        return new Date(date1.toDateString()).valueOf() == new Date(date2.toDateString()).valueOf()
+      }
+    },
+    mounted() {
+      this.selectType('day')
+      this.toToday()
     }
   }
 </script>
-<style lang="less" scoped>
-  .bar{
+<style lang="less"
+       scoped>
+  .bar {
     background: white;
     padding: 10px 5px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+
+    .week {
+      width: 70%;
+      display: flex;
+      justify-content: space-around;
+      > div {
+        padding: 5px;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        &.weekDay {
+          &.selected {
+            color: #2c8abf;
+          }
+        }
+        &:first-child, &:last-child {
+          background: #f6f6f6;
+          .iconarrow {
+            margin-right: 5px;
+          }
+          border: 1px solid #f6f6f6;
+          border-radius: 20px;
+        }
+      }
+    }
   }
 
-  .button-group{
+  .button-group {
     display: flex;
-    span{
+    span {
       padding: 2px 5px;
       margin: 0 10px;
       cursor: pointer;
-      &.selected{
+      &.selected {
         color: #2c8abf;
       }
     }
-    .today{
+    .today {
       color: #2c8abf;
       border: solid 1px #2c8abf;
       border-radius: 5px;
