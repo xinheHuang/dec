@@ -25,7 +25,7 @@
                 <div class="item"
                      :class="{'even':item.number%2===0}"
                      v-if="currentTab==='statistic'">
-                  <div style="color: #2c8abf;width: 250px;display: flex;align-items: center">
+                  <div style="color: #2c8abf;width: 250px;display: flex;align-items: center;flex-shrink: 0;">
                     <img :src="require(`../../assets/images/flags/${item.country}.png`)"
                          style="flex-grow: 0;height: 20px">
                     <span style="margin-left: 20px"
@@ -33,11 +33,11 @@
                   </div>
                   <div class="values">
                     <div><span>公布值：</span><span v-html="item.announce+item.unit"></span></div>
-                    <div><span>预测值：</span><span v-html="item.estimate+item.unit"></span></div>
+                    <div><span>预测值：</span><span v-html="item.estimate=='0'?'-':item.estimate+item.unit"></span></div>
                     <div><span>前值：</span><span v-html="item.previous+item.unit"></span></div>
                   </div>
                   <div style="flex-grow: 1;text-align: right"
-                       v-html="'发布机构：'+item.institution"></div>
+                       v-html="item.institution?'发布机构：'+item.institution:''"></div>
                 </div>
 
                 <div class="item"
@@ -82,23 +82,23 @@
                     <img :src="require(`../../assets/images/flags/${item.country}.png`)"
                          style="flex-grow: 0;height: 15px;margin-right: 5px">
                     <span style="color: #2c8abf;font-size: 12px"
-                          v-html="item.indicator"></span>
+                          v-html="item.indicator+((!item.unit||item.unit==='%')?'':'（'+item.unit+'）')"></span>
                   </div>
                   <div style="display: flex;justify-content: space-around"
                        class="values">
                     <div>
                       <span>前值</span>
-                      <span v-html="item.previous+item.unit">
+                      <span v-html="item.previous+(item.unit==='%'?'%':'')">
                     </span>
                     </div>
                     <div>
                       <span>预测值</span>
-                      <span v-html="item.estimate+item.unit">
+                      <span v-html="item.estimate=='0'?'-':item.estimate+(item.unit==='%'?'%':'')">
                     </span>
                     </div>
                     <div>
                       <span>公布值</span>
-                      <span v-html="item.announce+item.unit">
+                      <span v-html="item.announce+(item.unit==='%'?'%':'')">
                     </span>
                     </div>
                   </div>
@@ -112,11 +112,11 @@
                   </div>
                   <div v-if="item.type===1"
                        style="padding: 5px;align-items: center">
-                    <div>
+                    <div v-if="item.dial">
                       <span>接入号码：</span>
                       <span v-html="item.dial"></span>
                     </div>
-                    <div>
+                    <div v-if="item.password">
                       <span>参会密码：</span>
                       <span v-html="item.password"></span>
                     </div>
@@ -124,15 +124,15 @@
 
                   <div v-if="item.type===2"
                        style="padding: 5px;align-items: center">
-                    <div>
+                    <div v-if="item.location">
                       <span>地点：</span>
                       <span v-html="item.location"></span>
                     </div>
-                    <div>
+                    <div v-if="item.guest">
                       <span>嘉宾：</span>
                       <span v-html="item.guest"></span>
                     </div>
-                    <div>
+                    <div v-if="item.contact">
                       <span>联系人：</span>
                       <span v-html="item.contact"></span>
                     </div>
@@ -411,7 +411,7 @@
       }
       .item {
         display: flex;
-        height: 30px;
+        min-height: 30px;
         padding: 5px 10px;
         &.even {
           background: #f6f6f6;
@@ -421,7 +421,7 @@
           margin-left: 30px;
           flex-shrink: 0;
           > div {
-            width: 180px;
+            width: 200px;
             > span {
               &:first-child {
                 color: gray;
