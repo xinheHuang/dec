@@ -220,10 +220,19 @@
         console.log(searchStr,selected,dataObj)
         const regx = new RegExp(searchStr)
         const researchRes = []
-        const currentNav = selected
-        const results = dataObj[currentNav]
+        dataObj.forEach((result) => {
+          data.items.filter(item=>{
+              let checked=[];
+             if (this.currentTab==='schedule'){
+               if (calendarType==='day'){
+                 checked=['title','content']
+               }
+               if (calendarType==='week'){
 
-        results.forEach((result) => {
+               }
+             }
+             checked.some((key)=>item[key].search(regx)!==-1)?checked.reduce((prev,key)=>{return {...prev,key:item[key].replace(searchStr, `<span style="color: red;">${searchStr}</span>`)}},{...item}):null
+          })
           const newsItem = result.newsItem.filter(item => item.content.search(regx) !== -1)
             .map((item) => ({
               ...item,
