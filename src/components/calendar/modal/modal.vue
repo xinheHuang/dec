@@ -22,7 +22,9 @@
           </div>
 
           <div class="modal-body">
-            {{schedule.content}}
+            <div v-html="schedule.content">
+
+            </div>
           </div>
 
         </div>
@@ -110,6 +112,8 @@
 
   .modal-body {
     margin: 20px 0;
+    max-height: 200px;
+    overflow-y: auto;
   }
 
   .modal-default-button {

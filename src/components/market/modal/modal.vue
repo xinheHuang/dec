@@ -26,7 +26,7 @@
               <div class="divider"></div>
             </div>
 
-            <div class="modal-body">
+            <div class="modal-body" >
               <div v-html="article.content"></div>
             </div>
           </div>
@@ -126,6 +126,8 @@
 
   .modal-body {
     margin: 20px 0;
+    max-height: 300px;
+    overflow-y: auto;
   }
 
   .modal-default-button {
