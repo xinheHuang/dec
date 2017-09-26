@@ -82,7 +82,6 @@
       },
 
       toolTipText() {
-        console.log(this.companyList.people)
         return `<div style="display: flex;justify-content: space-around;align-items: center">
           <div style="text-align: center; margin:10px;padding-right: 10px;
           border-right: solid 1px
@@ -105,7 +104,7 @@
     methods: {
       dateFormat,
       openModal(article) {  //文章弹窗
-        EventBus.$emit('articleModal', article)
+        EventBus.$emit('articleModal', article.YID)
       },
       getDiffRecommends: function (article, index) {
         const currentSet = new Set(article.recommends.map((recommend) => recommend.relatoin.name))

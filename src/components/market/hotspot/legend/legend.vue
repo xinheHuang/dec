@@ -56,7 +56,7 @@
       }
     },
     mounted() {
-
+      this.renderChart()
     }
   }
 </script>

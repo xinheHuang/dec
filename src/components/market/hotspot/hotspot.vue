@@ -19,27 +19,31 @@
         <div>
 
           <div style="width: 100%;text-align: left;vertical-align: middle">
-            <div v-if="!barChartData || barChartData.length===0">加载中</div>
-            <barchart :data="barChartData"
-                      v-show="barChartData.length>0"
-                      :y-label="['总阅读数','过去一周']"
-                      :height="300"
-                      :width="450"></barchart>
+            <div v-if="!barChartData ">加载中</div>
+            <div v-else-if="barChartData.length===0 ">暂无数据</div>
+            <div v-else>
+              <barchart :data="barChartData"
+                        :y-label="['总阅读数','过去一周']"
+                        :height="300"
+                        :width="450"></barchart>
+            </div>
           </div>
         </div>
         <div>
           <div style="width: 100%;text-align: center;">
-            <div v-if="!areaChartData || areaChartData.length===0">加载中</div>
-            <div style="display: flex">
+            <div v-if="!areaChartData ">加载中</div>
+            <div v-else-if="areaChartData.length===0 ">暂无数据</div>
+            <div v-else
+                 style="display: flex">
               <areachart
                 style="flex-shrink: 0"
                 :data="areaChartData"
                 :keys="areaChartKeys"
-                v-show="areaChartData.length>0"
                 y-label="阅读比例"
                 :height="300"
                 :width="400"></areachart>
-              <legends :keys="areaChartKeys" style="margin-left: 10px;flex-shrink: 0"></legends>
+              <legends :keys="areaChartKeys"
+                       style="margin-left: 10px;flex-shrink: 0"></legends>
             </div>
           </div>
         </div>
@@ -81,7 +85,7 @@
   import areachart from './areachart/areachart.vue'
   import legends from './legend/legend.vue'
   import * as d3 from 'd3'
-  import {dateString} from '../../../utils'
+  import { dateString } from '../../../utils'
 
   export default {
     data() {
@@ -93,8 +97,8 @@
         conclusions: [],
         articleData: {},
         areaChartKeys: [],
-        barChartData: [],
-        areaChartData: [],
+        barChartData: null,
+        areaChartData: null,
         selectedChartType: null,
         slickOptions: {  // 滑动部分配置
           slidesToShow: 3,
@@ -111,7 +115,7 @@
     },
     computed: {
       chartTypes() {
-        return [{name: '全部'}, ...this.categories]
+        return [{ name: '全部' }, ...this.categories]
       }
     },
     methods: {
@@ -130,8 +134,8 @@
             x: d['relation.name'],
             y: Number(d['sum'])
           }
-        }).sort((a,b)=>b.y-a.y)  //barchart 数据
-
+        })
+          .sort((a, b) => b.y - a.y)  //barchart 数据
       },
       changeAreaChart(type) {
         let category  //分类
@@ -144,33 +148,36 @@
               ...prev,
               [c]: 0
             }), {})
-            articles.filter((article)=>article.industry).forEach((article) => {
-              const industry = type.name === '全部' ? this.subCategory[article.industry].name :
-                article.industry
-              if (category.includes(industry)) {
-                group[industry]+=article.num_read  //统计该分类下那一周的阅读量
-              }
-            })
+            articles.filter((article) => article.industry)
+              .forEach((article) => {
+                const industry = type.name === '全部' ? this.subCategory[article.industry].name :
+                  article.industry
+                if (category.includes(industry)) {
+                  group[industry] += article.num_read  //统计该分类下那一周的阅读量
+                }
+              })
             return {
-              date:key,
+              date: key,
               group
             }
           })
 
-        const  parseTime=d3.timeParse("%Y-%m-%d")
+        const parseTime = d3.timeParse('%Y-%m-%d')
         this.areaChartData = data.map((d) => {
-          const total=Object.values(d.group).reduce((prev,s)=>prev+s,0)
+          const total = Object.values(d.group)
+            .reduce((prev, s) => prev + s, 0)
           return {
-            date:parseTime(d.date),
+            date: parseTime(d.date),
             ...Object.keys(d.group)
               .reduce((prev, key) => {
                 return {
                   ...prev,
-                  [key]:total===0?1/Object.keys(d.group).length: d.group[key]/total  //计算百分比
+                  [key]: total === 0 ? 1 / Object.keys(d.group).length : d.group[key] / total  //计算百分比
                 }
               }, {})
           }
-        }).sort((a,b)=> a.date > b.date ? 1 : -1) //按时间排序
+        })
+          .sort((a, b) => a.date > b.date ? 1 : -1) //按时间排序
         this.areaChartKeys = category
       },
 
@@ -204,13 +211,14 @@
       this.$http.get('/api/market/articles')  //获取所有文章
         .then(res => {
           const articleData = {}
-          res.data.filter(article=>article.relation).forEach((article) => {
-            if (!articleData[article.relation.name]) {
-              articleData[article.relation.name] = []
-            }
-            article.date = new Date(article.riqi)
-            articleData[article.relation.name].push(article)
-          })
+          res.data.filter(article => article.relation)
+            .forEach((article) => {
+              if (!articleData[article.relation.name]) {
+                articleData[article.relation.name] = []
+              }
+              article.date = new Date(article.riqi)
+              articleData[article.relation.name].push(article)
+            })
           this.articleData = Object.keys(articleData)
             .map((topic) => {
               const articles = articleData[topic]
@@ -265,15 +273,15 @@
           return Promise.all(this.categories.map((category) => this.$http.get(`/api/market/categories/${category.CID}`)))
         })
         .then(arr => {
-          arr.forEach((res,index) => {
-            const category=this.categories[index]
+          arr.forEach((res, index) => {
+            const category = this.categories[index]
             category.subCategories = res.data
             res.data.forEach((c) => {
               this.subCategory[c.name] = category
             })
           })
           //图表默认全部
-          this.changeChartType({name:'全部'})
+          this.changeChartType({ name: '全部' })
         })
     },
   }

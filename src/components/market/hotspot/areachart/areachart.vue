@@ -199,6 +199,7 @@
       }
     },
     mounted() {
+      this.renderChart()
     }
   }
 </script>

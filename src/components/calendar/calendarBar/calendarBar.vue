@@ -1,14 +1,16 @@
 <template>
   <div class="bar">
     <div class="week">
-      <div @click="prevWeek()"><span class="iconarrow icon-chevron-circle-left"></span><span>上一周</span></div>
+      <div @click="prevWeek()"><span class="iconarrow icon-chevron-circle-left"
+                                     style="margin-right: 5px "></span><span>上一周</span></div>
       <div v-for="weekDay in getDateWeek"
            class="weekDay"
            @click="selectDate(weekDay)"
            :class="{'selected':checkDateEqual(selectedDate,weekDay)}">
         {{weekDayFormat(weekDay)}}
       </div>
-      <div @click="nextWeek()"><span class="iconarrow icon-chevron-circle-right"></span><span>下一周</span></div>
+      <div @click="nextWeek()"><span>下一周</span><span class="iconarrow icon-chevron-circle-right"
+                                                     style="margin-left: 5px "></span></div>
     </div>
     <div class="button-group">
       <span @click="selectType('day')"
@@ -27,7 +29,7 @@
   </div>
 </template>
 <script>
-  import {weekDayFormat,checkDateEqual} from '../../../utils'
+  import { weekDayFormat, checkDateEqual } from '../../../utils'
   import '../../../assets/font/arrow/style.css'
 
   export default {
@@ -68,7 +70,7 @@
         this.weekFirstDay = new Date(this.weekFirstDay.getTime() + 7 * 60 * 60 * 24 * 1000)
       },
       toToday() {
-        this.selectDate(new Date('2017-03-15')) //test
+        this.selectDate(new Date('2017-09-11')) //test
         const day = this.selectedDate.getDay()
         this.weekFirstDay = new Date(this.selectedDate.getTime() - 60 * 60 * 24 * (day === 0 ? 6 : (day - 1)) * 1000) // will return firstday (i.e. Monday) of the week
       },
@@ -77,7 +79,7 @@
     },
     mounted() {
 //      this.selectType('day')
-      this.selectType('week') //test
+      this.selectType('day') //test
       this.toToday()
     }
   }
@@ -107,9 +109,6 @@
         }
         &:first-child, &:last-child {
           background: #f6f6f6;
-          .iconarrow {
-            margin-right: 5px;
-          }
           border: 1px solid #f6f6f6;
           border-radius: 20px;
         }

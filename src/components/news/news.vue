@@ -3,6 +3,7 @@
     <content-nav :menus="newsMenu"
                  @search="onSearch"
                  :dataObj="dataObj"
+                 :searchMethod="searchMethod"
                  @switchTab="tabChanged"></content-nav>
     <table border="1"
            cellspacing="1"
@@ -373,6 +374,30 @@
       }
     },
     methods: {
+      searchMethod(searchStr,selected,dataObj){
+        const regx = new RegExp(searchStr)
+        const researchRes = []
+        const currentNav = selected
+        const results = dataObj[currentNav]
+
+        results.forEach((result) => {
+          const newsItem = result.newsItem.filter(item => item.content.search(regx) !== -1)
+            .map((item) => ({
+              ...item,
+              isShowDetails: false,
+              content: item.content.replace(searchStr, `<span style="color: red;">${searchStr}</span>`),
+              details: item.details.replace(searchStr, `<span style="color: red;">${searchStr}</span>`)
+            }))
+          const resItem = {
+            date: result.date,
+            newsItem,
+          }
+          if (resItem.newsItem.length > 0) {
+            researchRes.push(resItem)
+          }
+        })
+        return researchRes
+      },
       showDetails(item) {
         item.isShowDetails = !item.isShowDetails
       },

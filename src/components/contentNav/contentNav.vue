@@ -39,16 +39,17 @@
         type: Array,
         required: true,
       },
-      dataObj: Object,
+      dataObj: null,
       enableSearch:{
         type:Boolean,
         default:true,
-      }
+      },
+      searchMethod:Function,
     },
     data() {
       return {
         searchStr: '',
-        selected: this.menus[0].key,
+        selected: null,
         showSubMenu: false,
         subMenus: null,
         selectedSubMenu: null,
@@ -56,11 +57,13 @@
     },
     methods: {
       switchSubMenu(menu) {
+        if (this.selectedSubMenu===menu.key) return
         this.selectedSubMenu = menu.key
         this.$emit('switchTab', menu)
       },
 
       switchTab(menu) {
+        if (this.selected===menu.key) return;
         this.showSubMenu = !!menu.subMenu
         this.selected = menu.key
         if (this.showSubMenu) {
@@ -72,41 +75,8 @@
       },
       searchInContent(event) {
         if (event.keyCode === 13) {
-          console.log(this.searchStr)
-//          this.searchStr = event.target.value
-//          this.showSearchBar = true
-
-          const regx = new RegExp(this.searchStr)
-
-          // 如果得到结果集
-          const researchRes = []
-          // 防止连续搜索结果为空
-          const currentNav = this.selected
-//          for (var i = 0; i < this.$refs.navs.children.length; i++) {
-//            if (this.$refs.navs.children[i].className === 'selected') {
-//              currentNav = this.$refs.navs.children[i].getAttribute('name')
-//              break
-//            }
-//          }
-          const results = this.dataObj[currentNav]
-
-          results.forEach((result) => {
-            const newsItem = result.newsItem.filter(item => item.content.search(regx) !== -1)
-              .map((item) => ({
-                ...item,
-                isShowDetails: false,
-                content: item.content.replace(this.searchStr, `<span style="color: red;">${this.searchStr}</span>`),
-                details: item.details.replace(this.searchStr, `<span style="color: red;">${this.searchStr}</span>`)
-              }))
-            const resItem = {
-              date: result.date,
-              newsItem,
-            }
-            if (resItem.newsItem.length > 0) {
-              researchRes.push(resItem)
-            }
-          })
-
+          console.log(this.searchMethod);
+          const researchRes=this.searchMethod(this.searchStr,this.selected,this.dataObj)
           this.$emit('switchTab', {
             key: 'researchRes'
           })
@@ -115,18 +85,12 @@
             result: researchRes
           })
 
-          /* ajax demo */
-          // axios.post('/search.php',{
-          //     str:this.searchStr,
-          //     globel: all
-          // }).then(response=>{
-          //
-          // })
-
         }
       },
     },
-
+    mounted(){
+      this.switchTab( this.menus[0])
+    }
   }
 </script>
 

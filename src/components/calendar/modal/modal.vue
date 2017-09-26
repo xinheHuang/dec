@@ -4,32 +4,27 @@
     <div class="modal-mask">
       <div class="modal-wrapper">
         <div class="modal-container">
-          <div v-if="!article">加载中</div>
-          <div v-else>
-            <div class="modal-header">
-              <div class="close">
-                <a class="icon-close icon-circle-with-cross"
-                   @click="$emit('close')"></a>
-              </div>
-              <div style="text-align: center">
-                <h3 style="color:black;">
-                  {{article.title}}
-                </h3>
-              </div>
-              <div class="info">
-                <span><span class="icon-calendar-o iconcalendar" />{{dateFormat(new Date(article.riqi))}}</span>
-                <span><span class="iconfont icon-personal" />{{article.author}}</span>
-                <span><span class="iconcalendar icon-eye" />{{article.num_read}}</span>
-                <span><span style="font-size: 12px"
-                            class="iconfont icon-like" />{{article.num_like}}</span>
-              </div>
-              <div class="divider"></div>
+          <div class="modal-header">
+            <div class="close">
+              <a class="icon-close icon-circle-with-cross"
+                 @click="$emit('close')"></a>
             </div>
-
-            <div class="modal-body">
-              <div v-html="article.content"></div>
+            <div style="text-align: center">
+              <h3 style="color:black;">
+                {{schedule.title}}
+              </h3>
             </div>
+            <div class="info">
+              <span><span class="icon-calendar-o iconcalendar" />{{schedule.riqi_detail}}</span>
+              <span><span class="iconfont icon-personal" />{{schedule.author}}</span>
+            </div>
+            <div class="divider"></div>
           </div>
+
+          <div class="modal-body">
+            {{schedule.content}}
+          </div>
+
         </div>
       </div>
     </div>
@@ -43,24 +38,13 @@
 
   export default {
     props: {
-      articleID: {  //弹窗文章的属性
-        type: Number,
+      schedule: {  //弹窗文章的属性
+        type: Object,
         required: true,
       }
     },
-    data() {
-      return {
-        article: null,
-      }
-    },
     methods: {
-      dateFormat,
-    },
-    mounted() {
-      this.$http.get(`/api/market/article/${this.articleID}`)
-        .then(res => {
-          this.article = res.data
-        })
+      dateFormat
     }
   }
 </script>

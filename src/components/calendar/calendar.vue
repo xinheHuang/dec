@@ -2,13 +2,15 @@
   <div>
     <content-nav :menus="calendarMenu"
                  @search="onSearch"
-                 :dataObj="dataObj"
+                 :dataObj="calendarType=='week'?weekShown:dayShown"
+                 :searchMethod="searchMethod"
                  @switchTab="tabChanged"></content-nav>
     <calendar-bar @dateChange="onDateChange"
                   @typeChange="onCalendarTypeChange"></calendar-bar>
     <div class="content">
       <!--日历-->
-      <div v-if="calendarType=='day'" class="day-calendar">
+      <div v-if="calendarType=='day'"
+           class="day-calendar">
         <div v-for="time in dayShown"
              style="    border: 1px solid #f6f6f6;"
              :key="time.time.getTime()">
@@ -19,20 +21,31 @@
             <div style="display: flex;flex-direction: column;flex-grow: 1">
               <div v-for="item in time.items"
                    :key="item.ID"
-                   class="item"
-                   :class="{'even':item.number%2===0}"
               >
-                <div style="color: #2c8abf;width: 250px;display: flex;align-items: center">
-                  <img :src="require(`../../assets/images/flags/${item.country}.png`)"
-                       style="flex-grow: 0;height: 20px">
-                  <span style="margin-left: 20px">{{item.indicator}}</span>
+                <div class="item"
+                     :class="{'even':item.number%2===0}"
+                     v-if="currentTab==='statistic'">
+                  <div style="color: #2c8abf;width: 250px;display: flex;align-items: center">
+                    <img :src="require(`../../assets/images/flags/${item.country}.png`)"
+                         style="flex-grow: 0;height: 20px">
+                    <span style="margin-left: 20px">{{item.indicator}}</span>
+                  </div>
+                  <div class="values">
+                    <div><span>公布值：</span><span>{{item.announce}}{{item.unit}}</span></div>
+                    <div><span>预测值：</span><span>{{item.estimate}}{{item.unit}}</span></div>
+                    <div><span>前值：</span><span>{{item.previous}}{{item.unit}}</span></div>
+                  </div>
+                  <div style="flex-grow: 1;text-align: right">发布机构：{{item.institution}}</div>
                 </div>
-                <div class="values">
-                  <div><span>公布值：</span><span>{{item.announce}}{{item.unit}}</span></div>
-                  <div><span>预测值：</span><span>{{item.estimate}}{{item.unit}}</span></div>
-                  <div><span>前值：</span><span>{{item.previous}}{{item.unit}}</span></div>
+
+                <div class="item"
+                     :class="{'even':item.number%2===0}"
+                     v-if="currentTab==='schedule'">
+                  <div style="display: flex;align-items: center ">
+                    <p><span style="font-weight: bold">{{item.title}}</span>
+                    {{item.content}}</p>
+                  </div>
                 </div>
-                <div style="flex-grow: 1;text-align: right">发布机构：{{item.institution}}</div>
               </div>
             </div>
           </div>
@@ -40,24 +53,83 @@
       </div>
 
       <!--周历-->
-      <div v-if="calendarType=='week'" class="week-calendar">
+      <div v-if="calendarType=='week'"
+           class="week-calendar">
         <div v-for="(day,index) in weekShown"
              class="day"
              :key="day.day.toISOString()">
           <div style="text-align: center;padding: 10px 0">
             <span>{{'星期' + weekDay[day.day.getDay()]}}</span>
           </div>
-          <div class="border" :class="{'select':checkDateEqual(day.day,selectedDate)}">
+          <div class="border"
+               :class="{'select':checkDateEqual(day.day,selectedDate)}">
             <div style="background: #f6f6f6;color: gray;padding: 10px">
               <span>{{dateFormat(day.day)}}</span>
             </div>
-            <div v-for="time in day.data" :key="time.time.getTime()" class="time">
+            <div v-for="time in day.data"
+                 :key="time.time.getTime()"
+                 class="time">
               <div style="color: gray;padding: 10px">{{getTime(time.time)}}</div>
-              <div v-for="item in time.items" :key="item.ID" style="background: lightblue;margin-bottom: 5px">
+              <div v-for="item in time.items"
+                   :key="item.ID"
+                   style="background: lightblue;margin-bottom: 5px">
+                <div v-if="currentTab==='statistic'">
                 <div style="display: flex;padding: 5px;align-items: center">
                   <img :src="require(`../../assets/images/flags/${item.country}.png`)"
-                       style="flex-grow: 0;height: 20px;margin-right: 5px">
-                  <span style="color: #2c8abf">{{item.indicator}}</span>
+                       style="flex-grow: 0;height: 15px;margin-right: 5px">
+                  <span style="color: #2c8abf;font-size: 12px">{{item.indicator}}</span>
+                </div>
+                <div style="display: flex;justify-content: space-around"
+                     class="values">
+                  <div>
+                    <span>前值</span>
+                    <span>
+                      {{item.previous}}{{item.unit}}
+                    </span>
+                  </div>
+                  <div>
+                    <span>预测值</span>
+                    <span>
+                      {{item.estimate}}{{item.unit}}
+                    </span>
+                  </div>
+                  <div>
+                    <span>公布值</span>
+                    <span>
+                      {{item.announce}}{{item.unit}}
+                    </span>
+                  </div>
+                </div>
+                </div>
+                <div v-if="currentTab==='schedule'" style="font-size: 12px  ">
+                  <div style="padding: 5px;align-items: center;cursor: pointer" @click="showModal(item)">
+                    <span style="color: #2c8abf;">{{item.title}}</span>
+                  </div>
+                 <div v-if="item.type===1" style="padding: 5px;align-items: center">
+                  <div>
+                    <span>接入号码：</span>
+                    <span>{{item.dial}}</span>
+                  </div>
+                   <div>
+                     <span>参会密码：</span>
+                     <span>{{item.password}}</span>
+                   </div>
+                 </div>
+
+                  <div v-if="item.type===2" style="padding: 5px;align-items: center">
+                    <div>
+                      <span>地点：</span>
+                      <span>{{item.location}}</span>
+                    </div>
+                    <div>
+                      <span>嘉宾：</span>
+                      <span>{{item.guest}}</span>
+                    </div>
+                    <div>
+                      <span>联系人：</span>
+                      <span>{{item.contact}}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -72,7 +144,7 @@
   import contentNav from '../contentNav/contentNav.vue'
   import calendarBar from './calendarBar/calendarBar.vue'
   import { dateString, twoDigitNumber, weekDay, dateFormat, checkDateEqual } from '../../utils'
-
+  import EventBus from '../../eventBus'
   export default {
     data() {
       return {
@@ -86,21 +158,21 @@
             name: '日程'
           },
         ],
-        currentTab: 'statistic',
+        currentTab: null,
         dataObj: {},
-        showSearchBar: false,
         calendar1Data: {},
+        calendar2Data: {},
         selectedDate: null,
         calendarType: null,
         weekFirstDay: null,
+        shownData: {},
         weekDay
       }
     },
     computed: {
-
       dayShown() {
         if (!this.selectedDate) return
-        const dayData = this.calendar1Data[dateString(this.selectedDate)]
+        const dayData = this.shownData[dateString(this.selectedDate)]
         if (!dayData) return
         const data = Object.keys(dayData)
           .map((key) => {
@@ -119,13 +191,12 @@
         })
         return data
       },
-      weekShown: function () {
+      weekShown() {
         if (!this.weekFirstDay) return
-
         const weekData = []
         let weekDay = this.weekFirstDay
         for (let i = 0; i < 7; i++) {
-          const dayData = this.calendar1Data[dateString(weekDay)]
+          const dayData = this.shownData[dateString(weekDay)]
           const data = !dayData ? null : Object.keys(dayData)
             .map((key) => {
               const time = new Date(key)
@@ -145,21 +216,49 @@
       }
     },
     methods: {
+      searchMethod(searchStr,selected,dataObj){
+        console.log(searchStr,selected,dataObj)
+        const regx = new RegExp(searchStr)
+        const researchRes = []
+        const currentNav = selected
+        const results = dataObj[currentNav]
+
+        results.forEach((result) => {
+          const newsItem = result.newsItem.filter(item => item.content.search(regx) !== -1)
+            .map((item) => ({
+              ...item,
+              isShowDetails: false,
+              content: item.content.replace(searchStr, `<span style="color: red;">${searchStr}</span>`),
+              details: item.details.replace(searchStr, `<span style="color: red;">${searchStr}</span>`)
+            }))
+          const resItem = {
+            date: result.date,
+            newsItem,
+          }
+          if (resItem.newsItem.length > 0) {
+            researchRes.push(resItem)
+          }
+        })
+        return researchRes
+      },
       dateFormat,
       checkDateEqual,
+      showModal(schedule){
+        EventBus.$emit('scheduleModal', schedule)
+      },
       getTime(date) {
         return `${twoDigitNumber(date.getUTCHours())}:${twoDigitNumber(date.getMinutes())}`
       },
-      showDetails(item) {
-        item.isShowDetails = !item.isShowDetails
-      },
       tabChanged(menu) {
-        this.showSearchBar = false
+        if (this.currentTab === menu.key) return
         this.currentTab = menu.key
-        console.log(menu)
+        if (this.currentTab === 'statistic') {
+          this.shownData = this.calendar1Data
+        } else {
+          this.shownData = this.calendar2Data
+        }
       },
       onSearch(result) {
-        console.log(result)
         this.showSearchBar = true
         this.searchStr = result.searchStr
         this.dataObj.searchResult = result.result
@@ -171,25 +270,40 @@
         this.weekFirstDay = new Date(this.selectedDate.getTime() - 60 * 60 * 24 * (day === 0 ? 6 : (day - 1)) * 1000) // will return firstday (i.e. Monday) of the week
       },
       onCalendarTypeChange(type) {
-        console.log(type)
         this.calendarType = type
       }
     },
     mounted() {
-      this.$http.get('/api/calendar/calendar1')
-        .then(res => {
-          const calendar1Data = {}
-          res.data.forEach((data) => {
-            if (!calendar1Data[data.riqi]) {
-              calendar1Data[data.riqi] = {}
-            }
-            if (!calendar1Data[data.riqi][data.riqi_detail]) {
-              calendar1Data[data.riqi][data.riqi_detail] = []
-            }
-            calendar1Data[data.riqi][data.riqi_detail].push(data)
+        Promise.all([this.$http.get('/api/calendar/calendar1'), this.$http.get('/api/calendar/calendar2')])
+          .then(([res1,res2])=>{
+            const calendar1Data = {}
+            res1.data.forEach((data) => {
+              if (!calendar1Data[data.riqi]) {
+                calendar1Data[data.riqi] = {}
+              }
+              if (!calendar1Data[data.riqi][data.riqi_detail]) {
+                calendar1Data[data.riqi][data.riqi_detail] = []
+              }
+              calendar1Data[data.riqi][data.riqi_detail].push(data)
+            })
+            this.calendar1Data = calendar1Data
+
+            const calendar2Data = {}
+            res2.data.forEach((data) => {
+              const day = new Date(data.riqi_detail)
+              const riqi = dateString(day)
+              if (!calendar2Data[riqi]) {
+                calendar2Data[riqi] = {}
+              }
+              if (!calendar2Data[riqi][data.riqi_detail]) {
+                calendar2Data[riqi][data.riqi_detail] = []
+              }
+              calendar2Data[riqi][data.riqi_detail].push(data)
+            })
+            this.calendar2Data = calendar2Data
+
+            this.shownData = this.currentTab === 'statistic' ? calendar1Data : calendar2Data;
           })
-          this.calendar1Data = calendar1Data
-        })
     },
     components: {
       contentNav,
@@ -247,8 +361,8 @@
       border: 1px solid lightgray;
       display: flex;
       .day {
-       flex:1 0 auto;
-        width:0
+        flex: 1 0 auto;
+        width: 0
       }
       .border {
         &.select {
@@ -258,7 +372,23 @@
           border: 1px solid lightgray;
         }
       }
+
+      .values {
+        > div {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          font-size: 12px;
+          span {
+            margin-bottom: 5px;
+            &:first-child {
+              color: gray;
+            }
+          }
+        }
+      }
     }
+
   }
 
 

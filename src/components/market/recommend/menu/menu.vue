@@ -41,7 +41,6 @@
       },
 
       switchMenu(menu) {
-        console.log('switch menu, ', menu)
         this.selected = menu.CID
         this.getSubMenu(this.selected)
           .then(subMenus => {
