@@ -375,6 +375,7 @@
     },
     methods: {
       searchMethod(searchStr,selected,dataObj){
+        this.searchStr=searchStr
         const regx = new RegExp(searchStr)
         const researchRes = []
         const currentNav = selected
@@ -413,10 +414,12 @@
         item.showWechatQRcode = false
       },
       onSearch(result) {
+        this.tabChanged({
+          key: 'researchRes'
+        })
         console.log(result)
         this.showSearchBar = true
-        this.searchStr = result.searchStr
-        this.dataObj.searchResult = result.result
+        this.dataObj.searchResult = result
         this.currentTab = 'searchResult'
       }
     },

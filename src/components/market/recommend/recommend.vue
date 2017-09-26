@@ -190,10 +190,12 @@
       },
 
       onLeft(ref) {  //左箭头点击
-        ref.prev()
+        if (ref)
+          ref.prev()
       },
       onRight(ref) {  //右箭头点击
-        ref.next()
+        if (ref)
+          ref.next()
       },
       companySelect(company) {  //选择行业类别
         if (company === this.currentSelect)

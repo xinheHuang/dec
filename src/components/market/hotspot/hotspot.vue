@@ -85,7 +85,7 @@
   import areachart from './areachart/areachart.vue'
   import legends from './legend/legend.vue'
   import * as d3 from 'd3'
-  import { dateString } from '../../../utils'
+  import {dateString} from '../../../utils'
 
   export default {
     data() {
@@ -115,7 +115,7 @@
     },
     computed: {
       chartTypes() {
-        return [{ name: '全部' }, ...this.categories]
+        return [{name: '全部'}, ...this.categories]
       }
     },
     methods: {
@@ -135,49 +135,49 @@
             y: Number(d['sum'])
           }
         })
-          .sort((a, b) => b.y - a.y)  //barchart 数据
+                                .sort((a, b) => b.y - a.y)  //barchart 数据
       },
       changeAreaChart(type) {
         let category  //分类
         category = (type.name === '全部' ? this.categories : type.subCategories).map((c) => c.name)
         let data
         data = Object.keys(this.articleRelations)
-          .map((key) => {
-            const articles = this.articleRelations[key]
-            const group = category.reduce((prev, c) => ({
-              ...prev,
-              [c]: 0
-            }), {})
-            articles.filter((article) => article.industry)
-              .forEach((article) => {
-                const industry = type.name === '全部' ? this.subCategory[article.industry].name :
-                  article.industry
-                if (category.includes(industry)) {
-                  group[industry] += article.num_read  //统计该分类下那一周的阅读量
-                }
-              })
-            return {
-              date: key,
-              group
-            }
-          })
+                     .map((key) => {
+                       const articles = this.articleRelations[key]
+                       const group = category.reduce((prev, c) => ({
+                         ...prev,
+                         [c]: 0
+                       }), {})
+                       articles.filter((article) => article.industry)
+                               .forEach((article) => {
+                                 const industry = type.name === '全部' ? this.subCategory[article.industry].name :
+                                                  article.industry
+                                 if (category.includes(industry)) {
+                                   group[industry] += article.num_read  //统计该分类下那一周的阅读量
+                                 }
+                               })
+                       return {
+                         date: key,
+                         group
+                       }
+                     })
 
         const parseTime = d3.timeParse('%Y-%m-%d')
         this.areaChartData = data.map((d) => {
           const total = Object.values(d.group)
-            .reduce((prev, s) => prev + s, 0)
+                              .reduce((prev, s) => prev + s, 0)
           return {
             date: parseTime(d.date),
             ...Object.keys(d.group)
-              .reduce((prev, key) => {
-                return {
-                  ...prev,
-                  [key]: total === 0 ? 1 / Object.keys(d.group).length : d.group[key] / total  //计算百分比
-                }
-              }, {})
+                     .reduce((prev, key) => {
+                       return {
+                         ...prev,
+                         [key]: total === 0 ? 1 / Object.keys(d.group).length : d.group[key] / total  //计算百分比
+                       }
+                     }, {})
           }
         })
-          .sort((a, b) => a.date > b.date ? 1 : -1) //按时间排序
+                                 .sort((a, b) => a.date > b.date ? 1 : -1) //按时间排序
         this.areaChartKeys = category
       },
 
@@ -189,10 +189,12 @@
 
       },
       onLeft() {  //左箭头点击
-        this.$refs.slick.prev()
+        if (this.$refs.slick)
+          this.$refs.slick.prev()
       },
       onRight() {  //右箭头点击
-        this.$refs.slick.next()
+        if (this.$refs.slick)
+          this.$refs.slick.next()
       },
       changeSlick: function (event, slick, slide) {
         this.slickRightDisable = slide >= this.articleData.length - 3
@@ -209,80 +211,81 @@
     },
     mounted() {
       this.$http.get('/api/market/articles')  //获取所有文章
-        .then(res => {
-          const articleData = {}
-          res.data.filter(article => article.relation)
-            .forEach((article) => {
-              if (!articleData[article.relation.name]) {
-                articleData[article.relation.name] = []
-              }
-              article.date = new Date(article.riqi)
-              articleData[article.relation.name].push(article)
-            })
-          this.articleData = Object.keys(articleData)
-            .map((topic) => {
-              const articles = articleData[topic]
-              const readNumber = articles.reduce(
-                (prev, article) => prev + article.num_read,
-                0)
-              articles.sort(
-                (a, b) => a.date > b.date ? -1 : 1)
-              return {
-                key: topic,
-                readNumber,
-                items: articles
-              }
-            })
-            .sort(
-              (a, b) => b.readNumber - a.readNumber)
+          .then(res => {
+            const articleData = {}
+            res.data.filter(article => article.relation)
+               .forEach((article) => {
+                 if (!articleData[article.relation.name]) {
+                   articleData[article.relation.name] = []
+                 }
+                 article.date = new Date(article.riqi)
+                 articleData[article.relation.name].push(article)
+               })
+            this.articleData = Object.keys(articleData)
+                                     .map((topic) => {
+                                       const articles = articleData[topic]
+                                       const readNumber = articles.reduce(
+                                         (prev, article) => prev + article.num_read,
+                                         0)
+                                       articles.sort(
+                                         (a, b) => a.date > b.date ? -1 : 1)
+                                       return {
+                                         key: topic,
+                                         readNumber,
+                                         items: articles
+                                       }
+                                     })
+                                     .sort(
+                                       (a, b) => b.readNumber - a.readNumber)
 
-          this.$nextTick(() => {
-            this.$refs.slick.reSlick()
-            this.changeSlick(null, null, 0)
+            this.$nextTick(() => {
+              this.$refs.slick.reSlick()
+              this.changeSlick(null, null, 0)
+            })
+
           })
 
-        })
-
       this.$http.get('/api/market/conclusion')  //获取所有结论
-        .then(res => {
-          this.conclusions = res.data.content1
-        })
+          .then(res => {
+            this.conclusions = res.data.content1
+          })
 
 
       //获取过去7天阅读总量 根据topic 行业
       Promise.all([this.$http.get('/api/market/readNumbersLast7Days'), this.$http.get('api/market/articleRelations'),
-        this.$http.get('/api/market/categories')])
-        .then(([res1, res2, res3]) => {
-          this.readNumberData = res1.data
+                   this.$http.get('/api/market/categories')])
+             .then(([res1, res2, res3]) => {
+               this.readNumberData = res1.data
 
-          const data = {}
-          res2.data.forEach(d => {
-            const date = new Date(d.riqi)
-            const day = date.getDay()
-            const sunday = new Date(date.getTime() + (day === 0 ? 0 :
-              (7 - day)) * 60 * 60 * 24 * 1000)
-            const stringSunday = dateString(sunday)  //计算那一周的周日
-            if (!data[stringSunday]) {
-              data[stringSunday] = []
-            }
-            data[stringSunday].push(d)
-          })
-          this.articleRelations = data
-          this.categories = res3.data
-          //获取所有二级行业
-          return Promise.all(this.categories.map((category) => this.$http.get(`/api/market/categories/${category.CID}`)))
-        })
-        .then(arr => {
-          arr.forEach((res, index) => {
-            const category = this.categories[index]
-            category.subCategories = res.data
-            res.data.forEach((c) => {
-              this.subCategory[c.name] = category
-            })
-          })
-          //图表默认全部
-          this.changeChartType({ name: '全部' })
-        })
+               const data = {}
+               res2.data.forEach(d => {
+                 const date = new Date(d.riqi)
+                 const day = date.getDay()
+                 const sunday = new Date(date.getTime() + (day === 0 ? 0 :
+                                                           (7 - day)) * 60 * 60 * 24 * 1000)
+                 const stringSunday = dateString(sunday)  //计算那一周的周日
+                 if (!data[stringSunday]) {
+                   data[stringSunday] = []
+                 }
+                 data[stringSunday].push(d)
+               })
+               this.articleRelations = data
+               this.categories = res3.data
+               //获取所有二级行业
+               return Promise.all(
+                 this.categories.map((category) => this.$http.get(`/api/market/categories/${category.CID}`)))
+             })
+             .then(arr => {
+               arr.forEach((res, index) => {
+                 const category = this.categories[index]
+                 category.subCategories = res.data
+                 res.data.forEach((c) => {
+                   this.subCategory[c.name] = category
+                 })
+               })
+               //图表默认全部
+               this.changeChartType({name: '全部'})
+             })
     },
   }
 </script>

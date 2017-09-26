@@ -70,7 +70,7 @@
         this.weekFirstDay = new Date(this.weekFirstDay.getTime() + 7 * 60 * 60 * 24 * 1000)
       },
       toToday() {
-        this.selectDate(new Date('2017-09-11')) //test
+        this.selectDate(new Date('2017-03-15')) //test
         const day = this.selectedDate.getDay()
         this.weekFirstDay = new Date(this.selectedDate.getTime() - 60 * 60 * 24 * (day === 0 ? 6 : (day - 1)) * 1000) // will return firstday (i.e. Monday) of the week
       },

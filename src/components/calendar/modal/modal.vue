@@ -15,7 +15,7 @@
               </h3>
             </div>
             <div class="info">
-              <span><span class="icon-calendar-o iconcalendar" />{{schedule.riqi_detail}}</span>
+              <span><span class="icon-calendar-o iconcalendar" />{{dateFormat(new Date(schedule.riqi_detail))}}</span>
               <span><span class="iconfont icon-personal" />{{schedule.author}}</span>
             </div>
             <div class="divider"></div>

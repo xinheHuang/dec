@@ -2,7 +2,7 @@
   <div>
     <content-nav :menus="calendarMenu"
                  @search="onSearch"
-                 :dataObj="calendarType=='week'?weekShown:dayShown"
+                 :dataObj="calendarType=='week'?weekShownData:dayShownData"
                  :searchMethod="searchMethod"
                  @switchTab="tabChanged"></content-nav>
     <calendar-bar @dateChange="onDateChange"
@@ -28,22 +28,26 @@
                   <div style="color: #2c8abf;width: 250px;display: flex;align-items: center">
                     <img :src="require(`../../assets/images/flags/${item.country}.png`)"
                          style="flex-grow: 0;height: 20px">
-                    <span style="margin-left: 20px">{{item.indicator}}</span>
+                    <span style="margin-left: 20px"
+                          v-html="item.indicator"></span>
                   </div>
                   <div class="values">
-                    <div><span>公布值：</span><span>{{item.announce}}{{item.unit}}</span></div>
-                    <div><span>预测值：</span><span>{{item.estimate}}{{item.unit}}</span></div>
-                    <div><span>前值：</span><span>{{item.previous}}{{item.unit}}</span></div>
+                    <div><span>公布值：</span><span v-html="item.announce+item.unit"></span></div>
+                    <div><span>预测值：</span><span v-html="item.estimate+item.unit"></span></div>
+                    <div><span>前值：</span><span v-html="item.previous+item.unit"></span></div>
                   </div>
-                  <div style="flex-grow: 1;text-align: right">发布机构：{{item.institution}}</div>
+                  <div style="flex-grow: 1;text-align: right"
+                       v-html="'发布机构：'+item.institution"></div>
                 </div>
 
                 <div class="item"
                      :class="{'even':item.number%2===0}"
                      v-if="currentTab==='schedule'">
                   <div style="display: flex;align-items: center ">
-                    <p><span style="font-weight: bold">{{item.title}}</span>
-                    {{item.content}}</p>
+                    <p><span style="font-weight: bold"
+                             v-html="item.title"></span>
+                      <span v-html="item.content"></span>
+                    </p>
                   </div>
                 </div>
               </div>
@@ -74,60 +78,63 @@
                    :key="item.ID"
                    style="background: lightblue;margin-bottom: 5px">
                 <div v-if="currentTab==='statistic'">
-                <div style="display: flex;padding: 5px;align-items: center">
-                  <img :src="require(`../../assets/images/flags/${item.country}.png`)"
-                       style="flex-grow: 0;height: 15px;margin-right: 5px">
-                  <span style="color: #2c8abf;font-size: 12px">{{item.indicator}}</span>
-                </div>
-                <div style="display: flex;justify-content: space-around"
-                     class="values">
-                  <div>
-                    <span>前值</span>
-                    <span>
-                      {{item.previous}}{{item.unit}}
+                  <div style="display: flex;padding: 5px;align-items: center">
+                    <img :src="require(`../../assets/images/flags/${item.country}.png`)"
+                         style="flex-grow: 0;height: 15px;margin-right: 5px">
+                    <span style="color: #2c8abf;font-size: 12px"
+                          v-html="item.indicator"></span>
+                  </div>
+                  <div style="display: flex;justify-content: space-around"
+                       class="values">
+                    <div>
+                      <span>前值</span>
+                      <span v-html="item.previous+item.unit">
                     </span>
-                  </div>
-                  <div>
-                    <span>预测值</span>
-                    <span>
-                      {{item.estimate}}{{item.unit}}
+                    </div>
+                    <div>
+                      <span>预测值</span>
+                      <span v-html="item.estimate+item.unit">
                     </span>
-                  </div>
-                  <div>
-                    <span>公布值</span>
-                    <span>
-                      {{item.announce}}{{item.unit}}
+                    </div>
+                    <div>
+                      <span>公布值</span>
+                      <span v-html="item.announce+item.unit">
                     </span>
+                    </div>
                   </div>
                 </div>
-                </div>
-                <div v-if="currentTab==='schedule'" style="font-size: 12px  ">
-                  <div style="padding: 5px;align-items: center;cursor: pointer" @click="showModal(item)">
-                    <span style="color: #2c8abf;">{{item.title}}</span>
+                <div v-if="currentTab==='schedule'"
+                     style="font-size: 12px  ">
+                  <div style="padding: 5px;align-items: center;cursor: pointer"
+                       @click="showModal(item)">
+                    <span style="color: #2c8abf;"
+                          v-html="item.title"></span>
                   </div>
-                 <div v-if="item.type===1" style="padding: 5px;align-items: center">
-                  <div>
-                    <span>接入号码：</span>
-                    <span>{{item.dial}}</span>
+                  <div v-if="item.type===1"
+                       style="padding: 5px;align-items: center">
+                    <div>
+                      <span>接入号码：</span>
+                      <span v-html="item.dial"></span>
+                    </div>
+                    <div>
+                      <span>参会密码：</span>
+                      <span v-html="item.password"></span>
+                    </div>
                   </div>
-                   <div>
-                     <span>参会密码：</span>
-                     <span>{{item.password}}</span>
-                   </div>
-                 </div>
 
-                  <div v-if="item.type===2" style="padding: 5px;align-items: center">
+                  <div v-if="item.type===2"
+                       style="padding: 5px;align-items: center">
                     <div>
                       <span>地点：</span>
-                      <span>{{item.location}}</span>
+                      <span v-html="item.location"></span>
                     </div>
                     <div>
                       <span>嘉宾：</span>
-                      <span>{{item.guest}}</span>
+                      <span v-html="item.guest"></span>
                     </div>
                     <div>
                       <span>联系人：</span>
-                      <span>{{item.contact}}</span>
+                      <span v-html="item.contact"></span>
                     </div>
                   </div>
                 </div>
@@ -143,8 +150,9 @@
 <script>
   import contentNav from '../contentNav/contentNav.vue'
   import calendarBar from './calendarBar/calendarBar.vue'
-  import { dateString, twoDigitNumber, weekDay, dateFormat, checkDateEqual } from '../../utils'
+  import {dateString, twoDigitNumber, weekDay, dateFormat, checkDateEqual} from '../../utils'
   import EventBus from '../../eventBus'
+
   export default {
     data() {
       return {
@@ -166,99 +174,160 @@
         calendarType: null,
         weekFirstDay: null,
         shownData: {},
+        searchResult: null,
+        dayShownData: null,
+        weekShownData: null,
         weekDay
       }
     },
     computed: {
       dayShown() {
         if (!this.selectedDate) return
+        if (this.searchResult) {
+          console.log('return search result')
+          return this.searchResult
+        }
         const dayData = this.shownData[dateString(this.selectedDate)]
         if (!dayData) return
         const data = Object.keys(dayData)
-          .map((key) => {
-            const time = new Date(key)
-            return {
-              time,
-              items: dayData[key]
-            }
-          })
-          .sort((a, b) => a.time > b.time ? 1 : -1)
+                           .map((key) => {
+                             const time = new Date(key)
+                             return {
+                               time,
+                               items: dayData[key]
+                             }
+                           })
+                           .sort((a, b) => a.time > b.time ? 1 : -1)
         let k = 0
         data.forEach((time) => {
           time.items.forEach(item => {
             item.number = k++
           })
         })
+        this.dayShownData = data
         return data
       },
       weekShown() {
         if (!this.weekFirstDay) return
+        if (this.searchResult) return this.searchResult
         const weekData = []
         let weekDay = this.weekFirstDay
         for (let i = 0; i < 7; i++) {
           const dayData = this.shownData[dateString(weekDay)]
           const data = !dayData ? null : Object.keys(dayData)
-            .map((key) => {
-              const time = new Date(key)
-              return {
-                time,
-                items: dayData[key]
-              }
-            })
-            .sort((a, b) => a.time > b.time ? 1 : -1)
+                                               .map((key) => {
+                                                 const time = new Date(key)
+                                                 return {
+                                                   time,
+                                                   items: dayData[key]
+                                                 }
+                                               })
+                                               .sort((a, b) => a.time > b.time ? 1 : -1)
           weekData.push({
-            day: weekDay,
-            data
-          })
+                          day: weekDay,
+                          data
+                        })
           weekDay = new Date(weekDay.getTime() + 60 * 60 * 24 * 1000)
         }
+        this.weekShownData = weekData
         return weekData
       }
     },
     methods: {
-      searchMethod(searchStr,selected,dataObj){
-        console.log(searchStr,selected,dataObj)
+      searchMethod(searchStr, selected, dataObj) {
+        console.log(searchStr, selected, dataObj)
+        const {calendarType, currentTab} = this
         const regx = new RegExp(searchStr)
-        const researchRes = []
-        dataObj.forEach((result) => {
-          data.items.filter(item=>{
-              let checked=[];
-             if (this.currentTab==='schedule'){
-               if (calendarType==='day'){
-                 checked=['title','content']
-               }
-               if (calendarType==='week'){
+        let searchResult = []
+        if (calendarType === 'day') {
+          dataObj.forEach((data) => {
+            const resultItems = []
+            data.items.map(item => {
+              let checked = []
+              if (currentTab === 'schedule') {
+                  checked = ['title', 'content']
+              }
 
-               }
-             }
-             checked.some((key)=>item[key].search(regx)!==-1)?checked.reduce((prev,key)=>{return {...prev,key:item[key].replace(searchStr, `<span style="color: red;">${searchStr}</span>`)}},{...item}):null
+              if (currentTab === 'statistic') {
+                  checked = ['indicator', 'announce', 'unit', 'estimate', 'previous', 'institution']
+              }
+
+
+              if (checked.some((key) => !item[key] ? false : String(item[key])
+                  .search(regx) !== -1)) {
+                resultItems.push(checked.reduce((prev, key) => {
+                  return {
+                    ...prev,
+                    [key]: (!item[key]) ? item[key] : String(item[key])
+                      .replace(searchStr, `<span style="color: red;">${searchStr}</span>`)
+                  }
+                }, {...item}))
+              }
+            })
+            if (resultItems.length > 0) {
+              searchResult.push({
+                                  ...data,
+                                  items: resultItems
+                                })
+            }
           })
-          const newsItem = result.newsItem.filter(item => item.content.search(regx) !== -1)
-            .map((item) => ({
-              ...item,
-              isShowDetails: false,
-              content: item.content.replace(searchStr, `<span style="color: red;">${searchStr}</span>`),
-              details: item.details.replace(searchStr, `<span style="color: red;">${searchStr}</span>`)
-            }))
-          const resItem = {
-            date: result.date,
-            newsItem,
-          }
-          if (resItem.newsItem.length > 0) {
-            researchRes.push(resItem)
-          }
-        })
-        return researchRes
+        }
+
+        if (calendarType === 'week') {
+          searchResult = dataObj.map((day) => {
+            let data = day.data
+            let tempResult = []
+            if (data) {
+              data.forEach((data) => {
+                const resultItems = []
+                data.items.map(item => {
+                  let checked = []
+                  if (currentTab === 'schedule') {
+                    checked = ['title', 'content', 'dial', 'password', 'location', 'contact', 'guest']
+                  }
+
+                  if (currentTab === 'statistic') {
+                    checked = ['indicator', 'announce', 'unit', 'estimate', 'previous', 'institution']
+                  }
+
+
+                  if (checked.some((key) => !item[key] ? false : String(item[key])
+                      .search(regx) !== -1)) {
+                    resultItems.push(checked.reduce((prev, key) => {
+                      return {
+                        ...prev,
+                        [key]: (!item[key]) ? item[key] : String(item[key])
+                          .replace(searchStr, `<span style="color: red;">${searchStr}</span>`)
+                      }
+                    }, {...item}))
+                  }
+                })
+                if (resultItems.length > 0) {
+                  tempResult.push({
+                                    ...data,
+                                    items: resultItems
+                                  })
+                }
+              })
+            }
+            return {
+              ...day,
+              data: tempResult,
+            }
+          })
+        }
+        return searchResult
       },
       dateFormat,
       checkDateEqual,
-      showModal(schedule){
+      showModal(schedule) {
         EventBus.$emit('scheduleModal', schedule)
       },
       getTime(date) {
         return `${twoDigitNumber(date.getUTCHours())}:${twoDigitNumber(date.getMinutes())}`
       },
       tabChanged(menu) {
+        this.searchResult = null
         if (this.currentTab === menu.key) return
         this.currentTab = menu.key
         if (this.currentTab === 'statistic') {
@@ -266,53 +335,54 @@
         } else {
           this.shownData = this.calendar2Data
         }
+
       },
-      onSearch(result) {
-        this.showSearchBar = true
-        this.searchStr = result.searchStr
-        this.dataObj.searchResult = result.result
-        this.currentTab = 'searchResult'
+      onSearch(searchResult) {
+        this.searchResult = searchResult
+        console.log('search result', searchResult)
       },
       onDateChange(date) {
         this.selectedDate = date
         const day = this.selectedDate.getDay()
         this.weekFirstDay = new Date(this.selectedDate.getTime() - 60 * 60 * 24 * (day === 0 ? 6 : (day - 1)) * 1000) // will return firstday (i.e. Monday) of the week
+        this.searchResult = null
       },
       onCalendarTypeChange(type) {
+        this.searchResult = null
         this.calendarType = type
       }
     },
     mounted() {
-        Promise.all([this.$http.get('/api/calendar/calendar1'), this.$http.get('/api/calendar/calendar2')])
-          .then(([res1,res2])=>{
-            const calendar1Data = {}
-            res1.data.forEach((data) => {
-              if (!calendar1Data[data.riqi]) {
-                calendar1Data[data.riqi] = {}
-              }
-              if (!calendar1Data[data.riqi][data.riqi_detail]) {
-                calendar1Data[data.riqi][data.riqi_detail] = []
-              }
-              calendar1Data[data.riqi][data.riqi_detail].push(data)
-            })
-            this.calendar1Data = calendar1Data
+      Promise.all([this.$http.get('/api/calendar/calendar1'), this.$http.get('/api/calendar/calendar2')])
+             .then(([res1, res2]) => {
+               const calendar1Data = {}
+               res1.data.forEach((data) => {
+                 if (!calendar1Data[data.riqi]) {
+                   calendar1Data[data.riqi] = {}
+                 }
+                 if (!calendar1Data[data.riqi][data.riqi_detail]) {
+                   calendar1Data[data.riqi][data.riqi_detail] = []
+                 }
+                 calendar1Data[data.riqi][data.riqi_detail].push(data)
+               })
+               this.calendar1Data = calendar1Data
 
-            const calendar2Data = {}
-            res2.data.forEach((data) => {
-              const day = new Date(data.riqi_detail)
-              const riqi = dateString(day)
-              if (!calendar2Data[riqi]) {
-                calendar2Data[riqi] = {}
-              }
-              if (!calendar2Data[riqi][data.riqi_detail]) {
-                calendar2Data[riqi][data.riqi_detail] = []
-              }
-              calendar2Data[riqi][data.riqi_detail].push(data)
-            })
-            this.calendar2Data = calendar2Data
+               const calendar2Data = {}
+               res2.data.forEach((data) => {
+                 const day = new Date(data.riqi_detail)
+                 const riqi = dateString(day)
+                 if (!calendar2Data[riqi]) {
+                   calendar2Data[riqi] = {}
+                 }
+                 if (!calendar2Data[riqi][data.riqi_detail]) {
+                   calendar2Data[riqi][data.riqi_detail] = []
+                 }
+                 calendar2Data[riqi][data.riqi_detail].push(data)
+               })
+               this.calendar2Data = calendar2Data
 
-            this.shownData = this.currentTab === 'statistic' ? calendar1Data : calendar2Data;
-          })
+               this.shownData = this.currentTab === 'statistic' ? calendar1Data : calendar2Data
+             })
     },
     components: {
       contentNav,

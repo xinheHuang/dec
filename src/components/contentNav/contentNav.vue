@@ -75,16 +75,8 @@
       },
       searchInContent(event) {
         if (event.keyCode === 13) {
-          console.log(this.searchMethod);
           const researchRes=this.searchMethod(this.searchStr,this.selected,this.dataObj)
-          this.$emit('switchTab', {
-            key: 'researchRes'
-          })
-          this.$emit('search', {
-            searchStr: this.searchStr,
-            result: researchRes
-          })
-
+          this.$emit('search', researchRes)
         }
       },
     },
