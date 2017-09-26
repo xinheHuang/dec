@@ -76,7 +76,7 @@
               <div style="color: gray;padding: 10px">{{getTime(time.time)}}</div>
               <div v-for="item in time.items"
                    :key="item.ID"
-                   style="background: lightblue;margin-bottom: 5px">
+                   style="background: #D5FFFF;margin-bottom: 5px">
                 <div v-if="currentTab==='statistic'">
                   <div style="display: flex;padding: 5px;align-items: center">
                     <img :src="require(`../../assets/images/flags/${item.country}.png`)"
