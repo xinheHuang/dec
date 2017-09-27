@@ -3,7 +3,7 @@
     <nav-menu :navs="navs"
               @switchNav="changeNav"></nav-menu>
     <div class="content">
-      <component :is="currentView"></component>
+      <router-view></router-view>
     </div>
     <fixed-tools></fixed-tools>
     <footer class="footer"></footer>
@@ -45,7 +45,6 @@
             name: '市场'
           }
         ],
-        currentView: 'news',
         showArticleModal: false,
         articleID:null,
 
@@ -56,7 +55,7 @@
     },
     methods: {
       changeNav(nav) {
-        this.currentView = nav.key
+        this.$router.push({name:nav.key})
       }
     },
     created() {
