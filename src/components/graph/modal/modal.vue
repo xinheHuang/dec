@@ -16,28 +16,25 @@
                 {{node.topic}}
               </h3>
               <div v-show="editTopic">
-                <input v-model="tempTopic">
-                <button @click="saveClick()">save</button>
+                <input v-model="tempTopic" style="font-size: 16px">
+                <button @click="saveTopic()" style="font-size: 12px">保存</button>
               </div>
               <transition name="fade">
                 <div style="position: absolute;top: 0;right: 50px;display: flex;align-items: center" v-show="showSuccessTip">
                   <img :src="require('../../../assets/images/sign-check-icon.png')"
                        style="width: 20px;height: 20px">
-                  <span style="margin-left: 20px">修改成功!</span>
+                  <span style="margin-left: 20px">{{saveText}}成功!</span>
                 </div>
               </transition>
             </div>
-            <div class="info">
-
-            </div>
-            <div class="divider"></div>
+            <!--<div class="divider"></div>-->
           </div>
 
           <div class="modal-body">
             <content-nav :menus="menu"
                          :enableSearch="false"
                          @switchTab="tabChanged"></content-nav>
-            <component :is="currentTab"></component>
+            <component :is="currentTab" :node="node" :saved="saveComment"></component>
           </div>
 
         </div>
@@ -73,6 +70,7 @@
         showSuccessTip:false,
         timeout:null,
         currentTab:null,
+        saveText:null,
       }
     },
     methods: {
@@ -80,27 +78,31 @@
         this.currentTab = menu.key
       },
       dateFormat,
-      showSuccess(){
+      showSuccess(text){
         if (this.timeout){
           clearTimeout(this.timeout)
         }
         this.showSuccessTip=true;
-
+        this.saveText=text;
         this.timeout=setTimeout(()=>{
           this.showSuccessTip=false
           this.timeout=null;
         },2000)
       },
-      saveClick() {
+      saveComment(){
+        this.showSuccess('发表')
+      },
+      saveTopic() {
         if (this.tempTopic) {
           this.node.topic = this.tempTopic
           this.editTopic = false;
-         this.showSuccess();
+         this.showSuccess('修改');
         }
         else {
           alert('topic 不能为空')
         }
       }
+
     },
     beforeDestroy(){
       if (this.timeout){

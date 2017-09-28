@@ -285,6 +285,7 @@
         this.jm.update_node(node.id,node.topic);
       })
 
+      $('#jsmind_container').css('height',$('.content').height()-$('.top-op').height())
     }
   }
 </script>
@@ -294,7 +295,8 @@
   #graph {
     #jsmind_container {
       width: 100%;
-      height: 800px;
+      /*height: 800px;*/
+      height: 100%;
       border: solid 1px #ccc;
       /*background:#f4f4f4;*/
       background: #f4f4f4;
