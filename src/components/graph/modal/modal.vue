@@ -1,0 +1,208 @@
+<!--node弹窗-->
+<template>
+  <transition name="modal">
+    <div class="modal-mask">
+      <div class="modal-wrapper">
+        <div class="modal-container">
+          <div class="modal-header">
+            <div class="close">
+              <a class="icon-close icon-circle-with-cross"
+                 @click="$emit('close')"></a>
+            </div>
+            <div style="text-align: center;position: relative">
+              <h3 style="color:black;"
+                  @dblclick="   editTopic=true;        tempTopic=node.topic"
+                  v-show="!editTopic">
+                {{node.topic}}
+              </h3>
+              <div v-show="editTopic">
+                <input v-model="tempTopic">
+                <button @click="saveClick()">save</button>
+              </div>
+              <transition name="fade">
+                <div style="position: absolute;top: 0;right: 50px;display: flex;align-items: center" v-show="showSuccessTip">
+                  <img :src="require('../../../assets/images/sign-check-icon.png')"
+                       style="width: 20px;height: 20px">
+                  <span style="margin-left: 20px">修改成功!</span>
+                </div>
+              </transition>
+            </div>
+            <div class="info">
+
+            </div>
+            <div class="divider"></div>
+          </div>
+
+          <div class="modal-body">
+            <content-nav :menus="menu"
+                         :enableSearch="false"
+                         @switchTab="tabChanged"></content-nav>
+            <component :is="currentTab"></component>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </transition>
+</template>
+
+<script>
+  import '../../../assets/font/calendar/style.css'
+  import '../../../assets/font/close/style.css'
+  import contentNav from '../../contentNav/contentNav.vue'
+  import comment from './comment.vue'
+  import indicator from './indicator.vue'
+
+  import {dateFormat} from '../../../utils'
+
+  export default {
+    props: {
+      node: {  //弹窗文章的属性
+        type: Object,
+        required: true,
+      }
+    },
+    data() {
+      return {
+        menu: [
+          { key: 'comment', name: '关联点评' },
+          { key: 'indicator', name: '关联指标' },
+        ],
+        editTopic: false,
+        tempTopic: null,
+        showSuccessTip:false,
+        timeout:null,
+        currentTab:null,
+      }
+    },
+    methods: {
+      tabChanged(menu){
+        this.currentTab = menu.key
+      },
+      dateFormat,
+      showSuccess(){
+        if (this.timeout){
+          clearTimeout(this.timeout)
+        }
+        this.showSuccessTip=true;
+
+        this.timeout=setTimeout(()=>{
+          this.showSuccessTip=false
+          this.timeout=null;
+        },2000)
+      },
+      saveClick() {
+        if (this.tempTopic) {
+          this.node.topic = this.tempTopic
+          this.editTopic = false;
+         this.showSuccess();
+        }
+        else {
+          alert('topic 不能为空')
+        }
+      }
+    },
+    beforeDestroy(){
+      if (this.timeout){
+        clearTimeout(this.timeout)
+      }
+    },
+    components:{
+      contentNav,
+      comment,
+      indicator,
+    }
+  }
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
+
+  .close {
+    display: flex;
+    flex-direction: row-reverse;
+    font-size: 18px;
+    color: #6b6868;
+    cursor: pointer;
+    top: 0;
+    margin-bottom: 5px
+  }
+
+  .info {
+    display: flex;
+    justify-content: center;
+    color: #6b6868;
+    font-size: 14px;
+  }
+
+  .info span {
+    padding: 10px;
+    line-height: 20px;
+    vertical-align: bottom;
+  }
+
+  .modal-mask {
+    position: fixed;
+    z-index: 9998;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, .5);
+    display: table;
+    transition: opacity .3s ease;
+  }
+
+  .modal-wrapper {
+    display: table-cell;
+    vertical-align: middle;
+  }
+
+  .modal-container {
+    width: 900px;
+    margin: 0px auto;
+    padding: 20px 30px;
+    background-color: #fff;
+    border-radius: 2px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
+    transition: all .3s ease;
+    font-family: Helvetica, Arial, sans-serif;
+  }
+
+  .modal-header h3 {
+    margin-top: 0;
+    color: #42b983;
+  }
+
+  .modal-body {
+    margin: 20px 0;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .modal-default-button {
+    float: right;
+  }
+
+  .modal-enter {
+    opacity: 0;
+  }
+
+  .modal-leave-active {
+    opacity: 0;
+  }
+
+  .modal-enter .modal-container,
+  .modal-leave-active .modal-container {
+    -webkit-transform: scale(1.1);
+    transform: scale(1.1);
+  }
+
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity .5s
+  }
+  .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+    opacity: 0
+  }
+
+</style>

@@ -7,7 +7,7 @@ import axios from 'axios'
 import './assets/styles/main.css'
 import './assets/font/iconfont.css'
 import './assets/styles/animate.css'
-
+import $ from 'jquery'
 
 Vue.prototype.$http = axios
 Vue.config.productionTip = false

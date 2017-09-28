@@ -16,6 +16,11 @@
                     :schedule="schedule"
                     @close="showScheduleModal = false">
     </schedule-modal>
+
+    <node-modal v-if="showNodeModal"
+                :node="node"
+                @close="closeNodeModal()">
+    </node-modal>
   </div>
 </template>
 
@@ -27,6 +32,7 @@
   import market from './components/market/market.vue'
   import articleModal from './components/market/modal/modal.vue'
   import scheduleModal from './components/calendar/modal/modal.vue'
+  import nodeModal from './components/graph/modal/modal.vue'
   import EventBus from './eventBus'
 
   export default {
@@ -55,6 +61,8 @@
         currentNav: null,
         showScheduleModal: false,
         schedule: null,
+        showNodeModal: false,
+        node: null
 
       }
     },
@@ -67,11 +75,15 @@
         if (nav.key === 'graph') {  //temp
           route = {
             ...route,
-            params: { id: 1 }
+            params: {id: 1}
           }
         }
         this.$router.push(route)
         this.currentNav = nav.key
+      },
+      closeNodeModal(){
+        this.showNodeModal = false
+        EventBus.$emit('nodeModalClose',this.node);
       }
     },
     created() {
@@ -87,6 +99,11 @@
         this.showScheduleModal = true
         this.schedule = schedule
       })
+
+      EventBus.$on('nodeModal', node => {
+        this.showNodeModal = true
+        this.node = node
+      })
     },
 
     components: {
@@ -96,7 +113,8 @@
       market,
       calendar,
       articleModal,
-      scheduleModal
+      scheduleModal,
+      nodeModal,
     },
   }
 </script>
