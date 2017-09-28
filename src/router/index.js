@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import News from '../components/news/news.vue'
 import Market from '../components/market/market.vue'
 import Calendar from '../components/calendar/calendar.vue'
+import Graph from '../components/graph/graph.vue'
 Vue.use(Router)
 
 export default new Router({
@@ -21,6 +22,11 @@ export default new Router({
       path: '/market',
       name: 'market',
       component: Market
+    },
+    {
+      path:'/graph/:id',
+      name: 'graph',
+      component: Graph
     }
   ]
 })

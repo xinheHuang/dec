@@ -42,6 +42,10 @@ const dateFormat=(date)=>{
 
 const twoDigitNumber=(number)=> ('0' + number).slice(-2)
 
+const numberZh={
+  1:'一',2:'二',3:'三',4:'四',5:'五',6:'六',7:'七'
+}
+
 const weekDay={
   0:'日',1:'一',2:'二',3:'三',4:'四',5:'五',6:'六',
 }
@@ -54,4 +58,4 @@ const dateString=(date)=> date.toISOString()
                               .split('T')[0]
 
 const checkDateEqual=(date1, date2)=> new Date(date1.toDateString()).valueOf() === new Date(date2.toDateString()).valueOf()
-export { dotString ,dateFormat,weekDayFormat,dateString,twoDigitNumber,weekDay,checkDateEqual}
+export { dotString ,dateFormat,weekDayFormat,dateString,twoDigitNumber,weekDay,checkDateEqual,numberZh}

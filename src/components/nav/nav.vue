@@ -52,11 +52,11 @@
         type: Array,
         required: true,
       },
+      currentNav:String,
     },
     data() {
       return {
         showUserMenu: false,
-        currentNav:'news',
         userInfo: {
           'userid': 1,
           'username': '小明',
@@ -70,7 +70,6 @@
         this.showUserMenu = !this.showUserMenu
       },
       switchNav(nav){
-        this.currentNav = nav.key
         this.$emit('switchNav', nav)
       }
     }

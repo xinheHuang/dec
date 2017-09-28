@@ -50,10 +50,21 @@ body{
   border-color:  transparent #e2dddd transparent transparent;
 }
 
+.tooltip[x-placement='bottom']{
+  margin-top: 15px;
+}
+
+.tooltip[x-placement='bottom'] .tooltip-inner::after{
+  border-color:   transparent transparent #e2dddd  transparent;
+  top: calc(-50% + 5px); /* At the bottom of the tooltip */
+  left: calc(50% + 5px);
+}
+
 .tooltip[aria-hidden='true'] {
    visibility: hidden;
    opacity: 0;
    transition: opacity .15s, visibility .15s;
+
  }
 
 .tooltip[aria-hidden='false'] {

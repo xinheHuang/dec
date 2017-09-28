@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <nav-menu :navs="navs"
+              :currentNav="currentNav"
               @switchNav="changeNav"></nav-menu>
     <div class="content">
       <router-view></router-view>
@@ -12,8 +13,8 @@
                    @close="showArticleModal = false">
     </article-modal>
     <schedule-modal v-if="showScheduleModal"
-                   :schedule="schedule"
-                   @close="showScheduleModal = false">
+                    :schedule="schedule"
+                    @close="showScheduleModal = false">
     </schedule-modal>
   </div>
 </template>
@@ -43,33 +44,51 @@
           {
             key: 'market',
             name: '市场'
+          },
+          {
+            key: 'graph',
+            name: '思维导图'
           }
         ],
         showArticleModal: false,
-        articleID:null,
-
+        articleID: null,
+        currentNav: null,
         showScheduleModal: false,
-        schedule:null
+        schedule: null,
 
       }
     },
     methods: {
       changeNav(nav) {
-        this.$router.push({name:nav.key})
+
+        let route = {
+          name: nav.key
+        }
+        if (nav.key === 'graph') {  //temp
+          route = {
+            ...route,
+            params: { id: 1 }
+          }
+        }
+        this.$router.push(route)
+        this.currentNav = nav.key
       }
     },
     created() {
+      console.log(this.$route)
+      this.currentNav = this.$route.name
       EventBus.$on('articleModal', articleID => {
         this.showArticleModal = true
-        this.articleID=articleID;
+        this.articleID = articleID
       })
 
       EventBus.$on('scheduleModal', schedule => {
-        console.log('schedule',schedule)
+        console.log('schedule', schedule)
         this.showScheduleModal = true
-        this.schedule=schedule;
+        this.schedule = schedule
       })
     },
+
     components: {
       navMenu,
       fixedTools,
