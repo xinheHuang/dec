@@ -324,7 +324,7 @@
         EventBus.$emit('scheduleModal', schedule)
       },
       getTime(date) {
-        return `${twoDigitNumber(date.getUTCHours())}:${twoDigitNumber(date.getMinutes())}`
+        return `${twoDigitNumber(date.getHours())}:${twoDigitNumber(date.getMinutes())}`
       },
       tabChanged(menu) {
         this.searchResult = null
