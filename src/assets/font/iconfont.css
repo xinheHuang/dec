@@ -15,9 +15,9 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-setting1:before { content: "\e65e"; }
+/*.icon-setting1:before { content: "\e65e"; }*/
 
-.icon-personal:before { content: "\e617"; }
+/*.icon-personal:before { content: "\e617"; }*/
 
 .icon-search:before { content: "\e63e"; }
 

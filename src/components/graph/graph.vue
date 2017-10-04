@@ -25,10 +25,10 @@
         </select>
       </div>
       <div class="save-op">
-        <span @Click>
+        <span @click="save()">
           保存
         </span>
-        <span @Click
+        <span @click="submit()"
               v-tooltip.bottom="{content:'将此版图谱记录为历史版本'}">
           提交
         </span>
@@ -41,8 +41,7 @@
            class="left-op"
       >
         <img :src="require('../../assets/images/plus.png')"
-             @mousedown="handleButton($event)"
-             @mouseup="handleButton($event)"
+             v-button
              @click="zoomIn()"/>
         <input type="range"
                style="-webkit-appearance: slider-vertical;writing-mode: bt-lr"
@@ -53,15 +52,13 @@
                @change="changeZoom()"
                v-model="currentZoom"/>
         <img :src="require('../../assets/images/minus.png' )"
-             @mousedown="handleButton($event)"
-             @mouseup="handleButton($event)"
+             v-button
              @click="zoomOut()"/>
         <img :src="require('../../assets/images/drag.png')"
              :class="{'selected':isDrag}"
              @click="toggleDrag"/>
         <img :src="require('../../assets/images/position.png')"
-             @mousedown="handleButton($event)"
-             @mouseup="handleButton($event)"
+             v-button
              @click="goCenter()"
         />
         <img :src="require('../../assets/images/eye.png')"
@@ -69,8 +66,9 @@
              @click="showThumbnail"/>
       </div>
       <div class="thumbnail"
-           id="thumbnail"
-           v-show="showThumb">
+
+             v-show="showThumb">
+        <img :src="thumbSrc" width="auto" height="100%" >
       </div>
     </div>
 
@@ -82,7 +80,7 @@
   import jsMind from 'jsmind'
   import 'jsmind/style/jsmind.css'
   import VTooltip from 'v-tooltip'
-  import {numberZh} from '../../utils'
+  import { numberZh } from '../../utils'
   import '../../assets/js/html2canvas'
   import '../../assets/js/jquery-ui-1.12.1.custom/jquery-ui.min'
   import EventBus from '../../eventBus'
@@ -91,6 +89,8 @@
   export default {
     data() {
       return {
+        thumbSrc:null,
+        jsMindContainer: null,
         id: null,
         jm: null,
         zoomOutDisabled: false,
@@ -103,17 +103,40 @@
       }
     },
     methods: {
-      handleButton(e){
-        const target=$(e.target)
-        if (e.type==='mousedown'){
-          target.addClass('selected')
-        }else{
-          target.removeClass('selected')
-        }
+      save(){
+        console.log(this.jm)
+        const nodes=Object.keys(this.jm.mind.nodes).map((id)=>{
+          const node=this.jm.mind.nodes[id];
+          console.log(node);
+          return {
+            NID:id,
+            title:node.topic,
+            direction:node.direction==-1?'left':'right',
+            GID:this.id,
+            FNID:node.isroot?0:node.parent.id
+          }
+        })
+        console.log(nodes);
+        this.$http.post(`/api/graph`,{
+          nodes,
+          graph:{
+            GID:this.id,  //todo create or update?
+            entity:this.graph.entity,
+            company:'company', //todo
+            author: 'author'
+          }
+        }).then(res=>{
+          console.log(res.data);
+        })
       },
-      goCenter(){
-        $(".jsmind-inner").animate({"left":"0" ,"top":"0"})
-        this.updateThumbnail()
+      update(){
+
+      },
+      goCenter() {
+        $(".jsmind-inner")
+          .animate({ "left": "0", "top": "0" },()=>{
+            this.updateThumbnail()
+          })
       },
 
       toggleDrag() {
@@ -122,37 +145,43 @@
         if (this.isDrag)
           $(".jsmind-inner")
             .draggable({
-                         stop: () => {
-                           this.updateThumbnail()
-                         }
-                       })
+              stop: () => {
+                this.updateThumbnail()
+              }
+            })
         else
           $(".jsmind-inner")
             .draggable('destroy')
       },
       handleClick() {
+        console.log(this.jm.get_selected_node())
         this.updateThumbnail()
       },
       showThumbnail() {
         this.showThumb = !this.showThumb
-        this.updateThumbnail();
+        this.updateThumbnail()
       },
       updateThumbnail() {
         if (this.showThumb) {
-          html2canvas(document.getElementById('jsmind_container'), {
-            onrendered: function (canvas) {
-              var extra_canvas = document.createElement("canvas")
-              extra_canvas.setAttribute('width', 150)
-              extra_canvas.setAttribute('height', 90)
-              var ctx = extra_canvas.getContext('2d')
-              ctx.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, 150, 90)
-              var dataURL = extra_canvas.toDataURL()
-              var img = $(document.createElement('img'))
-              img.attr('src', dataURL)
-              $('#thumbnail')
-                .html(img)
-            }
-          })
+//          html2canvas(this.jsMindContainer, {
+//            onrendered: function (canvas) {
+//              var extra_canvas = document.createElement("canvas")
+//              extra_canvas.setAttribute('width', 150)
+//              extra_canvas.setAttribute('height', 90)
+//              var ctx = extra_canvas.getContext('2d')
+//              ctx.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, 150, 90)
+//              var dataURL = extra_canvas.toDataURL()
+//              var img = $(document.createElement('img'))
+//              img.attr('src', dataURL)
+//              $('#thumbnail')
+//                .html(img)
+//            }
+//          })
+          html2canvas(this.jsMindContainer)
+            .then((canvas) => {
+//            $('.thumbnail').append(canvas)
+              this.thumbSrc = canvas.toDataURL()
+            })
         }
       },
       removeNode() {
@@ -225,67 +254,71 @@
       const options = {                   // options 将在下一章中详细介绍
         container: 'jsmind_container', // [必选] 容器的ID，或者为容器的对象
         editable: true,                // [可选] 是否启用编辑
-        theme: 'primary',                // [可选] 主题
+        theme: 'primary', // [可选] 主题
+        shortcut: {
+          enable: false
+        }
       }
       this.jm = new jsMind(options)
 
 
       this.id = this.$route.params.id
-      const {id} = this
+      const { id } = this
       this.$http.get(`/api/graph/${id}`)
-          .then(res => {
-            this.graph = res.data
-            console.log(this.graph)
-            this.nodes = this.graph.graph_nodes.map(({title, FNID, direction, NID}) => {
-              return {
-                id: NID,
-                isroot: FNID === 0,
-                parentid: FNID,
-                topic: title,
-                direction
-              }
-            })
-            const mind = {
-              /* 元数据，定义思维导图的名称、作者、版本等信息 */
-              'meta': {
-                'name': 'example',
-                'author': 'hizzgdev@163.com',
-                'version': '0.2'
-              },
-              /* 数据格式声明 */
-              'format': 'node_array',
-              /* 数据内容 */
-              'data': this.nodes
+        .then(res => {
+          this.graph = res.data
+          console.log(this.graph)
+          this.nodes = this.graph.graph_nodes.map(({ title, FNID, direction, NID }) => {
+            return {
+              id: NID,
+              isroot: FNID == 0,
+              parentid: FNID,
+              topic: title,
+              direction
             }
-            this.jm.show(mind)
-            this.jm.begin_edit=function(node){
-              if(!jsMind.util.is_node(node)){
-                var the_node = this.get_node(node);
-                if(!the_node){
-                  logger.error('the node[id='+node+'] can not be found.');
-                  return false;
-                }else{
-                  return this.begin_edit(the_node);
-                }
-              }
-              if(this.get_editable()){
-                console.log(node);
-                EventBus.$emit('nodeModal',node)
-              }else{
-                logger.error('fail, this mind map is not editable.');
-                return;
-              }
-            },
-
-            console.log(this.jm.dblclick_handle);
-            this.updateThumbnail()
           })
+          const mind = {
+            /* 元数据，定义思维导图的名称、作者、版本等信息 */
+            'meta': {
+              'name': 'example',
+              'author': 'hizzgdev@163.com',
+              'version': '0.2'
+            },
+            /* 数据格式声明 */
+            'format': 'node_array',
+            /* 数据内容 */
+            'data': this.nodes
+          }
+          this.jm.show(mind)
+          this.jm.begin_edit = function (node) {
+            if (!jsMind.util.is_node(node)) {
+              var the_node = this.get_node(node)
+              if (!the_node) {
+                logger.error('the node[id=' + node + '] can not be found.')
+                return false
+              } else {
+                return this.begin_edit(the_node)
+              }
+            }
+            if (this.get_editable()) {
+              console.log(node)
+              EventBus.$emit('nodeModal', node)
+            } else {
+              logger.error('fail, this mind map is not editable.')
+              return
+            }
+          },
+
+            console.log(this.jm.dblclick_handle)
+          this.updateThumbnail()
+        })
 
       EventBus.$on('nodeModalClose', (node) => {
-        this.jm.update_node(node.id,node.topic);
+        this.jm.update_node(node.id, node.topic)
       })
 
-      $('#jsmind_container').css('height',$('.content').height()-$('.top-op').height())
+      this.jsMindContainer = $('#jsmind_container')
+//      this.jsMindContainer.css('height',window.innerHeight-40-$('.top-op').height())
     }
   }
 </script>
@@ -295,8 +328,8 @@
   #graph {
     #jsmind_container {
       width: 100%;
-      /*height: 800px;*/
-      height: 100%;
+      height: 600px;
+      /*height: 100%;*/
       border: solid 1px #ccc;
       /*background:#f4f4f4;*/
       background: #f4f4f4;
@@ -353,7 +386,7 @@
         width: 30px;
         padding: 5px;
         opacity: 0.4;
-        &.selected{
+        &.selected {
           opacity: 1;
         }
       }
@@ -363,7 +396,7 @@
       position: absolute;
       bottom: 35px;
       left: 60px;
-      width: 150px;
+      /*width: 150px;*/
       height: 90px;
       border: 1px solid #ccc;
       /*display: none;*/

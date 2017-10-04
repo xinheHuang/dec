@@ -15,17 +15,26 @@
                   v-show="!editTopic">
                 {{node.topic}}
               </h3>
-              <div v-show="editTopic">
-                <input v-model="tempTopic" style="font-size: 16px">
-                <button @click="saveTopic()" style="font-size: 12px">保存</button>
-              </div>
-              <transition name="fade">
-                <div style="position: absolute;top: 0;right: 50px;display: flex;align-items: center" v-show="showSuccessTip">
-                  <img :src="require('../../../assets/images/sign-check-icon.png')"
-                       style="width: 20px;height: 20px">
-                  <span style="margin-left: 20px">{{saveText}}成功!</span>
+              <div v-show="editTopic"
+                   class="edit-topic">
+                <input v-model="tempTopic">
+                <div class="icon" @click="saveTopic()" v-button>
+                  <icon name="save"/>
                 </div>
-              </transition>
+              </div>
+              <div style="position: absolute;top: 0;right: 50px;">
+                <transition name="fade">
+                  <div style="display: flex;align-items: center"
+                       v-show="showSuccessTip">
+                    <img :src="require('../../../assets/images/sign-check-icon.png')"
+                         style="width: 20px;height: 20px">
+                    <span style="margin-left: 20px">{{saveText}}成功!</span>
+                  </div>
+                </transition>
+                <div v-show="isSaving">
+                  <span>{{savingText}}中...</span>
+                </div>
+              </div>
             </div>
             <!--<div class="divider"></div>-->
           </div>
@@ -34,7 +43,9 @@
             <content-nav :menus="menu"
                          :enableSearch="false"
                          @switchTab="tabChanged"></content-nav>
-            <component :is="currentTab" :node="node" :saved="saveComment"></component>
+            <component :is="currentTab" :node="node"
+                       :saving="saving"
+                       :saved="saved" ></component>
           </div>
 
         </div>
@@ -50,7 +61,8 @@
   import comment from './comment.vue'
   import indicator from './indicator.vue'
 
-  import {dateFormat} from '../../../utils'
+  import { dateFormat } from '../../../utils'
+  import 'vue-awesome/icons/save'
 
   export default {
     props: {
@@ -67,36 +79,46 @@
         ],
         editTopic: false,
         tempTopic: null,
-        showSuccessTip:false,
-        timeout:null,
-        currentTab:null,
-        saveText:null,
+        showSuccessTip: false,
+        timeout: null,
+        currentTab: null,
+        saveText: null,
+        isSaving: false,
+        savingText: null,
       }
     },
     methods: {
-      tabChanged(menu){
+      tabChanged(menu) {
         this.currentTab = menu.key
       },
       dateFormat,
-      showSuccess(text){
-        if (this.timeout){
+      showSuccess(text) {
+        if (this.timeout) {
           clearTimeout(this.timeout)
         }
-        this.showSuccessTip=true;
-        this.saveText=text;
-        this.timeout=setTimeout(()=>{
-          this.showSuccessTip=false
-          this.timeout=null;
-        },2000)
+        this.isSaving = false
+        this.showSuccessTip = true
+        this.saveText = text
+        this.timeout = setTimeout(() => {
+          this.showSuccessTip = false
+          this.timeout = null
+        }, 2000)
       },
-      saveComment(){
-        this.showSuccess('发表')
+      saving(text) {
+        this.savingText = text
+        this.isSaving = true
       },
+      saved(text) {
+        this.showSuccess(text)
+      },
+//      saveIndicator() {
+//        this.showSuccess('保存')
+//      },
       saveTopic() {
         if (this.tempTopic) {
           this.node.topic = this.tempTopic
-          this.editTopic = false;
-         this.showSuccess('修改');
+          this.editTopic = false
+          this.showSuccess('修改')
         }
         else {
           alert('topic 不能为空')
@@ -104,21 +126,45 @@
       }
 
     },
-    beforeDestroy(){
-      if (this.timeout){
+    beforeDestroy() {
+      if (this.timeout) {
         clearTimeout(this.timeout)
       }
     },
-    components:{
+    components: {
       contentNav,
       comment,
       indicator,
-    }
+    },
+
   }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style lang="less" scoped>
+
+  .edit-topic {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: nowrap;
+    > input {
+      font-size: 16px;
+      margin-right: 15px
+    }
+    .icon {
+      > * {
+        height: 20px;
+        width: auto;
+        color: #ccc;
+      }
+      &.selected {
+        > * {
+          color: black;
+        }
+      }
+    }
+  }
 
   .close {
     display: flex;
@@ -203,6 +249,7 @@
   .fade-enter-active, .fade-leave-active {
     transition: opacity .5s
   }
+
   .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
     opacity: 0
   }

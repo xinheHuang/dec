@@ -22,6 +22,9 @@
              style="margin: 0 10px"></div>
         <div>
           <div style="display: flex;align-items: center">
+            <!--<div>-->
+              <!--<icon name="plus-circle" class="iconplus"></icon>-->
+            <!--</div>-->
             <span class="iconplus icon-plus-circle">     </span>
             <span style="margin-left: 20px;flex-grow: 1;word-break: break-all"
                   ref="title">
@@ -29,6 +32,7 @@
             </span>
           </div>
           <div style="display: flex;align-items: center">
+            <!--<icon name="minus-circle" class="iconminus"></icon>-->
             <span class="iconplus icon-minus-circle">     </span>
             <p style="margin-left: 20px;flex-grow: 1;word-break: break-all"
                ref="title">
@@ -46,9 +50,11 @@
   import Vue from 'vue'
   import '../../../../assets/font/plus/style.css'
   import EventBus from '../../../../eventBus'
-  import {dateFormat, dotString} from '../../../../utils'
+  import { dateFormat, dotString } from '../../../../utils'
   import '../../../../utils/clamp.min'
   import VTooltip from 'v-tooltip'
+  import 'vue-awesome/icons/plus-circle'
+  import 'vue-awesome/icons/minus-circle'
 
   Vue.use(VTooltip)
   export default {
@@ -67,18 +73,19 @@
         return this.companyList.articles.map((article, index, arr) => {
           const currentSet = new Set(article.recommends.map((recommend) => recommend.relatoin.name))
           const prevSet = index === arr.length - 1 ? new Set() :
-                          new Set(arr[index + 1].recommends.map((recommend) => recommend.relatoin.name))
+            new Set(arr[index + 1].recommends.map((recommend) => recommend.relatoin.name))
           return {
             ...article,
             plus: [...currentSet].filter(x => !prevSet.has(x))
-                                 .reduce(
-                                   (prev, x) => `${prev}${prev && ','}${x}`,
-                                   ''),
+              .reduce(
+                (prev, x) => `${prev}${prev && ','}${x}`,
+                ''),
             minus: [...prevSet].filter(x => !currentSet.has(x))
-                               .reduce((prev, x) => `${prev}${prev && ','}${x}`,
-                                       '')
+              .reduce((prev, x) => `${prev}${prev && ','}${x}`,
+                '')
           }
-        }).filter((article) => article.plus || article.minus)
+        })
+          .filter((article) => article.plus || article.minus)
       },
 
       toolTipText() {
@@ -109,21 +116,21 @@
       getDiffRecommends: function (article, index) {
         const currentSet = new Set(article.recommends.map((recommend) => recommend.relatoin.name))
         const prevSet = index === this.companyList.articles.length - 1 ? new Set() :
-                        new Set(this.companyList.articles[index + 1].recommends.map((recommend) => recommend.relatoin.name))
+          new Set(this.companyList.articles[index + 1].recommends.map((recommend) => recommend.relatoin.name))
         return {
           plus: [...currentSet].filter(x => !prevSet.has(x))
-                               .reduce((prev, x) => `${prev}${prev && ','}${x}`,
-                                       ''),
+            .reduce((prev, x) => `${prev}${prev && ','}${x}`,
+              ''),
           minus: [...prevSet].filter(x => !currentSet.has(x))
-                             .reduce((prev, x) => `${prev}${prev && ','}${x}`,
-                                     '')
+            .reduce((prev, x) => `${prev}${prev && ','}${x}`,
+              '')
         }
       }
     },
     mounted() {
       if (this.$refs.title) {
         this.$refs.title.forEach((el) => {
-          $clamp(el, {clamp: 2})
+          $clamp(el, { clamp: 2 })
         })
       }
     },
@@ -133,10 +140,12 @@
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 
-  .iconplus {
+  .iconplus, .iconminus {
     padding: 10px;
     color: #6b6868;
-    font-size: 20px
+    font-size: 20px;
+    /*height: 20px;*/
+    /*width: 20px;*/
   }
 
   .key {

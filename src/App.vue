@@ -101,6 +101,7 @@
       })
 
       EventBus.$on('nodeModal', node => {
+//        console.log('nodemodal')
         this.showNodeModal = true
         this.node = node
       })
@@ -119,11 +120,11 @@
   }
 </script>
 
-<style scoped="">
+<style scoped>
   .content {
     /*background: #f6f6f6;*/
     width: 1280px;
-    height: 45rem;
+    /*height: calc(100% - 40px);*/
     margin: 0 auto;
     margin-top: .6rem;
   }

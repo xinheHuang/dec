@@ -59,6 +59,7 @@
     props: {
       node: Object,
       saved: Function,
+//      saving:Function,
     },
     data() {
       return {
@@ -104,7 +105,7 @@
             content: this.editor.getValue()
           })
             .then((res) => {
-              this.saved()
+              this.saved('发表')
               this.comments.unshift(res.data);
               this.saving = false
             })

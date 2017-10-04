@@ -15,8 +15,8 @@
               </h3>
             </div>
             <div class="info">
-              <span><span class="icon-calendar-o iconcalendar" />{{dateFormat(new Date(schedule.riqi_detail))}}</span>
-              <span><span class="iconfont icon-personal" />{{schedule.author}}</span>
+              <span><icon name="calendar-o" /><span>{{dateFormat(new Date(schedule.riqi_detail))}}</span></span>
+              <span><icon name="user"/><span>{{schedule.author}}</span></span>
             </div>
             <div class="divider"></div>
           </div>
@@ -34,6 +34,8 @@
 </template>
 
 <script>
+  import 'vue-awesome/icons/user'
+  import 'vue-awesome/icons/calendar-o'
   import '../../../assets/font/calendar/style.css'
   import '../../../assets/font/close/style.css'
   import { dateFormat } from '../../../utils'
@@ -52,7 +54,7 @@
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style lang="less" scoped>
 
   .close {
     display: flex;
@@ -69,12 +71,15 @@
     justify-content: center;
     color: #6b6868;
     font-size: 14px;
-  }
-
-  .info span {
-    padding: 10px;
-    line-height: 20px;
-    vertical-align: bottom;
+    margin-bottom: 5px;
+    >span {
+      display: flex;
+      align-items: center;
+      margin-right: 20px;
+      >span{
+        margin-left: 10px;
+      }
+    }
   }
 
   .modal-mask {

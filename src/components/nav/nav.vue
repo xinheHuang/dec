@@ -24,13 +24,13 @@
              class="user__menu">
           <ul>
             <a href="">
-              <li><i class="iconfont icon-personal"></i>我的主页</li>
+              <li><icon class='icon' name="user"></icon><span>我的主页</span></li>
             </a>
             <a href="">
-              <li><i class="iconfont icon-setting1"></i>设置</li>
+              <li><icon class='icon' name="cog"></icon><span>设置</span></li>
             </a>
             <a href="">
-              <li><i class="iconfont icon-power"></i>退出</li>
+              <li><icon class='icon' name="power-off"></icon><span>退出</span></li>
             </a>
           </ul>
         </div>
@@ -46,6 +46,9 @@
 </template>
 
 <script>
+  import 'vue-awesome/icons/cog'
+  import 'vue-awesome/icons/user'
+  import 'vue-awesome/icons/power-off'
   export default {
     props: {
       navs: {
@@ -84,7 +87,7 @@
   .header {
     background: #000;
     color: #fff;
-    height: 2.5rem;
+    height: 40px;
     box-shadow: 0 2px 5px #888888;
     padding-left: 9rem;
     padding-right: 2rem;
@@ -187,12 +190,14 @@
 
   .user__menu li {
     list-style-type: none;
+    display: flex;
     font-size: 15px;
+    align-items: center;
   }
 
-  .user__menu i {
-    float: left;
-    margin: 0 3px;
+  .user__menu .icon {
+    margin: 0 5px;
+    height: 15px;
     color: #9eacc6;
   }
 </style>

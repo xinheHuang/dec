@@ -10,13 +10,18 @@
           {{menu.name}}
         </li>
       </ul>
-      <div v-if="enableSearch" class="content__search">
-        <i class="iconfont icon-search"></i>
+      <div v-if="enableSearch" class="search">
+
         <input type="text"
-               name="search"
+               class="search-input"
                placeholder="搜索快讯"
                v-model="searchStr"
-               @keypress="searchInContent">
+               @keypress="searchInContent($event)">
+        <div class="search-img" @click="searchInContent()">
+          <icon name="search"/>
+        </div>
+        <!--<i class="iconfont icon-search"></i>-->
+
       </div>
     </nav>
     <nav v-if="showSubMenu"
@@ -40,11 +45,11 @@
         required: true,
       },
       dataObj: null,
-      enableSearch:{
-        type:Boolean,
-        default:true,
+      enableSearch: {
+        type: Boolean,
+        default: true,
       },
-      searchMethod:Function,
+      searchMethod: Function,
     },
     data() {
       return {
@@ -57,13 +62,13 @@
     },
     methods: {
       switchSubMenu(menu) {
-        if (this.selectedSubMenu===menu.key) return
+        if (this.selectedSubMenu === menu.key) return
         this.selectedSubMenu = menu.key
         this.$emit('switchTab', menu)
       },
 
       switchTab(menu) {
-        if (this.selected===menu.key) return;
+        if (this.selected === menu.key) return
         this.showSubMenu = !!menu.subMenu
         this.selected = menu.key
         if (this.showSubMenu) {
@@ -74,25 +79,55 @@
         this.$emit('switchTab', menu)
       },
       searchInContent(event) {
-        if (event.keyCode === 13) {
-          const researchRes=this.searchMethod(this.searchStr,this.selected,this.dataObj)
+        console.log('search')
+        if (!event || event.keyCode === 13) {
+          const researchRes = this.searchMethod(this.searchStr, this.selected, this.dataObj)
           this.$emit('search', researchRes)
         }
       },
     },
-    mounted(){
-      this.switchTab( this.menus[0])
+    mounted() {
+      this.switchTab(this.menus[0])
     }
   }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style scoped lang="less">
   .content__nav {
     background-color: #fff;
     height: 2.5rem;
     line-height: 2.5rem;
     margin-bottom: 4px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .search {
+    /*display: flex;*/
+    margin-right: 10px;
+    position: relative;
+  }
+
+  .search-input {
+    flex-grow: 1;
+    /*width: 100%;*/
+    border-radius: 5px;
+    border: solid 1px black;
+    height: 20px;
+    font-size: 14px;
+    padding: 5px 10px;
+  }
+
+  .search-img {
+    position: absolute;
+    >*s {
+      height: 20px;
+    }
+    right: 10px;
+    top: 5px;
   }
 
   .content__search {

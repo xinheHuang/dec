@@ -17,16 +17,15 @@
                 </h3>
               </div>
               <div class="info">
-                <span><span class="icon-calendar-o iconcalendar" />{{dateFormat(new Date(article.riqi))}}</span>
-                <span><span class="iconfont icon-personal" />{{article.author}}</span>
-                <span><span class="iconcalendar icon-eye" />{{article.num_read}}</span>
-                <span><span style="font-size: 12px"
-                            class="iconfont icon-like" />{{article.num_like}}</span>
+                <span><icon name="calendar-o"/><span>{{dateFormat(new Date(article.riqi))}}</span></span>
+                <span><icon name="user"/><span>{{article.author}}</span></span>
+                <span><icon name="eye"/><span>{{article.num_read}}</span></span>
+                <span><icon name="heart"/><span>{{article.num_like}}</span></span>
               </div>
               <div class="divider"></div>
             </div>
 
-            <div class="modal-body" >
+            <div class="modal-body">
               <div v-html="article.content"></div>
             </div>
           </div>
@@ -37,6 +36,10 @@
 </template>
 
 <script>
+  import 'vue-awesome/icons/eye'
+  import 'vue-awesome/icons/calendar-o'
+  import 'vue-awesome/icons/user'
+  import 'vue-awesome/icons/heart'
   import '../../../assets/font/calendar/style.css'
   import '../../../assets/font/close/style.css'
   import { dateFormat } from '../../../utils'
@@ -66,7 +69,7 @@
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style scoped lang="less">
 
   .close {
     display: flex;
@@ -83,12 +86,18 @@
     justify-content: center;
     color: #6b6868;
     font-size: 14px;
-  }
+    margin-bottom: 5px;
 
-  .info span {
-    padding: 10px;
-    line-height: 20px;
-    vertical-align: bottom;
+    > span {
+      display: flex;
+      align-items: center;
+      margin-right: 20px;
+
+      > span {
+        margin-left: 10px;
+      }
+
+    }
   }
 
   .modal-mask {
@@ -126,7 +135,7 @@
 
   .modal-body {
     margin: 20px 0;
-    max-height: 300px;
+    max-height: 200px;
     overflow-y: auto;
   }
 
