@@ -40,15 +40,16 @@
       <div v-if="jm"
            class="left-op"
       >
+        <!--{{currentZoom}}-->
         <img :src="require('../../assets/images/plus.png')"
              v-button
              @click="zoomIn()"/>
         <input type="range"
                style="-webkit-appearance: slider-vertical;writing-mode: bt-lr"
-               min="0.5"
-               max="2"
+               :min="jm.view.minZoom"
+               :max="jm.view.maxZoom"
                orient="vertical"
-               step="0.1"
+               :step="jm.view.zoomStep"
                @change="changeZoom()"
                v-model="currentZoom"/>
         <img :src="require('../../assets/images/minus.png' )"
@@ -67,8 +68,8 @@
       </div>
       <div class="thumbnail"
 
-             v-show="showThumb">
-        <img :src="thumbSrc" width="auto" height="100%" >
+           v-show="showThumb">
+        <img :src="thumbSrc" width="auto" height="100%">
       </div>
     </div>
 
@@ -89,52 +90,59 @@
   export default {
     data() {
       return {
-        thumbSrc:null,
+        thumbSrc: null,
         jsMindContainer: null,
         id: null,
         jm: null,
         zoomOutDisabled: false,
         zoomInDisabled: false,
         currentZoom: 1,
+        maxZoom:2,
+        minZoom:0.5,
+        zoomStep:0.1,
         selected: '',
+        currX:0,
+        currY:0,
         showThumb: false,
         isDrag: false,
         numberZh,
       }
     },
     methods: {
-      save(){
+      save() {
         console.log(this.jm)
-        const nodes=Object.keys(this.jm.mind.nodes).map((id)=>{
-          const node=this.jm.mind.nodes[id];
-          console.log(node);
-          return {
-            NID:id,
-            title:node.topic,
-            direction:node.direction==-1?'left':'right',
-            GID:this.id,
-            FNID:node.isroot?0:node.parent.id
-          }
-        })
-        console.log(nodes);
-        this.$http.post(`/api/graph`,{
+        const nodes = Object.keys(this.jm.mind.nodes)
+          .map((id) => {
+            const node = this.jm.mind.nodes[id]
+            console.log(node)
+            return {
+              NID: id,
+              title: node.topic,
+              direction: node.direction == -1 ? 'left' : 'right',
+              GID: this.id,
+              FNID: node.isroot ? 0 : node.parent.id
+            }
+          })
+        console.log(nodes)
+        this.$http.post(`/api/graph`, {
           nodes,
-          graph:{
-            GID:this.id,  //todo create or update?
-            entity:this.graph.entity,
-            company:'company', //todo
+          graph: {
+            GID: this.id,  //todo create or update?
+            entity: this.graph.entity,
+            company: 'company', //todo
             author: 'author'
           }
-        }).then(res=>{
-          console.log(res.data);
         })
+          .then(res => {
+            console.log(res.data)
+          })
       },
-      update(){
+      update() {
 
       },
       goCenter() {
         $(".jsmind-inner")
-          .animate({ "left": "0", "top": "0" },()=>{
+          .animate({ "left": "0", "top": "0" }, () => {
             this.updateThumbnail()
           })
       },
@@ -142,19 +150,37 @@
       toggleDrag() {
         console.log('drag')
         this.isDrag = !this.isDrag
-        if (this.isDrag)
-          $(".jsmind-inner")
-            .draggable({
-              stop: () => {
-                this.updateThumbnail()
-              }
-            })
-        else
-          $(".jsmind-inner")
-            .draggable('destroy')
+        const inner = $(".jsmind-inner")
+        if (this.isDrag) {
+          let startDrag = false
+          let startX, startY;
+          let originTransform
+          inner.mousedown((event) => {
+            startDrag = true
+            startX = this.currX - event.clientX
+            startY = this.currY - event.clientY
+            originTransform = inner.children('canvas')[0].style.transform
+          })
+          inner.mousemove((event) => {
+            if (startDrag) {
+              inner.children()
+                .css('transform', `translate(${ event.clientX + startX}px,${ event.clientY + startY}px)`+originTransform.replace(/translate\(.*?\)/, '') )
+            }
+          })
+          inner.mouseup((event) => {
+            console.log('stop drag')
+            startDrag = false
+            this.currX = +event.clientX + startX
+            this.currY = +event.clientY + startY
+            this.updateThumbnail()
+          })
+        }
+        else {
+          inner.unbind()
+        }
       },
       handleClick() {
-        console.log(this.jm.get_selected_node())
+//        console.log(this.jm.get_selected_node())
         this.updateThumbnail()
       },
       showThumbnail() {
@@ -199,28 +225,28 @@
         this.updateThumbnail()
       },
       changeZoom() {
-        this.jm.view.setZoom(this.currentZoom)
+        this.jm.view.setZoom(+this.currentZoom)
         this.updateThumbnail()
       },
       zoomIn() {
-        console.log(this)
-        let i = this.jm.view.zoomIn()
-        console.log(this.jm.view, i)
-        if (i) {
-          this.zoomOutDisabled = false
-        } else {
-          this.zoomInDisabled = true
-        }
-        this.currentZoom = this.jm.view.actualZoom
+//        let i = this.jm.view.zoomIn()
+//        if (i) {
+//          this.zoomOutDisabled = false
+//        } else {
+//          this.zoomInDisabled = true
+//        }
+        this.jm.view.zoomIn()
+        this.currentZoom = +this.jm.view.actualZoom
         this.updateThumbnail()
       },
       zoomOut() {
-        if (this.jm.view.zoomOut()) {
-          this.zoomInDisabled = false
-        } else {
-          this.zoomOutDisabled = true
-        }
-        this.currentZoom = this.jm.view.actualZoom
+//        if (this.jm.view.zoomOut()) {
+//          this.zoomInDisabled = false
+//        } else {
+//          this.zoomOutDisabled = true
+//        }
+        this.jm.view.zoomOut()
+        this.currentZoom = +this.jm.view.actualZoom
         this.updateThumbnail()
       },
       addChildNode() {
@@ -313,12 +339,31 @@
           this.updateThumbnail()
         })
 
+      this.jm.view.setZoom = function (zoom) {
+        console.log(zoom)
+        if ((zoom < this.minZoom-0.0001) || (zoom > this.maxZoom+0.0001)) {
+          return false
+        }
+        console.log('set ',zoom)
+        this.actualZoom = zoom
+        for (var i = 0; i < this.e_panel.children.length; i++) {
+          const transform = this.e_panel.children[i].style.transform
+//          console.log(transform.replace(/scale\(.*?\)/, '') + `scale(${zoom})`)
+          this.e_panel.children[i].style.transform = transform.replace(/scale\(.*?\)/, '') + `scale(${zoom})`
+        }
+
+        this.show(true)
+        return true
+
+      }
       EventBus.$on('nodeModalClose', (node) => {
         this.jm.update_node(node.id, node.topic)
       })
 
       this.jsMindContainer = $('#jsmind_container')
 //      this.jsMindContainer.css('height',window.innerHeight-40-$('.top-op').height())
+
+
     }
   }
 </script>
@@ -330,10 +375,14 @@
       width: 100%;
       height: 600px;
       /*height: 100%;*/
+      /*position: absolute;*/
       border: solid 1px #ccc;
       /*background:#f4f4f4;*/
       background: #f4f4f4;
+      overflow: hidden;
+      /*z-index: 9;*/
       .jsmind-inner {
+        /*z-index: 3;*/
         overflow: hidden;
       }
     }
