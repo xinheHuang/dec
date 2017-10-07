@@ -36,26 +36,41 @@ const dotString = (s, maxLen) => {
 }
 
 
-const dateFormat=(date)=>{
+const dateFormat = (date) => {
   return `${date.getMonth() + 1}月${date.getDate()}日`
 }
 
-const twoDigitNumber=(number)=> ('0' + number).slice(-2)
+const twoDigitNumber = (number) => ('0' + number).slice(-2)
 
-const numberZh={
-  1:'一',2:'二',3:'三',4:'四',5:'五',6:'六',7:'七'
+const numberZh = {
+  1: '一',
+  2: '二',
+  3: '三',
+  4: '四',
+  5: '五',
+  6: '六',
+  7: '七'
 }
 
-const weekDay={
-  0:'日',1:'一',2:'二',3:'三',4:'四',5:'五',6:'六',
+const weekDay = {
+  0: '日',
+  1: '一',
+  2: '二',
+  3: '三',
+  4: '四',
+  5: '五',
+  6: '六',
 }
 
-const weekDayFormat=(date)=>{
-  return `周${weekDay[date.getDay()]}${twoDigitNumber(date.getMonth()+1)}/${twoDigitNumber(date.getDate())}`
+const weekDayFormat = (date) => {
+  return `周${weekDay[date.getDay()]}${twoDigitNumber(date.getMonth() + 1)}/${twoDigitNumber(date.getDate())}`
 }
 
-const dateString=(date)=> date.toISOString()
-                              .split('T')[0]
+const dateString = (date) => date.toISOString()
+                                 .split('T')[0]
 
-const checkDateEqual=(date1, date2)=> new Date(date1.toDateString()).valueOf() === new Date(date2.toDateString()).valueOf()
-export { dotString ,dateFormat,weekDayFormat,dateString,twoDigitNumber,weekDay,checkDateEqual,numberZh}
+const checkDateEqual = (date1, date2) => new Date(date1.toDateString()).valueOf() === new Date(date2.toDateString()).valueOf()
+
+const checkMobile = (mobile) => /^1\d{10}$/.test(mobile)
+
+export {dotString, dateFormat, weekDayFormat, dateString, twoDigitNumber, weekDay, checkDateEqual, numberZh, checkMobile}

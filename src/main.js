@@ -2,23 +2,24 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import router from './router'
-import App from './App.vue'
-import axios from 'axios'
+import App from './app.vue'
+import httpUtil from './utils/httpUtil'
 import './assets/styles/main.css'
 import './assets/font/iconfont.css'
 import './assets/styles/animate.css'
 import $ from 'jquery'
+import swal from 'sweetalert'
 import Icon from 'vue-awesome/components/Icon.vue'
 import Button from './directives/button'
-Vue.prototype.$http = axios
+
+Vue.prototype.swal = swal
+Vue.prototype.$http = httpUtil
 Vue.config.productionTip = false
 
+Vue.directive('button', Button)
 
 
-Vue.directive('button',Button)
-
-
-Vue.component('icon',Icon)
+Vue.component('icon', Icon)
 
 
 new Vue({
