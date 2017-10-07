@@ -5,7 +5,7 @@
         <img src="../../../static/logo.png"/>
         <h3 class="text"><span>熵</span><span style="margin-left: 20px">简</span></h3>
       </div>
-      <h3 style="text-align: center;color: rgb(217,217,217);font-weight: normal">专注智能投研辅助决策工具</h3>
+      <h3 style="text-align: center;color: rgb(217,217,217);font-weight: normal;font-size: 40dpx">专注智能投研辅助决策工具</h3>
       <div class="table">
         <div class="tab">
           <span :class="{selected:current=='login'}"
@@ -36,6 +36,7 @@
                    v-model="registerCompany"
                    type="text">
             <select v-model="registerPosition"
+                    :class="{selected:!registerPosition}"
                     style="padding-left: 5px">
               <option disabled
                       value=""> 您的职位
@@ -165,24 +166,26 @@
     height: 100%;
     width: 100%;
     background: url("../../assets/images/login_bg.jpg");
+    background-size: 100% 100%;
     display: flex;
-    align-items: center;
+    /*align-items: center;*/
     justify-content: center;
     .center {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      /*justify-content: center;*/
       .logo {
+        margin-top: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         img {
-          height: 40px;
+          height: 80px;
           width: auto;
         }
         .text {
-          font-size: 40px;
+          font-size: 80px;
           margin: 0 0 0 20px;
           color: @blue;
         }
@@ -222,13 +225,16 @@
               background: white;
               color: black;
             }
+            &.selected{
+              color: rgba(255, 255, 255, 0.5);
+            }
             white-space: normal;
             width: 100%;
             box-sizing: border-box;
             background: rgba(255, 255, 255, 0.1);
             padding: 10px;
             /*color: rgba(255,255,255,0.5);*/
-            color: rgba(255, 255, 255, 0.5);
+            color: rgba(255, 255, 255,1);
             &::placeholder {
               color: rgba(255, 255, 255, 0.5);
             }
