@@ -1,8 +1,6 @@
 <template>
-  <div id="main">
-    <nav-menu :navs="navs"
-              :currentNav="currentNav"
-              @switchNav="changeNav"></nav-menu>
+  <div id="main" @click="closeMenu()">
+    <nav-menu ></nav-menu>
     <div class="content">
       <router-view></router-view>
     </div>
@@ -38,24 +36,6 @@
   export default {
     data() {
       return {
-        navs: [
-          {
-            key: 'news',
-            name: '新闻'
-          },
-          {
-            key: 'calendar',
-            name: '日历'
-          },
-          {
-            key: 'market',
-            name: '市场'
-          },
-          {
-            key: 'graph',
-            name: '思维导图'
-          }
-        ],
         showArticleModal: false,
         articleID: null,
         currentNav: null,
@@ -63,32 +43,18 @@
         schedule: null,
         showNodeModal: false,
         node: null
-
       }
     },
     methods: {
-      changeNav(nav) {
-
-        let route = {
-          name: nav.key
-        }
-        if (nav.key === 'graph') {  //temp
-          route = {
-            ...route,
-            params: {id: 1}
-          }
-        }
-        this.$router.push(route)
-        this.currentNav = nav.key
-      },
       closeNodeModal(){
         this.showNodeModal = false
         EventBus.$emit('nodeModalClose',this.node);
+      },
+      closeMenu(){
+        EventBus.$emit('menuClose');
       }
     },
     created() {
-      console.log(this.$route)
-      this.currentNav = this.$route.name
       EventBus.$on('articleModal', articleID => {
         this.showArticleModal = true
         this.articleID = articleID
@@ -101,7 +67,6 @@
       })
 
       EventBus.$on('nodeModal', node => {
-//        console.log('nodemodal')
         this.showNodeModal = true
         this.node = node
       })
@@ -122,12 +87,11 @@
 
 <style scoped>
   #main{
-    padding-bottom: 20px;
+    /*padding-bottom: 20px;*/
+    height: 100%;
   }
   .content {
-    /*background: #f6f6f6;*/
-    width: 1280px;
-    /*height: calc(100% - 40px);*/
+    max-width: 1280px;
     margin: 0 auto;
     margin-top: .6rem;
   }

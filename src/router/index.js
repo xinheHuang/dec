@@ -6,6 +6,8 @@ import Calendar from '../components/main/calendar/calendar.vue'
 import Graph from '../components/main/graph/graph.vue'
 import Main from '../components/main/main.vue'
 import Login from '../components/login/login.vue'
+import Home from '../components/main/home/home.vue'
+import Profile from '../components/main/profile/profile.vue'
 
 Vue.use(Router)
 
@@ -23,9 +25,19 @@ export default new Router(
       },
       {
         path: '/main',
-        redirect: '/news',
+        redirect: '/home',
         component: Main,
         children: [
+          {
+            path: '/profile',
+            name: 'profile',
+            component: Profile
+          },
+          {
+            path: '/home',
+            name: 'home',
+            component: Home
+          },
           {
             path: '/news',
             name: 'news',
