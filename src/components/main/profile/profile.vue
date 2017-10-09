@@ -26,13 +26,16 @@
                    @switchTab="switchTab"
                    :enableSearch="false"/>
 
+      <component v-if="currentMenu" :is="currentMenu.key"></component>
+
     </div>
   </div>
 </template>
 
 <script>
   import contentNav from '../contentNav/contentNav.vue'
-
+  import graph from './mygraphs/my-graphs.vue'
+  import follow from './follow/follow.vue'
   export default {
     data() {
       return {
@@ -46,12 +49,13 @@
             key: 'graph',
             name: '我的图谱'
           }
-        ]
+        ],
+        currentMenu: null,
       }
     },
-    methods:{
-      switchTab(menu){
-        console.log(menu)
+    methods: {
+      switchTab(menu) {
+        this.currentMenu = menu
       }
     },
     mounted() {
@@ -64,7 +68,9 @@
           })
     },
     components: {
-      contentNav
+      contentNav,
+      graph,
+      follow
     }
   }
 </script>

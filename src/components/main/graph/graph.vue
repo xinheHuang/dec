@@ -94,6 +94,7 @@
 <script>
   import Vue from 'vue'
   import jsMind from 'jsmind'
+  import screenshot from 'jsmind/js/jsmind.screenshot'
   import 'jsmind/style/jsmind.css'
   import VTooltip from 'v-tooltip'
   import {numberZh} from '../../../utils/index'
