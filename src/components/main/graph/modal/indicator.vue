@@ -1,18 +1,7 @@
 <template>
   <div id="indicators">
     <div style="display: flex;flex-direction: row-reverse">
-      <div class="search">
-        <input type="text"
-               class="search-input"
-               v-model="searchIndicatorKey"
-               @keyup.enter="search()"
-               placeholder="搜索指标">
-        <div @click="search()"
-             class="search-img">
-          <icon name="search"/>
-        </div>
-      </div>
-      <!--<img class="search-img" :src="require('../../../assets/images/search.png')" @click="search()"/>-->
+      <search-bar :search="search" placeHolder="搜索指标"/>
     </div>
 
     <div class="indicator-table">
@@ -38,7 +27,7 @@
         <div class="pagination">
           <div @click="clickPrev()"
                :class="{disabled:currentPage<=1}"><span>上一页</span></div>
-          <div v-for="page of totalPage"
+          <div v-for="page in totalPage"
                :class="{selected:currentPage===page}"
                @click="clickPage(page)">
             <span>{{page}}</span>
@@ -122,7 +111,7 @@
   import 'vue-awesome/icons/bell'
   import 'vue-awesome/icons/download'
   import 'vue-awesome/icons/trash'
-  import 'vue-awesome/icons/search'
+  import SearchBar from '../../searchBar/searchBar.vue'
 
   export default {
     props: {
@@ -134,7 +123,6 @@
       return {
         selectType1: 1,
         selectType2: 0,
-        searchIndicatorKey: null,
         currentPage: 1,
         currentIndicators: [],
         currentSelectIndicator: null,
@@ -172,7 +160,7 @@
               this.indicatorWarnings.unshift(warning)
             })
       },
-      saveWarnChange({warn_type, warnType1, warnType2,  ID, upper_limit, lower_limit}) {
+      saveWarnChange({warn_type, warnType1, warnType2, ID, upper_limit, lower_limit}) {
         this.saving('设置中...')
 //        const {warn_type,warnType1,warnType2,IID,ID,upper_limit,lower_limit}=warning
         const warnType = warn_type == 0 ? 0 : (+warnType1) + (+warnType2)
@@ -224,9 +212,9 @@
       type1Change(warning) {
         warning.warnType2 = 0
       },
-      search() {
+      search(key) {
         this.saving('搜索中...')
-        this.$http.get(`/api/indicator?key=${this.searchIndicatorKey || ''}`)
+        this.$http.get(`/api/indicator?key=${key || ''}`)
             .then((res) => {
               this.currentIndicators = res
               this.saved()
@@ -235,7 +223,6 @@
       clickIndicator(indicator) {
         if (indicator === this.currentSelectIndicator) {
           this.currentSelectIndicator = null
-//          this.indicatorWarnings=[];
         }
         else {
           this.currentSelectIndicator = indicator
@@ -275,35 +262,15 @@
           })
 
     },
+    components: {
+      SearchBar
+    }
   }
 </script>
 <style lang="less"
        scoped>
   #indicators {
     padding: 10px 20px 0;
-    .search {
-      /*display: flex;*/
-      /*display: flex;*/
-      /*float: right;*/
-      position: relative;
-    }
-    .search-input {
-      /*flex-grow: 1;*/
-      /*width: 100%;*/
-      border-radius: 5px;
-      border: solid 1px black;
-      height: 20px;
-      font-size: 14px;
-      padding: 5px 10px;
-    }
-    .search-img {
-      position: absolute;
-      > * {
-        height: 20px;
-      }
-      right: 10px;
-      top: 5px;
-    }
     .unit {
       width: 100px;
       flex-shrink: 0;

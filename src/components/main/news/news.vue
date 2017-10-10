@@ -64,9 +64,7 @@
                        @mouseleave="moveOutWechat(item)"></i>
                     <i class="iconfont icon-weibo"></i>
                   </div>
-                  <transition mode="out-in"
-                              enter-active-class="animated fadeIn"
-                              leave-active-class="animated fadeOut">
+                  <transition name="fade">
                     <div class="wechat-qrcode"
                          v-if="item.showWechatQRcode">
                       <img src="http://s.jiathis.com/qrcode.php?url=http://36kr.com/newsflashes/78787"

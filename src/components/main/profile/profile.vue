@@ -15,7 +15,7 @@
             <span>{{profile.position}}</span>
           </div>
         </div>
-        <span class="edit">
+        <span class="button-blue">
           编辑个人资料
         </span>
       </div>
@@ -26,7 +26,8 @@
                    @switchTab="switchTab"
                    :enableSearch="false"/>
 
-      <component v-if="currentMenu" :is="currentMenu.key"></component>
+      <component v-if="currentMenu"
+                 :is="currentMenu.key"></component>
 
     </div>
   </div>
@@ -35,14 +36,15 @@
 <script>
   import contentNav from '../contentNav/contentNav.vue'
   import graph from './mygraphs/my-graphs.vue'
-  import follow from './follow/follow.vue'
+  import interest from './interest/interest.vue'
+
   export default {
     data() {
       return {
         profile: {},
         menu: [
           {
-            key: 'follow',
+            key: 'interest',
             name: '我的关注'
           },
           {
@@ -70,32 +72,21 @@
     components: {
       contentNav,
       graph,
-      follow
+      interest
     }
   }
 </script>
 
 <style scoped
        lang="less">
-  @blue: rgb(91, 155, 213);
-  .section {
-    background: white;
-    border: 2px solid #e2dddd;
-    margin: 20px;
-    padding: 20px 60px;
-  }
+
+  @import (reference) '../../../assets/styles/common';
 
   .user-profile {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
 
-    .edit {
-      border: solid 1px @blue;
-      color: @blue;
-      border-radius: 5px;
-      padding: 5px 20px;
-    }
     .info {
       .name {
         font-weight: bold;

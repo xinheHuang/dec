@@ -32,7 +32,10 @@
   }
 </script>
 
-<style scoped>
+<style lang="less">
+  @import './assets/styles/common';
+  @import './assets/styles/animate';
+  @import './assets/styles/modal';
   #app {
     height: 100%;
   }

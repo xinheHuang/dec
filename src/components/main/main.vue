@@ -85,7 +85,8 @@
   }
 </script>
 
-<style scoped>
+<style lang="less">
+  @import (reference) '../../assets/styles/common';
   #main{
     /*padding-bottom: 20px;*/
     height: 100%;
