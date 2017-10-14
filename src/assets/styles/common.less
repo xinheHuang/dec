@@ -10,13 +10,22 @@
   padding: 20px 60px;
 }
 
-.button-blue {
-  border: solid 1px @blue;
-  color: @blue;
+.button(@color) {
   border-radius: 5px;
   padding: 5px 20px;
+  border: 1px solid @color;
+  cursor: pointer;
+  color: @color
 }
 
-.basic-border{
+.button-blue {
+  .button(@blue)
+}
+
+.button-gray {
+  .button(@gray)
+}
+
+.basic-border {
   border: solid 1px @border-gray
 }
