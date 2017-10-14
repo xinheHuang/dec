@@ -2,18 +2,18 @@
   <div id="graph">
     <div class="top-op">
       <div style="display: flex;align-items: center">
-        <img :src="require('../../../assets/images/samelevelnode.png')"/>
+        <img :src="require('../../assets/images/samelevelnode.png')"/>
         <span @click="addParallelNode()">
           加入同级节点
         </span>
-        <img :src="require('../../../assets/images/nextlevelnode.png')"/>
+        <img :src="require('../../assets/images/nextlevelnode.png')"/>
         <span @click="addChildNode()">
           加入下级节点
         </span>
         <span @click="removeNode()">
           删除节点
         </span>
-        <img :src="require('../../../assets/images/shownodes.png')"/>
+        <img :src="require('../../assets/images/shownodes.png')"/>
         <select v-model="selected"
                 @change="selectChange()">
           <option disabled
@@ -52,7 +52,7 @@
            class="left-op"
       >
         <!--{{currentZoom}}-->
-        <img :src="require('../../../assets/images/plus.png')"
+        <img :src="require('../../assets/images/plus.png')"
              v-button
              @click="zoomIn()"/>
         <input type="range"
@@ -63,20 +63,20 @@
                :step="jm.view.zoomStep"
                @change="changeZoom()"
                v-model="currentZoom"/>
-        <img :src="require('../../../assets/images/minus.png' )"
+        <img :src="require('../../assets/images/minus.png' )"
              v-button
              @click="zoomOut()"/>
-        <img :src="require('../../../assets/images/drag.png')"
+        <img :src="require('../../assets/images/drag.png')"
              :class="{'selected':isDrag}"
              @click="toggleDrag"/>
         <!--<div class="icon" v-button @click="goCenter()">-->
         <!--<icon name="target" />-->
         <!--</div>-->
-        <img :src="require('../../../assets/images/position.png')"
+        <img :src="require('../../assets/images/position.png')"
              v-button
              @click="goCenter()"
         />
-        <img :src="require('../../../assets/images/eye.png')"
+        <img :src="require('../../assets/images/eye.png')"
              :class="{'selected':showThumb}"
              @click="showThumbnail"/>
       </div>
@@ -94,13 +94,13 @@
 <script>
   import Vue from 'vue'
   import jsMind from 'jsmind'
-  import screenshot from 'jsmind/js/jsmind.screenshot'
+//  import screenshot from 'jsmind/js/jsmind.screenshot'
   import 'jsmind/style/jsmind.css'
   import VTooltip from 'v-tooltip'
-  import {numberZh} from '../../../utils/index'
-  import '../../../assets/js/html2canvas'
-  import '../../../assets/js/jquery-ui-1.12.1.custom/jquery-ui.min'
-  import EventBus from '../../../eventBus'
+  import {numberZh} from '../../utils/index'
+  import '../../assets/js/html2canvas'
+  import '../../assets/js/jquery-ui-1.12.1.custom/jquery-ui.min'
+  import EventBus from '@/eventBus'
 
   import Icon from 'vue-awesome/components/Icon.vue'
   import 'vue-awesome/icons/check-circle'
@@ -394,8 +394,8 @@
                 logger.error('fail, this mind map is not editable.')
                 return
               }
-            },
-              this.updateThumbnail()
+            }
+            this.updateThumbnail()
           })
 
       this.jm.view.setZoom = function (zoom) {

@@ -1,13 +1,12 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import News from '../components/main/news/news.vue'
-import Market from '../components/main/market/market.vue'
-import Calendar from '../components/main/calendar/calendar.vue'
-import Graph from '../components/main/graph/graph.vue'
-import Main from '../components/main/main.vue'
-import Login from '../components/login/login.vue'
-import Home from '../components/main/home/home.vue'
-import Profile from '../components/main/profile/profile.vue'
+import News from 'View/main/news/news.vue'
+import Market from 'View/main/market/market.vue'
+import Calendar from 'View/main/calendar/calendar.vue'
+import Main from 'View/main/main.vue'
+import Login from 'View/login/login.vue'
+import Home from 'View/main/home/home.vue'
+import Profile from 'View/main/profile/profile.vue'
 
 Vue.use(Router)
 
@@ -53,11 +52,11 @@ export default new Router(
             name: 'market',
             component: Market
           },
-          {
-            path: '/graph/:id',
-            name: 'graph',
-            component: Graph
-          }
+          // {
+          //   path: '/graph/:id',
+          //   name: 'graph',
+          //   component: Graph
+          // }
         ]
       }
     ]

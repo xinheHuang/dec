@@ -83,7 +83,7 @@
 </template>
 
 <script>
-  import contentNav from '../contentNav/contentNav.vue'
+  import contentNav from '../../../components/contentNav/contentNav.vue'
 
   export default {
     data() {

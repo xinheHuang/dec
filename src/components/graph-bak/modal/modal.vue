@@ -63,12 +63,12 @@
 </template>
 
 <script>
-  import '../../../../assets/font/calendar/style.css'
-  import '../../../../assets/font/close/style.css'
-  import contentNav from '../../contentNav/contentNav.vue'
+  import '../../../assets/font/calendar/style.css'
+  import '../../../assets/font/close/style.css'
+  import contentNav from 'Component/contentNav/contentNav.vue'
   import comment from './comment.vue'
   import indicator from './indicator.vue'
-  import {dateFormat} from '../../../../utils'
+  import {dateFormat} from 'Util'
   import 'vue-awesome/icons/save'
   import 'vue-awesome/icons/close'
   import 'vue-awesome/icons/check-circle'

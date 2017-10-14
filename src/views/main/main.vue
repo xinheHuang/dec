@@ -23,14 +23,14 @@
 </template>
 
 <script>
-  import navMenu from './nav/nav.vue'
-  import fixedTools from './fixedTools/fixedTools.vue'
+  import navMenu from '../../components/nav/nav.vue'
+  import fixedTools from '../../components/fixedTools/fixedTools.vue'
   import news from './news/news.vue'
   import calendar from './calendar/calendar.vue'
   import market from './market/market.vue'
   import articleModal from './market/modal/modal.vue'
   import scheduleModal from './calendar/modal/modal.vue'
-  import nodeModal from './graph/modal/modal.vue'
+  import nodeModal from '../../components/graph/modal/modal.vue'
   import EventBus from '../../eventBus'
 
   export default {

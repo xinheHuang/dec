@@ -43,7 +43,7 @@
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less"
        scoped>
-  @import (reference) '../../../assets/styles/common';
+  @import (reference) '../../assets/styles/common';
   .fixedTools {
     position: fixed;
     right: 0;

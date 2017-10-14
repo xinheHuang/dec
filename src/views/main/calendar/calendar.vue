@@ -148,7 +148,7 @@
 </template>
 
 <script>
-  import contentNav from '../contentNav/contentNav.vue'
+  import contentNav from '../../../components/contentNav/contentNav.vue'
   import calendarBar from './calendarBar/calendarBar.vue'
   import {dateString, twoDigitNumber, weekDay, dateFormat, checkDateEqual} from '../../../utils/index'
   import EventBus from '../../../eventBus'

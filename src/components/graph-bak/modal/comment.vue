@@ -54,7 +54,7 @@
 <script>
   import Simditor from 'simditor'
   import 'simditor/styles/simditor.css'
-  import {twoDigitNumber} from '../../../../utils/index'
+  import {twoDigitNumber} from '../../../utils/index'
 
   export default {
     props: {

@@ -34,7 +34,7 @@
 </template>
 
 <script>
-  import contentNav from '../contentNav/contentNav.vue'
+  import contentNav from '../../../components/contentNav/contentNav.vue'
   import graph from './mygraphs/my-graphs.vue'
   import interest from './interest/interest.vue'
 

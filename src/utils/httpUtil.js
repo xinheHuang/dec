@@ -14,9 +14,9 @@ const methods = ['get', 'put', 'post', 'delete']
 methods.forEach((method) => {
   const fn = httpUtils[method]
   httpUtils[method] = async (...args) => {
-    console.log(method, args)
     try {
       const res = await fn(...args)
+      console.log(method, args,res.data)
       const {code, message, data} = res.data
       if (code == 0) {  //success
         return data

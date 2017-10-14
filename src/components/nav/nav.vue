@@ -2,7 +2,7 @@
   <div style="position: relative">
     <div class="header">
       <div class="logo">
-        <img :src="require('../../../assets/images/navLogo.png')">
+        <img :src="require('../../assets/images/navLogo.png')">
       </div>
       <div class="nav">
         <div class="menu">
@@ -64,7 +64,7 @@
   import 'vue-awesome/icons/calendar'
   import 'vue-awesome/icons/bell'
   import Icon from 'vue-awesome/components/Icon.vue'
-  import EventBus from '../../../eventBus'
+  import EventBus from '../../eventBus'
 
   Icon.register(
     {
@@ -134,7 +134,7 @@
           .then((info) => {
             this.userInfo = {
               ...info,
-              headPic: require('../../../assets/images/headPic.jpg')
+              headPic: require('../../assets/images/headPic.jpg')
             }
           })
       EventBus.$on('menuClose', () => {

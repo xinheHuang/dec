@@ -12,13 +12,14 @@ import $ from 'jquery'
 import swal from 'sweetalert'
 import Icon from 'vue-awesome/components/Icon.vue'
 import Button from './directives/button'
+import VTooltip from 'v-tooltip'
 
 Vue.prototype.swal = swal
 Vue.prototype.$http = httpUtil
 Vue.config.productionTip = false
 
 Vue.directive('button', Button)
-
+Vue.use(VTooltip)
 
 Vue.component('icon', Icon)
 
