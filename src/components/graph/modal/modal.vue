@@ -1,81 +1,67 @@
 <!--node弹窗-->
 <template>
-  <transition name="modal">
-    <div class="modal-mask">
-      <div class="modal-wrapper">
-        <div class="modal-container">
-          <div class="modal-header">
-            <div class="close">
-              <a class="icon-close icon-circle-with-cross"
-                 @click="$emit('close')"></a>
-            </div>
-            <div style="text-align: center;position: relative">
-              <h3 style="color:black;"
-                  @dblclick="   editTopic=true;        tempTopic=node.topic"
-                  v-show="!editTopic">
-                {{node.topic}}
-              </h3>
-              <div v-show="editTopic"
-                   class="edit-topic">
-                <input v-model="tempTopic">
-                <div class="icon"
-                     @click="saveTopic()"
-                     v-button>
-                  <icon name="save"/>
-                </div>
-              </div>
-              <div style="position: absolute;top: 0;right: 50px;">
-                <transition name="fade">
-                  <div v-show="tipShown "
-                       style="display: flex;align-items: center">
-                    <icon v-if="tipType=='succ'"
-                          name="check-circle"
-                          style="color:limegreen"/>
-                    <icon v-if="tipType=='error'"
-                          name="close"
-                          style="color:red"/>
-                    <span style="margin-left: 20px">{{saveText}}</span>
-                  </div>
-                </transition>
-                <div v-show="isSaving">
-                  <span>{{savingText}}</span>
-                </div>
-              </div>
-            </div>
-            <!--<div class="divider"></div>-->
+  <modal @close="close()">
+    <div slot="title"style="text-align: center;position: relative">
+      <h3 style="color:black;"
+          @dblclick="   editTopic=true;        tempTopic=modalData.topic"
+          v-show="!editTopic">
+        {{modalData.topic}}
+      </h3>
+      <div v-show="editTopic"
+           class="edit-topic">
+        <input v-model="tempTopic">
+        <div class="icon"
+             @click="saveTopic()"
+             v-button>
+          <icon name="save"/>
+        </div>
+      </div>
+      <div style="position: absolute;top: 0;right: 50px;">
+        <transition name="fade">
+          <div v-show="tipShown "
+               style="display: flex;align-items: center">
+            <icon v-if="tipType=='succ'"
+                  name="check-circle"
+                  style="color:limegreen"/>
+            <icon v-if="tipType=='error'"
+                  name="close"
+                  style="color:red"/>
+            <span style="margin-left: 20px">{{saveText}}</span>
           </div>
-
-          <div class="modal-body">
-            <content-nav :menus="menu"
-                         :enableSearch="false"
-                         @switchTab="tabChanged"></content-nav>
-            <component :is="currentTab"
-                       :node="node"
-                       :saving="saving"
-                       :saveFailed="saveFailed"
-                       :saved="saved"></component>
-          </div>
-
+        </transition>
+        <div v-show="isSaving">
+          <span>{{savingText}}</span>
         </div>
       </div>
     </div>
-  </transition>
+    <div slot="body">
+      <content-nav :menus="menu"
+                   :enableSearch="false"
+                   @switchTab="tabChanged"></content-nav>
+      <component :is="currentTab"
+                 :node="modalData"
+                 :edit-mode="false"
+                 :saving="saving"
+                 :saveFailed="saveFailed"
+                 :saved="saved"></component>
+    </div>
+  </modal>
 </template>
 
 <script>
-  import '../../../assets/font/calendar/style.css'
-  import '../../../assets/font/close/style.css'
   import contentNav from 'Component/contentNav/contentNav.vue'
+  import Modal from 'Component/modal/modal.vue'
   import comment from './comment.vue'
   import indicator from './indicator.vue'
   import {dateFormat} from 'Util'
   import 'vue-awesome/icons/save'
   import 'vue-awesome/icons/close'
   import 'vue-awesome/icons/check-circle'
+  import EventBus from '@/eventBus'
 
   export default {
     props: {
-      node: {  //弹窗node
+      modalData: {  //弹窗node
         type: Object,
         required: true,
       }
@@ -93,7 +79,7 @@
           },
         ],
         editTopic: true,
-        tempTopic: this.node.topic,
+        tempTopic: this.modalData.topic,
         tipShown: false,
         timeout: null,
         currentTab: null,
@@ -104,6 +90,11 @@
       }
     },
     methods: {
+      close(){
+        EventBus.$emit('closeModal',(node)=>{
+          EventBus.$emit('nodeModalClose',node);
+        });
+      },
       tabChanged(menu) {
         this.currentTab = menu.key
       },
@@ -138,7 +129,7 @@
       },
       saveTopic() {
         if (this.tempTopic) {
-          this.node.topic = this.tempTopic
+          this.modalData.topic = this.tempTopic
           this.editTopic = false
           this.saved('修改成功')
         }
@@ -157,6 +148,7 @@
       contentNav,
       comment,
       indicator,
+      Modal,
     },
 
   }

@@ -59,7 +59,7 @@
     },
     methods: {
       openModal(item) {  //
-        EventBus.$emit('articleModal', item.YID)
+        EventBus.$emit('openModal','article-modal', item.YID)
       },
       dateFormat
     },

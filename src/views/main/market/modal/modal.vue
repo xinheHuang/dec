@@ -1,38 +1,27 @@
 <!--文章弹窗-->
 <template>
-  <transition name="modal">
-    <div class="modal-mask">
-      <div class="modal-wrapper">
-        <div class="modal-container">
-          <div v-if="!article">加载中</div>
-          <div v-else>
-            <div class="modal-header">
-              <div class="close">
-                <a class="icon-close icon-circle-with-cross"
-                   @click="$emit('close')"></a>
-              </div>
-              <div style="text-align: center">
-                <h3 style="color:black;">
-                  {{article.title}}
-                </h3>
-              </div>
-              <div class="info">
-                <span><icon name="calendar-o"/><span>{{dateFormat(new Date(article.riqi))}}</span></span>
-                <span><icon name="user"/><span>{{article.author}}</span></span>
-                <span><icon name="eye"/><span>{{article.num_read}}</span></span>
-                <span><icon name="heart"/><span>{{article.num_like}}</span></span>
-              </div>
-              <div class="divider"></div>
-            </div>
-
-            <div class="modal-body">
-              <div v-html="article.content"></div>
-            </div>
-          </div>
+  <modal @close="close()">
+    <div slot="title">
+      <div v-if="!article">加载中</div>
+      <div v-else>
+        <div style="text-align: center">
+          <h3 style="color:black;">
+            {{article.title}}
+          </h3>
         </div>
+        <div class="info">
+          <span><icon name="calendar-o"/><span>{{dateFormat(new Date(article.riqi))}}</span></span>
+          <span><icon name="user"/><span>{{article.author}}</span></span>
+          <span><icon name="eye"/><span>{{article.num_read}}</span></span>
+          <span><icon name="heart"/><span>{{article.num_like}}</span></span>
+        </div>
+        <div class="divider"></div>
       </div>
     </div>
-  </transition>
+    <div slot="body" v-if="article">
+      <div v-html="article.content"></div>
+    </div>
+  </modal>
 </template>
 
 <script>
@@ -40,13 +29,13 @@
   import 'vue-awesome/icons/calendar-o'
   import 'vue-awesome/icons/user'
   import 'vue-awesome/icons/heart'
-  import '../../../../assets/font/calendar/style.css'
-  import '../../../../assets/font/close/style.css'
-  import { dateFormat } from '../../../../utils'
+  import { dateFormat } from 'Util'
+  import modal from 'Component/modal/modal.vue'
+  import EventBus from '@/eventBus'
 
   export default {
     props: {
-      articleID: {  //弹窗文章的属性
+      modalData: {  //弹窗文章的属性
         type: Number,
         required: true,
       }
@@ -57,13 +46,19 @@
       }
     },
     methods: {
+      close() {
+        EventBus.$emit('closeModal')
+      },
       dateFormat,
     },
     mounted() {
-      this.$http.get(`/api/market/article/${this.articleID}`)
+      this.$http.get(`/api/market/article/${this.modalData}`)
         .then(res => {
           this.article = res
         })
+    },
+    components: {
+      modal
     }
   }
 </script>

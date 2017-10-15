@@ -1,54 +1,48 @@
 <!--文章弹窗-->
 <template>
-  <transition name="modal">
-    <div class="modal-mask">
-      <div class="modal-wrapper">
-        <div class="modal-container">
-          <div class="modal-header">
-            <div class="close">
-              <a class="icon-close icon-circle-with-cross"
-                 @click="$emit('close')"></a>
-            </div>
-            <div style="text-align: center">
-              <h3 style="color:black;">
-                {{schedule.title}}
-              </h3>
-            </div>
-            <div class="info">
-              <span><icon name="calendar-o" /><span>{{dateFormat(new Date(schedule.riqi_detail))}}</span></span>
-              <span><icon name="user"/><span>{{schedule.author}}</span></span>
-            </div>
-            <div class="divider"></div>
-          </div>
+  <modal @close="close()">
+    <div slot="title">
+      <div style="text-align: center">
+        <h3 style="color:black;">
+          {{modalData.title}}
+        </h3>
+      </div>
+      <div class="info">
+        <span><icon name="calendar-o" /><span>{{dateFormat(new Date(modalData.riqi_detail))}}</span></span>
+        <span><icon name="user"/><span>{{modalData.author}}</span></span>
+      </div>
+      <div class="divider"></div>
+    </div>
+    <div slot="body">
+      <div v-html="modalData.content">
 
-          <div class="modal-body">
-            <div v-html="schedule.content">
-
-            </div>
-          </div>
-
-        </div>
       </div>
     </div>
-  </transition>
+  </modal>
 </template>
 
 <script>
+  import modal from 'Component/modal/modal.vue'
   import 'vue-awesome/icons/user'
   import 'vue-awesome/icons/calendar-o'
-  import '../../../../assets/font/calendar/style.css'
-  import '../../../../assets/font/close/style.css'
-  import { dateFormat } from '../../../../utils'
+  import { dateFormat } from 'Util'
+  import EventBus from '@/eventBus'
 
   export default {
     props: {
-      schedule: {  //弹窗文章的属性
+      modalData: {  //弹窗文章的属性
         type: Object,
         required: true,
       }
     },
     methods: {
+      close(){
+        EventBus.$emit('closeModal')
+      },
       dateFormat
+    },
+    components:{
+      modal
     }
   }
 </script>

@@ -1,83 +1,59 @@
 <template>
   <div id="main" @click="closeMenu()">
-    <nav-menu ></nav-menu>
+    <nav-menu></nav-menu>
     <div class="content">
       <router-view></router-view>
     </div>
     <fixed-tools></fixed-tools>
     <footer class="footer"></footer>
-    <article-modal v-if="showArticleModal"
-                   :articleID="articleID"
-                   @close="showArticleModal = false">
-    </article-modal>
-    <schedule-modal v-if="showScheduleModal"
-                    :schedule="schedule"
-                    @close="showScheduleModal = false">
-    </schedule-modal>
 
-    <node-modal v-if="showNodeModal"
-                :node="node"
-                @close="closeNodeModal()">
-    </node-modal>
+    <component v-if="showModal" :is="modal" :modal-data="modalData"></component>
   </div>
 </template>
 
 <script>
-  import navMenu from '../../components/nav/nav.vue'
-  import fixedTools from '../../components/fixedTools/fixedTools.vue'
-  import news from './news/news.vue'
-  import calendar from './calendar/calendar.vue'
-  import market from './market/market.vue'
-  import articleModal from './market/modal/modal.vue'
-  import scheduleModal from './calendar/modal/modal.vue'
-  import nodeModal from '../../components/graph/modal/modal.vue'
   import EventBus from '../../eventBus'
+
+  import navMenu from 'Component/nav/nav.vue'
+  import fixedTools from 'Component/fixedTools/fixedTools.vue'
+
+  import articleModal from 'View/main/market/modal/modal.vue'
+  import scheduleModal from 'View/main/calendar/modal/modal.vue'
+  import nodeModal from 'Component/graph/modal/modal.vue'
+
 
   export default {
     data() {
       return {
-        showArticleModal: false,
-        articleID: null,
-        currentNav: null,
-        showScheduleModal: false,
-        schedule: null,
-        showNodeModal: false,
-        node: null
+        showModal: false,
+        modalData: null,
+        modal: null,
       }
     },
     methods: {
-      closeNodeModal(){
-        this.showNodeModal = false
-        EventBus.$emit('nodeModalClose',this.node);
-      },
-      closeMenu(){
-        EventBus.$emit('menuClose');
+      closeMenu() {
+        EventBus.$emit('menuClose')
       }
     },
     created() {
-      EventBus.$on('articleModal', articleID => {
-        this.showArticleModal = true
-        this.articleID = articleID
+      EventBus.$on('openModal', (modalName, data) => {
+        this.modal = modalName
+        this.showModal = true
+        this.modalData = data
       })
 
-      EventBus.$on('scheduleModal', schedule => {
-        console.log('schedule', schedule)
-        this.showScheduleModal = true
-        this.schedule = schedule
-      })
-
-      EventBus.$on('nodeModal', node => {
-        this.showNodeModal = true
-        this.node = node
+      EventBus.$on('closeModal', (callback) => {
+        this.showModal = false
+        if (callback) {
+          callback(this.modalData)
+        }
       })
     },
 
     components: {
       navMenu,
       fixedTools,
-      news,
-      market,
-      calendar,
+
       articleModal,
       scheduleModal,
       nodeModal,
@@ -87,10 +63,12 @@
 
 <style lang="less">
   @import (reference) '../../assets/styles/common';
-  #main{
+
+  #main {
     /*padding-bottom: 20px;*/
     height: 100%;
   }
+
   .content {
     max-width: 1280px;
     margin: 0 auto;

@@ -287,22 +287,13 @@
       },
       updateThumbnail() {
         if (this.showThumb) {
-
-
           domtoimage.toPng(this.jsMindContainer[0])
             .then( (dataUrl)=>{
               this.thumbSrc  = dataUrl;
-//              document.body.appendChild(img);
             })
             .catch(function (error) {
               console.error('oops, something went wrong!', error);
             });
-
-
-//          html2canvas(this.jsMindContainer.find('.jsmind-inner'))
-//            .then((canvas) => {
-//              this.thumbSrc = canvas.toDataURL()
-//            })
         }
       },
       removeNode() {
@@ -403,7 +394,7 @@
         }
         if (this.get_editable()) {
           console.log(node)
-          EventBus.$emit('nodeModal', node)
+          EventBus.$emit('openModal', 'node-modal',node)
         } else {
           logger.error('fail, this mind map is not editable.')
           return

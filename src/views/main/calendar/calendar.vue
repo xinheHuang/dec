@@ -321,7 +321,7 @@
       dateFormat,
       checkDateEqual,
       showModal(schedule) {
-        EventBus.$emit('scheduleModal', schedule)
+        EventBus.$emit('openModal', 'schedule-modal',schedule)
       },
       getTime(date) {
         return `${twoDigitNumber(date.getHours())}:${twoDigitNumber(date.getMinutes())}`

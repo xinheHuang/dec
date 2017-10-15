@@ -1,50 +1,51 @@
 <template>
   <div id="indicators">
-    <div style="display: flex;flex-direction: row-reverse">
-      <search-bar :search="search" placeHolder="搜索指标"/>
-    </div>
-
-    <div class="indicator-table">
-      <div class="table">
-        <div style="display: flex">
-          <span class="name">指标名称</span>
-          <span class="frequency">发布频次</span>
-          <span class="unit">单位</span>
-          <span class="source">来源</span>
-        </div>
-        <div v-for="indicator in currentPageIndicators"
-             @click="clickIndicator(indicator)"
-             class="indicator"
-             :key="indicator.IID"
-             :class="{selected:currentSelectIndicator==indicator}">
-          <span class="name">{{indicator.title}}</span>
-          <span class="frequency">{{indicator.frequency}}</span>
-          <span class="unit">{{indicator.unit}}</span>
-          <span class="source">{{indicator.source}}</span>
-        </div>
+    <div v-if="editMode">
+      <div style="display: flex;flex-direction: row-reverse">
+        <search-bar :search="search" placeHolder="搜索指标"/>
       </div>
-      <div class="op">
-        <div class="pagination">
-          <div @click="clickPrev()"
-               :class="{disabled:currentPage<=1}"><span>上一页</span></div>
-          <div v-for="page in totalPage"
-               :class="{selected:currentPage===page}"
-               @click="clickPage(page)">
-            <span>{{page}}</span>
+
+      <div class="indicator-table">
+        <div class="table">
+          <div style="display: flex">
+            <span class="name">指标名称</span>
+            <span class="frequency">发布频次</span>
+            <span class="unit">单位</span>
+            <span class="source">来源</span>
           </div>
-          <div @click="clickNext()"
-               :class="{disabled:currentPage>=totalPage}"><span>下一页</span></div>
+          <div v-for="indicator in currentPageIndicators"
+               @click="clickIndicator(indicator)"
+               class="indicator"
+               :key="indicator.IID"
+               :class="{selected:currentSelectIndicator==indicator}">
+            <span class="name">{{indicator.title}}</span>
+            <span class="frequency">{{indicator.frequency}}</span>
+            <span class="unit">{{indicator.unit}}</span>
+            <span class="source">{{indicator.source}}</span>
+          </div>
         </div>
-        <div v-if="currentSelectIndicator">
-          <span style="border: none;margin-right: 10px">已选中指标：{{currentSelectIndicator.title}}</span>
-          <span style="cursor: pointer;color: #2c8abf;border: none"
-                v-if="!warningIDs.includes(currentSelectIndicator.IID)"
-                @click="addIndicator(currentSelectIndicator)">添加关联</span>
-          <span v-else>已添加</span>
+        <div class="op">
+          <div class="pagination">
+            <div @click="clickPrev()"
+                 :class="{disabled:currentPage<=1}"><span>上一页</span></div>
+            <div v-for="page in totalPage"
+                 :class="{selected:currentPage===page}"
+                 @click="clickPage(page)">
+              <span>{{page}}</span>
+            </div>
+            <div @click="clickNext()"
+                 :class="{disabled:currentPage>=totalPage}"><span>下一页</span></div>
+          </div>
+          <div v-if="currentSelectIndicator">
+            <span style="border: none;margin-right: 10px">已选中指标：{{currentSelectIndicator.title}}</span>
+            <span style="cursor: pointer;color: #2c8abf;border: none"
+                  v-if="!warningIDs.includes(currentSelectIndicator.IID)"
+                  @click="addIndicator(currentSelectIndicator)">添加关联</span>
+            <span v-else>已添加</span>
+          </div>
         </div>
       </div>
     </div>
-
     <div class="warning-graphs">
       <div v-for="(warning,index) in indicatorWarnings"
            :key="warning.ID">
@@ -116,6 +117,7 @@
   export default {
     props: {
       node: Object,
+      editMode: Boolean,
       saved: Function,
       saving: Function,
     },
@@ -151,16 +153,16 @@
         this.$http.post(`/api/graphNode/${this.GNID}/indicator/${indicator.IID}`, {
           IID: indicator.IID,
         })
-            .then(res => {
-              const warning = {
-                ...res,
-                indicator
+          .then(res => {
+            const warning = {
+              ...res,
+              indicator
 
-              }
-              this.indicatorWarnings.unshift(warning)
-            })
+            }
+            this.indicatorWarnings.unshift(warning)
+          })
       },
-      saveWarnChange({warn_type, warnType1, warnType2, ID, upper_limit, lower_limit}) {
+      saveWarnChange({ warn_type, warnType1, warnType2, ID, upper_limit, lower_limit }) {
         this.saving('设置中...')
 //        const {warn_type,warnType1,warnType2,IID,ID,upper_limit,lower_limit}=warning
         const warnType = warn_type == 0 ? 0 : (+warnType1) + (+warnType2)
@@ -169,9 +171,9 @@
           lower_limit,
           warn_type: warnType
         })
-            .then(res => {
-              this.saved('设置成功')
-            })
+          .then(res => {
+            this.saved('设置成功')
+          })
       },
       clickDownload(warning) {
         console.log('download')
@@ -179,24 +181,24 @@
       },
       async clickRemove(warning, index) {
         const r = await this.swal({
-                                    text: "确定删除指标关联？",
-                                    title: "删除关联",
-                                    buttons: {
-                                      cancel: {
-                                        text: '取消',
-                                        visible: true,
-                                      },
-                                      confirm: {
-                                        text: '删除',
-                                        visible: true,
-                                      },
-                                    },
-                                  })
+          text: "确定删除指标关联？",
+          title: "删除关联",
+          buttons: {
+            cancel: {
+              text: '取消',
+              visible: true,
+            },
+            confirm: {
+              text: '删除',
+              visible: true,
+            },
+          },
+        })
         if (r) {
           this.$http.delete(`/api/graphIndicator/${warning.ID}`)
-              .then((res) => {
-                this.indicatorWarnings.splice(index, 1)
-              })
+            .then((res) => {
+              this.indicatorWarnings.splice(index, 1)
+            })
         }
       },
       clickWarn(warning) {
@@ -215,10 +217,10 @@
       search(key) {
         this.saving('搜索中...')
         this.$http.get(`/api/indicator?key=${key || ''}`)
-            .then((res) => {
-              this.currentIndicators = res
-              this.saved()
-            })
+          .then((res) => {
+            this.currentIndicators = res
+            this.saved()
+          })
       },
       clickIndicator(indicator) {
         if (indicator === this.currentSelectIndicator) {
@@ -253,13 +255,13 @@
     },
     mounted() {
       this.$http.get(`/api/graphNode/${this.GNID}/indicators`)
-          .then((res) => {
-            this.indicatorWarnings = res
-            console.log(this.indicatorWarnings)
-            this.indicatorWarnings.forEach(warn => {
-              this.setWarnType(warn)
-            })
+        .then((res) => {
+          this.indicatorWarnings = res
+          console.log(this.indicatorWarnings)
+          this.indicatorWarnings.forEach(warn => {
+            this.setWarnType(warn)
           })
+        })
 
     },
     components: {

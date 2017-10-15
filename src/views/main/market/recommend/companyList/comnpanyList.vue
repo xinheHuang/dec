@@ -23,7 +23,7 @@
         <div>
           <div style="display: flex;align-items: center">
             <!--<div>-->
-              <!--<icon name="plus-circle" class="iconplus"></icon>-->
+            <!--<icon name="plus-circle" class="iconplus"></icon>-->
             <!--</div>-->
             <span class="iconplus icon-plus-circle">     </span>
             <span style="margin-left: 20px;flex-grow: 1;word-break: break-all"
@@ -111,7 +111,7 @@
     methods: {
       dateFormat,
       openModal(article) {  //文章弹窗
-        EventBus.$emit('articleModal', article.YID)
+        EventBus.$emit('openModal', 'article-modal', article.YID)
       },
       getDiffRecommends: function (article, index) {
         const currentSet = new Set(article.recommends.map((recommend) => recommend.relatoin.name))
