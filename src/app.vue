@@ -21,8 +21,6 @@
       })
 
       EventBus.$on('login', () => {
-        console.log(this.$route)
-        console.log(this.$router)
         this.$router.push({
                             path: '/login',
                             query: {redirect: this.$route.path}

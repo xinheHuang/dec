@@ -7,6 +7,7 @@ import Main from 'View/main/main.vue'
 import Login from 'View/login/login.vue'
 import Home from 'View/main/home/home.vue'
 import Profile from 'View/main/profile/profile.vue'
+import GraphEdit from 'View/main/graphEdit/graphEdit.vue'
 
 Vue.use(Router)
 
@@ -52,11 +53,12 @@ export default new Router(
             name: 'market',
             component: Market
           },
-          // {
-          //   path: '/graph/:id',
-          //   name: 'graph',
-          //   component: Graph
-          // }
+          {
+            path: '/graphEdit/:entity',
+            name: 'graphEdit',
+            component: GraphEdit,
+            props: true
+          }
         ]
       }
     ]

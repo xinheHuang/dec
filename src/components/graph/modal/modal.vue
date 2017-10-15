@@ -3,11 +3,11 @@
   <modal @close="close()">
     <div slot="title"style="text-align: center;position: relative">
       <h3 style="color:black;"
-          @dblclick="   editTopic=true;        tempTopic=modalData.topic"
-          v-show="!editTopic">
+          @dblclick="titleEdit()"
+          v-show="!editMode || !editTopic">
         {{modalData.topic}}
       </h3>
-      <div v-show="editTopic"
+      <div v-if="editMode" v-show="editTopic"
            class="edit-topic">
         <input v-model="tempTopic">
         <div class="icon"
@@ -64,7 +64,8 @@
       modalData: {  //弹窗node
         type: Object,
         required: true,
-      }
+      },
+      editMode:Boolean,
     },
     data() {
       return {
@@ -90,6 +91,12 @@
       }
     },
     methods: {
+      titleEdit(){
+        if (this.editMode){
+          this.editTopic=true;
+          this.tempTopic=this.modalData.topic
+        }
+      },
       close(){
         EventBus.$emit('closeModal',(node)=>{
           EventBus.$emit('nodeModalClose',node);

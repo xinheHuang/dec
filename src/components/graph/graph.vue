@@ -1,6 +1,7 @@
 <template>
   <div id="graph">
-    <div class="top-op" v-if="editMode">
+    <div class="top-op"
+         v-if="editMode">
       <div style="display: flex;align-items: center">
         <img :src="require('../../assets/images/samelevelnode.png')"/>
         <span @click="addParallelNode()">
@@ -78,7 +79,7 @@
              @click="showThumbnail"/>
       </div>
       <div class="thumbnail"
-           v-show="showThumb">
+           v-show="showThumb && thumbSrc">
         <img :src="thumbSrc"
              width="auto"
              height="100%">
@@ -93,12 +94,13 @@
   import jsMind from 'jsmind'
   import 'jsmind/style/jsmind.css'
   //  import VTooltip from 'v-tooltip'
-  import { numberZh } from '../../utils/index'
+  import {numberZh} from '../../utils/index'
   import EventBus from '@/eventBus'
 
   import Icon from 'vue-awesome/components/Icon.vue'
   import 'vue-awesome/icons/check-circle'
-  import domtoimage from 'dom-to-image';
+  import domtoimage from 'dom-to-image'
+
   Icon.register(
     {
       target: {
@@ -113,9 +115,9 @@
     props: {
       editMode: Boolean,
       nodes: Array,
-      graphInfo:Object,
-      onSaveDraft:Function,
-      onSaveFinal:Function,
+      graphInfo: Object,
+      onSaveDraft: Function,
+      onSaveFinal: Function,
     },
     data() {
       return {
@@ -142,7 +144,7 @@
     },
     computed: {
       graphNodes() {
-        return this.nodes.map(({ title, FNID, direction, NID, GNID }) => ({
+        return this.nodes.map(({title, FNID, direction, NID, GNID}) => ({
           GNID,
           id: NID,
           isroot: FNID == 0,
@@ -155,57 +157,57 @@
     methods: {
       submit() {
         this.swal({
-          text: "是否要将此版图谱归档为历史版本，方便您后续回溯？",
-          title: "提交图谱",
-          buttons: {
-            cancel: {
-              text: '取消',
-              visible: true,
-            },
-            confirm: {
-              text: '提交',
-              visible: true,
-            },
-          },
-        })
-          .then((isConfirm) => {
-            //todo add submit api
-            if (isConfirm) {
-              this.swal({
-                text: "已成功归档，您可以在 XXX 处回溯查阅。",
-                title: "提交成功",
-                icon: "success",
-              })
-            }
-          })
+                    text: "是否要将此版图谱归档为历史版本，方便您后续回溯？",
+                    title: "提交图谱",
+                    buttons: {
+                      cancel: {
+                        text: '取消',
+                        visible: true,
+                      },
+                      confirm: {
+                        text: '提交',
+                        visible: true,
+                      },
+                    },
+                  })
+            .then((isConfirm) => {
+              //todo add submit api
+              if (isConfirm) {
+                this.swal({
+                            text: "已成功归档，您可以在 XXX 处回溯查阅。",
+                            title: "提交成功",
+                            icon: "success",
+                          })
+              }
+            })
       },
 
       getCurrentNodes() {
         return Object.keys(this.jm.mind.nodes)
-          .map((id) => {
-            const node = this.jm.mind.nodes[id]
-            return {
-              NID: id,
-              title: node.topic,
-              direction: node.direction == -1 ? 'left' : 'right',
-              GID: this.id,
-              FNID: node.isroot ? 0 : node.parent.id
-            }
-          })
+                     .map((id) => {
+                       const node = this.jm.mind.nodes[id]
+                       return {
+                         NID: id,
+                         title: node.topic,
+                         direction: node.direction == -1 ? 'left' : 'right',
+                         GID: this.id,
+                         FNID: node.isroot ? 0 : node.parent.id
+                       }
+                     })
       },
       save() {
         this.isSaving = true
         const nodes = Object.keys(this.jm.mind.nodes)
-          .map((id) => {
-            const node = this.jm.mind.nodes[id]
-            return {
-              NID: id,
-              title: node.topic,
-              direction: node.direction == -1 ? 'left' : 'right',
-              GID: this.id,
-              FNID: node.isroot ? 0 : node.parent.id
-            }
-          })
+                            .map((id) => {
+                              const node = this.jm.mind.nodes[id]
+                              return {
+                                NID: id,
+                                title: node.topic,
+                                direction: node.direction == -1 ? 'left' : 'right',
+                                GID: this.id,
+                                FNID: node.isroot ? 0 : node.parent.id
+                              }
+                            })
         this.$http.post(`/api/graph`, {
           nodes,
           graph: {
@@ -215,17 +217,17 @@
             author: 'author'
           }
         })
-          .then(res => {
-            if (this.timeout) {
-              clearTimeout(this.timeout)
-            }
-            this.isSaving = false
-            this.showSuccessTip = true
-            this.timeout = setTimeout(() => {
-              this.showSuccessTip = false
-              this.timeout = null
-            }, 2000)
-          })
+            .then(res => {
+              if (this.timeout) {
+                clearTimeout(this.timeout)
+              }
+              this.isSaving = false
+              this.showSuccessTip = true
+              this.timeout = setTimeout(() => {
+                this.showSuccessTip = false
+                this.timeout = null
+              }, 2000)
+            })
       },
       goCenter() {
         if (this.centerTimeOut) return
@@ -261,9 +263,9 @@
           inner.mousemove((event) => {
             if (startDrag) {
               inner.children()
-                .css(
-                  'transform', `translate(${ event.clientX + startX}px,${ event.clientY + startY}px)` + originTransform.replace(
-                  /translate\(.*?\)/, ''))
+                   .css(
+                     'transform', `translate(${ event.clientX + startX}px,${ event.clientY + startY}px)` + originTransform.replace(
+                     /translate\(.*?\)/, ''))
             }
           })
           inner.mouseup((event) => {
@@ -283,17 +285,20 @@
       },
       showThumbnail() {
         this.showThumb = !this.showThumb
-        this.updateThumbnail()
+        if (this.showThumb)
+          this.updateThumbnail()
+        else
+          this.thumbSrc = null
       },
       updateThumbnail() {
         if (this.showThumb) {
           domtoimage.toPng(this.jsMindContainer[0])
-            .then( (dataUrl)=>{
-              this.thumbSrc  = dataUrl;
-            })
-            .catch(function (error) {
-              console.error('oops, something went wrong!', error);
-            });
+                    .then((dataUrl) => {
+                      this.thumbSrc = dataUrl
+                    })
+                    .catch(function (error) {
+                      console.error('oops, something went wrong!', error)
+                    })
         }
       },
       removeNode() {
@@ -349,10 +354,10 @@
         const node = this.jm.add_node(selected_node.parent, nodeid, '相邻节点')
         this.updateThumbnail()
       },
-      showGraph(nodes){
-        console.log('showGraph',nodes)
+      showGraph(nodes) {
+        console.log('showGraph', nodes)
         const mind = {
-          'meta':this.graphInfo,
+          'meta': this.graphInfo,
           'format': 'node_array',
           'data': nodes
         }
@@ -361,12 +366,13 @@
     },
     watch: {
       graphNodes(old, newNode) {
-        this.showGraph(newNode);
+        this.showGraph(newNode)
       }
     },
     mounted() {
 
-      this.jsMindContainer = $(this.$el).find('.jsmind-container')
+      this.jsMindContainer = $(this.$el)
+        .find('.jsmind-container')
       console.log(this.jsMindContainer)
       const options = {
         container: this.jsMindContainer[0],
@@ -394,7 +400,7 @@
         }
         if (this.get_editable()) {
           console.log(node)
-          EventBus.$emit('openModal', 'node-modal',node)
+          EventBus.$emit('openModal', 'node-modal', node)
         } else {
           logger.error('fail, this mind map is not editable.')
           return
@@ -438,7 +444,8 @@
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="less" scoped>
+<style lang="less"
+       scoped>
   #graph {
     .jsmind-container {
       width: 100%;

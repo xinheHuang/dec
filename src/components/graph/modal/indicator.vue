@@ -2,7 +2,8 @@
   <div id="indicators">
     <div v-if="editMode">
       <div style="display: flex;flex-direction: row-reverse">
-        <search-bar :search="search" placeHolder="搜索指标"/>
+        <search-bar :search="search"
+                    placeHolder="搜索指标"/>
       </div>
 
       <div class="indicator-table">
@@ -46,6 +47,7 @@
         </div>
       </div>
     </div>
+
     <div class="warning-graphs">
       <div v-for="(warning,index) in indicatorWarnings"
            :key="warning.ID">
@@ -53,7 +55,7 @@
           <h5 class="title">{{warning.title}}</h5>
           <div class="op">
             <div class="icon"
-                 @click="clickWarn(warning)"
+                 @click="editMode && clickWarn(warning)"
                  :class="{selected:warning.warn_type>0}">
               <icon name="bell"/>
             </div>
@@ -63,6 +65,7 @@
               <icon name="download"/>
             </div>
             <div class="icon"
+                 v-if="editMode"
                  @click="clickRemove(warning,index)"
                  v-button>
               <icon name="trash"/>
@@ -78,11 +81,13 @@
 
             <!--fixed-->
             <select v-model="warning.warnType1"
+                    :disabled="!editMode"
                     @change="type1Change(warning)">
               <option value="1">绝对值</option>
               <option value="2">增速</option>
             </select>
             <select v-model="warning.warnType2"
+                    :disabled="!editMode"
                     v-if="warning.warnType1!=1">
               <option value="0">同比</option>
               <option value="1">环比</option>
@@ -93,11 +98,12 @@
               <option value="0"></option>
             </select>
 
-            <input v-model="warning.upper_limit"/>
-            <input v-model="warning.lower_limit"/>
+            <input v-model="warning.upper_limit" :disabled="!editMode"/>
+            <input v-model="warning.lower_limit" :disabled="!editMode"/>
 
           </div>
           <div class="icon"
+               v-if="editMode"
                @click="saveWarnChange(warning)"
                v-button>
             <icon name="save"/>
@@ -153,16 +159,16 @@
         this.$http.post(`/api/graphNode/${this.GNID}/indicator/${indicator.IID}`, {
           IID: indicator.IID,
         })
-          .then(res => {
-            const warning = {
-              ...res,
-              indicator
+            .then(res => {
+              const warning = {
+                ...res,
+                indicator
 
-            }
-            this.indicatorWarnings.unshift(warning)
-          })
+              }
+              this.indicatorWarnings.unshift(warning)
+            })
       },
-      saveWarnChange({ warn_type, warnType1, warnType2, ID, upper_limit, lower_limit }) {
+      saveWarnChange({warn_type, warnType1, warnType2, ID, upper_limit, lower_limit}) {
         this.saving('设置中...')
 //        const {warn_type,warnType1,warnType2,IID,ID,upper_limit,lower_limit}=warning
         const warnType = warn_type == 0 ? 0 : (+warnType1) + (+warnType2)
@@ -171,9 +177,9 @@
           lower_limit,
           warn_type: warnType
         })
-          .then(res => {
-            this.saved('设置成功')
-          })
+            .then(res => {
+              this.saved('设置成功')
+            })
       },
       clickDownload(warning) {
         console.log('download')
@@ -181,24 +187,24 @@
       },
       async clickRemove(warning, index) {
         const r = await this.swal({
-          text: "确定删除指标关联？",
-          title: "删除关联",
-          buttons: {
-            cancel: {
-              text: '取消',
-              visible: true,
-            },
-            confirm: {
-              text: '删除',
-              visible: true,
-            },
-          },
-        })
+                                    text: "确定删除指标关联？",
+                                    title: "删除关联",
+                                    buttons: {
+                                      cancel: {
+                                        text: '取消',
+                                        visible: true,
+                                      },
+                                      confirm: {
+                                        text: '删除',
+                                        visible: true,
+                                      },
+                                    },
+                                  })
         if (r) {
           this.$http.delete(`/api/graphIndicator/${warning.ID}`)
-            .then((res) => {
-              this.indicatorWarnings.splice(index, 1)
-            })
+              .then((res) => {
+                this.indicatorWarnings.splice(index, 1)
+              })
         }
       },
       clickWarn(warning) {
@@ -217,10 +223,10 @@
       search(key) {
         this.saving('搜索中...')
         this.$http.get(`/api/indicator?key=${key || ''}`)
-          .then((res) => {
-            this.currentIndicators = res
-            this.saved()
-          })
+            .then((res) => {
+              this.currentIndicators = res
+              this.saved()
+            })
       },
       clickIndicator(indicator) {
         if (indicator === this.currentSelectIndicator) {
@@ -255,13 +261,13 @@
     },
     mounted() {
       this.$http.get(`/api/graphNode/${this.GNID}/indicators`)
-        .then((res) => {
-          this.indicatorWarnings = res
-          console.log(this.indicatorWarnings)
-          this.indicatorWarnings.forEach(warn => {
-            this.setWarnType(warn)
+          .then((res) => {
+            this.indicatorWarnings = res
+            console.log(this.indicatorWarnings)
+            this.indicatorWarnings.forEach(warn => {
+              this.setWarnType(warn)
+            })
           })
-        })
 
     },
     components: {
