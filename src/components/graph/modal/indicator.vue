@@ -3,7 +3,7 @@
     <div v-if="editMode">
       <div style="display: flex;flex-direction: row-reverse">
         <search-bar :search="search"
-                    placeHolder="搜索指标"/>
+                    placeHolder="搜索指标" />
       </div>
 
       <div class="indicator-table">
@@ -57,18 +57,18 @@
             <div class="icon"
                  @click="editMode && clickWarn(warning)"
                  :class="{selected:warning.warn_type>0}">
-              <icon name="bell"/>
+              <icon name="bell" />
             </div>
             <div class="icon"
                  @click="clickDownload(warning)"
                  v-button>
-              <icon name="download"/>
+              <icon name="download" />
             </div>
             <div class="icon"
                  v-if="editMode"
                  @click="clickRemove(warning,index)"
                  v-button>
-              <icon name="trash"/>
+              <icon name="trash" />
             </div>
           </div>
         </div>
@@ -98,15 +98,17 @@
               <option value="0"></option>
             </select>
 
-            <input v-model="warning.upper_limit" :disabled="!editMode"/>
-            <input v-model="warning.lower_limit" :disabled="!editMode"/>
+            <input v-model="warning.upper_limit"
+                   :disabled="!editMode" />
+            <input v-model="warning.lower_limit"
+                   :disabled="!editMode" />
 
           </div>
           <div class="icon"
                v-if="editMode"
                @click="saveWarnChange(warning)"
                v-button>
-            <icon name="save"/>
+            <icon name="save" />
           </div>
         </div>
       </div>
@@ -139,7 +141,7 @@
     },
     computed: {
       GNID() {
-        return this.node.data.GNID
+        return this.node.GNID
       },
       currentPageIndicators() {
         return this.currentIndicators.slice((this.currentPage - 1) * 5, (this.currentPage) * 5)
@@ -156,19 +158,20 @@
         if (this.warningIDs.includes(indicator.IID)) {
           return
         }
-        this.$http.post(`/api/graphNode/${this.GNID}/indicator/${indicator.IID}`, {
+        console.log('GNID',this.GNID);
+        this.$http.post(`/api/graphNode/${this.GNID}/indicators/`, {
           IID: indicator.IID,
         })
-            .then(res => {
-              const warning = {
-                ...res,
-                indicator
+          .then(res => {
+            const warning = {
+              ...res,
+              indicator
 
-              }
-              this.indicatorWarnings.unshift(warning)
-            })
+            }
+            this.indicatorWarnings.unshift(warning)
+          })
       },
-      saveWarnChange({warn_type, warnType1, warnType2, ID, upper_limit, lower_limit}) {
+      saveWarnChange({ warn_type, warnType1, warnType2, ID, upper_limit, lower_limit }) {
         this.saving('设置中...')
 //        const {warn_type,warnType1,warnType2,IID,ID,upper_limit,lower_limit}=warning
         const warnType = warn_type == 0 ? 0 : (+warnType1) + (+warnType2)
@@ -177,9 +180,9 @@
           lower_limit,
           warn_type: warnType
         })
-            .then(res => {
-              this.saved('设置成功')
-            })
+          .then(res => {
+            this.saved('设置成功')
+          })
       },
       clickDownload(warning) {
         console.log('download')
@@ -187,24 +190,24 @@
       },
       async clickRemove(warning, index) {
         const r = await this.swal({
-                                    text: "确定删除指标关联？",
-                                    title: "删除关联",
-                                    buttons: {
-                                      cancel: {
-                                        text: '取消',
-                                        visible: true,
-                                      },
-                                      confirm: {
-                                        text: '删除',
-                                        visible: true,
-                                      },
-                                    },
-                                  })
+          text: '确定删除指标关联？',
+          title: '删除关联',
+          buttons: {
+            cancel: {
+              text: '取消',
+              visible: true,
+            },
+            confirm: {
+              text: '删除',
+              visible: true,
+            },
+          },
+        })
         if (r) {
           this.$http.delete(`/api/graphIndicator/${warning.ID}`)
-              .then((res) => {
-                this.indicatorWarnings.splice(index, 1)
-              })
+            .then((res) => {
+              this.indicatorWarnings.splice(index, 1)
+            })
         }
       },
       clickWarn(warning) {
@@ -223,10 +226,10 @@
       search(key) {
         this.saving('搜索中...')
         this.$http.get(`/api/indicator?key=${key || ''}`)
-            .then((res) => {
-              this.currentIndicators = res
-              this.saved()
-            })
+          .then((res) => {
+            this.currentIndicators = res
+            this.saved()
+          })
       },
       clickIndicator(indicator) {
         if (indicator === this.currentSelectIndicator) {
@@ -260,14 +263,25 @@
       }
     },
     mounted() {
-      this.$http.get(`/api/graphNode/${this.GNID}/indicators`)
-          .then((res) => {
-            this.indicatorWarnings = res
-            console.log(this.indicatorWarnings)
-            this.indicatorWarnings.forEach(warn => {
-              this.setWarnType(warn)
-            })
+      this.$http.get(`/api/graphNode/${this.GNID}/indicators`,)
+        .then((res) => {
+          this.indicatorWarnings = res
+          console.log(this.indicatorWarnings)
+          this.indicatorWarnings.forEach(warn => {
+            this.setWarnType(warn)
           })
+        })
+        .catch(({ response }) => {
+          const { status } = response
+          if (status == 417) {
+            EventBus.$emit('errorDialog', {
+              text: '请先保存图谱',
+              callback() {
+                EventBus.$emit('closeModal')
+              }
+            })
+          }
+        })
 
     },
     components: {

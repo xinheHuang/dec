@@ -1,0 +1,5 @@
+/**
+ * Created by Xinhe on 2017-10-16.
+ */
+export const PROFILE_TAB_CHANGED = 'PROFILE_TAB_CHANGED'
+export const PROFILE_PAGE_SCROLLED = 'PROFILE_PAGE_SCROLLED'

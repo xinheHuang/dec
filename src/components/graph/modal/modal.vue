@@ -1,13 +1,14 @@
 <!--node弹窗-->
 <template>
+
   <modal @close="close()">
     <div slot="title"style="text-align: center;position: relative">
       <h3 style="color:black;"
           @dblclick="titleEdit()"
-          v-show="!editMode || !editTopic">
-        {{modalData.topic}}
+          v-show="!modalData.editMode || !editTopic">
+        {{modalData.node.topic}}
       </h3>
-      <div v-if="editMode" v-show="editTopic"
+      <div v-if="modalData.editMode" v-show="editTopic"
            class="edit-topic">
         <input v-model="tempTopic">
         <div class="icon"
@@ -20,13 +21,14 @@
         <transition name="fade">
           <div v-show="tipShown "
                style="display: flex;align-items: center">
+
             <icon v-if="tipType=='succ'"
                   name="check-circle"
                   style="color:limegreen"/>
             <icon v-if="tipType=='error'"
                   name="close"
                   style="color:red"/>
-            <span style="margin-left: 20px">{{saveText}}</span>
+            <span style="margin-left: 20px" v-html="saveText"></span>
           </div>
         </transition>
         <div v-show="isSaving">
@@ -39,8 +41,8 @@
                    :enableSearch="false"
                    @switchTab="tabChanged"></content-nav>
       <component :is="currentTab"
-                 :node="modalData"
-                 :edit-mode="false"
+                 :node="modalData.node"
+                 :edit-mode="modalData.editMode"
                  :saving="saving"
                  :saveFailed="saveFailed"
                  :saved="saved"></component>
@@ -65,7 +67,6 @@
         type: Object,
         required: true,
       },
-      editMode:Boolean,
     },
     data() {
       return {
@@ -80,11 +81,11 @@
           },
         ],
         editTopic: true,
-        tempTopic: this.modalData.topic,
+        tempTopic: this.modalData.node.topic,
         tipShown: false,
         timeout: null,
         currentTab: null,
-        saveText: null,
+        saveText: "",
         isSaving: false,
         savingText: null,
         tipType: null,
@@ -92,21 +93,21 @@
     },
     methods: {
       titleEdit(){
-        if (this.editMode){
+        if (this.modalData.editMode){
           this.editTopic=true;
-          this.tempTopic=this.modalData.topic
+          this.tempTopic=this.modalData.node.topic
         }
       },
       close(){
-        EventBus.$emit('closeModal',(node)=>{
-          EventBus.$emit('nodeModalClose',node);
+        EventBus.$emit('closeModal',(modalData)=>{
+          EventBus.$emit('nodeModalClose',modalData.node);
         });
       },
       tabChanged(menu) {
         this.currentTab = menu.key
       },
       dateFormat,
-      showTip(text) {
+      showTip(text) { //完成
         if (this.timeout) {
           clearTimeout(this.timeout)
         }
@@ -128,6 +129,7 @@
           return
         }
         this.tipType = 'succ'
+        console.log('text',text);
         this.showTip(text)
       },
       saveFailed(text) {
@@ -136,7 +138,7 @@
       },
       saveTopic() {
         if (this.tempTopic) {
-          this.modalData.topic = this.tempTopic
+          this.modalData.node.topic = this.tempTopic
           this.editTopic = false
           this.saved('修改成功')
         }
@@ -145,6 +147,9 @@
         }
       }
 
+    },
+    mounted(){
+      console.log(this.modalData);
     },
     beforeDestroy() {
       if (this.timeout) {

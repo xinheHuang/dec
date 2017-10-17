@@ -29,6 +29,7 @@ module.exports = {
       'Util': resolve('src/utils'),
       'Directive':resolve('src/directive'),
       'Asset':resolve('src/assets'),
+      'Store':resolve('src/store')
     }
   },
   module: {

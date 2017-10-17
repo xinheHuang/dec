@@ -3,18 +3,18 @@
     <div class="top-op"
          v-if="editMode">
       <div style="display: flex;align-items: center">
-        <img :src="require('../../assets/images/samelevelnode.png')"/>
+        <img :src="require('../../assets/images/samelevelnode.png')" />
         <span @click="addParallelNode()">
           加入同级节点
         </span>
-        <img :src="require('../../assets/images/nextlevelnode.png')"/>
+        <img :src="require('../../assets/images/nextlevelnode.png')" />
         <span @click="addChildNode()">
           加入下级节点
         </span>
         <span @click="removeNode()">
           删除节点
         </span>
-        <img :src="require('../../assets/images/shownodes.png')"/>
+        <img :src="require('../../assets/images/shownodes.png')" />
         <select v-model="selected"
                 @change="selectChange()">
           <option disabled
@@ -26,11 +26,11 @@
         </select>
       </div>
       <div class="save-op">
-        <span @click="save()"
+        <span @click="saveDraft()"
               :class="{disabled:isSaving}">
           保存{{isSaving ? '中...' : ''}}
         </span>
-        <span @click="submit()"
+        <span @click="saveFinal()"
               v-tooltip.bottom="{content:'将此版图谱记录为历史版本'}">
           提交
         </span>
@@ -39,11 +39,21 @@
     <div style="position: relative">
       <transition name="fade">
         <div class="save-tip"
+             v-show="showFailedTip"
+        >
+          <icon name="exclamation-triangle"
+                style="color:red" />
+          <span style="margin-left: 10px">{{tipType}}失败!</span>
+        </div>
+      </transition>
+
+      <transition name="fade">
+        <div class="save-tip"
              v-show="showSuccessTip"
         >
           <icon name="check-circle"
-                style="color:limegreen"/>
-          <span style="margin-left: 10px">保存成功!</span>
+                style="color:limegreen" />
+          <span style="margin-left: 10px">{{tipType}}成功!</span>
         </div>
       </transition>
 
@@ -55,7 +65,7 @@
         <!--{{currentZoom}}-->
         <img :src="require('Asset/images/plus.png')"
              v-button
-             @click="zoomIn()"/>
+             @click="zoomIn()" />
         <input type="range"
                style="-webkit-appearance: slider-vertical;writing-mode: bt-lr"
                :min="jm.view.minZoom"
@@ -63,20 +73,20 @@
                orient="vertical"
                :step="jm.view.zoomStep"
                @change="changeZoom()"
-               v-model="currentZoom"/>
+               v-model="currentZoom" />
         <img :src="require('Asset/images/minus.png' )"
              v-button
-             @click="zoomOut()"/>
+             @click="zoomOut()" />
         <img :src="require('Asset/images/drag.png')"
              :class="{'selected':isDrag}"
-             @click="toggleDrag"/>
+             @click="toggleDrag" />
         <img :src="require('Asset/images/position.png')"
              v-button
              @click="goCenter()"
         />
         <img :src="require('Asset/images/eye.png')"
              :class="{'selected':showThumb}"
-             @click="showThumbnail"/>
+             @click="showThumbnail" />
       </div>
       <div class="thumbnail"
            v-show="showThumb && thumbSrc">
@@ -94,11 +104,12 @@
   import jsMind from 'jsmind'
   import 'jsmind/style/jsmind.css'
   //  import VTooltip from 'v-tooltip'
-  import {numberZh} from '../../utils/index'
+  import { numberZh } from '../../utils/index'
   import EventBus from '@/eventBus'
 
   import Icon from 'vue-awesome/components/Icon.vue'
   import 'vue-awesome/icons/check-circle'
+  import 'vue-awesome/icons/exclamation-triangle'
   import domtoimage from 'dom-to-image'
 
   Icon.register(
@@ -106,7 +117,7 @@
       target: {
         width: 32,
         height: 32,
-        d: "M32 14h-3.154c-0.864-5.57-5.276-9.982-10.846-10.846v-3.154h-4v3.154c-5.57 0.864-9.982 5.276-10.846 10.846h-3.154v4h3.154c0.864 5.57 5.276 9.982 10.846 10.846v3.154h4v-3.154c5.57-0.864 9.982-5.276 10.846-10.846h3.154v-4zM24.776 14h-3.118c-0.603-1.705-1.953-3.056-3.658-3.658v-3.118c3.36 0.765 6.010 3.416 6.776 6.776zM16 18c-1.105 0-2-0.895-2-2s0.895-2 2-2c1.105 0 2 0.895 2 2s-0.895 2-2 2zM14 7.224v3.118c-1.705 0.603-3.056 1.953-3.658 3.658h-3.118c0.765-3.36 3.416-6.010 6.776-6.776zM7.224 18h3.118c0.603 1.705 1.953 3.056 3.658 3.658v3.118c-3.36-0.765-6.010-3.416-6.776-6.776zM18 24.776v-3.118c1.705-0.603 3.056-1.953 3.658-3.658h3.118c-0.765 3.36-3.416 6.010-6.776 6.776z"
+        d: 'M32 14h-3.154c-0.864-5.57-5.276-9.982-10.846-10.846v-3.154h-4v3.154c-5.57 0.864-9.982 5.276-10.846 10.846h-3.154v4h3.154c0.864 5.57 5.276 9.982 10.846 10.846v3.154h4v-3.154c5.57-0.864 9.982-5.276 10.846-10.846h3.154v-4zM24.776 14h-3.118c-0.603-1.705-1.953-3.056-3.658-3.658v-3.118c3.36 0.765 6.010 3.416 6.776 6.776zM16 18c-1.105 0-2-0.895-2-2s0.895-2 2-2c1.105 0 2 0.895 2 2s-0.895 2-2 2zM14 7.224v3.118c-1.705 0.603-3.056 1.953-3.658 3.658h-3.118c0.765-3.36 3.416-6.010 6.776-6.776zM7.224 18h3.118c0.603 1.705 1.953 3.056 3.658 3.658v3.118c-3.36-0.765-6.010-3.416-6.776-6.776zM18 24.776v-3.118c1.705-0.603 3.056-1.953 3.658-3.658h3.118c-0.765 3.36-3.416 6.010-6.776 6.776z'
       }
     }
   )
@@ -136,15 +147,19 @@
         showThumb: false,
         isDrag: false,
         numberZh,
-        showSuccessTip: false,
+
         timeout: null,
         isSaving: false,
-        centerTimeOut: null
+        centerTimeOut: null,
+
+        showSuccessTip: false,
+        showFailedTip: false,
+        tipType: '',
       }
     },
     computed: {
       graphNodes() {
-        return this.nodes.map(({title, FNID, direction, NID, GNID}) => ({
+        return this.nodes.map(({ title, FNID, direction, NID, GNID }) => ({
           GNID,
           id: NID,
           isroot: FNID == 0,
@@ -155,89 +170,111 @@
       }
     },
     methods: {
-      submit() {
-        this.swal({
-                    text: "是否要将此版图谱归档为历史版本，方便您后续回溯？",
-                    title: "提交图谱",
-                    buttons: {
-                      cancel: {
-                        text: '取消',
-                        visible: true,
-                      },
-                      confirm: {
-                        text: '提交',
-                        visible: true,
-                      },
-                    },
-                  })
-            .then((isConfirm) => {
-              //todo add submit api
-              if (isConfirm) {
-                this.swal({
-                            text: "已成功归档，您可以在 XXX 处回溯查阅。",
-                            title: "提交成功",
-                            icon: "success",
-                          })
+      async saveFinal() {
+        try {
+          const name = await this.swal({
+            text: '是否要将此版图谱归档为历史版本，方便您后续回溯？',
+            title: '提交图谱',
+            content: {
+              element: 'input',
+              attributes: {
+                placeholder: '请输入图谱名称',
               }
-            })
+            },
+            buttons: {
+              cancel: {
+                text: '取消',
+                visible: true,
+              },
+              confirm: {
+                text: '提交',
+                visible: true,
+                closeModal: false,
+              },
+            },
+          })
+          console.log('graph name', name)
+          if (name !== null) {
+            if (name) {
+              const nodes = this.getCurrentNodes()
+              const suc = await this.save('提交', async () => {
+                return await this.onSaveFinal(nodes, name)
+              })
+              if (suc) {
+                this.swal({
+                  text: '已成功归档，您可以在 XXX 处回溯查阅。',
+                  title: '提交成功',
+                  icon: 'success',
+                })
+              }
+            } else {
+              EventBus.$emit('errorDialog', { text: '请输入图谱名称', callback: this.saveFinal })
+            }
+          }
+        }
+        catch (error) {
+          this.swal.stopLoading()
+          EventBus.$emit('errorDialog', { title: '提交失败!', text: error.message })
+        }
       },
+      saveDraft() {
+        const nodes = this.getCurrentNodes()
+        try {
+          this.save('保存', async () => {
+            return await this.onSaveDraft(nodes)
+          })
+        } catch (error) {
 
+        }
+      },
       getCurrentNodes() {
         return Object.keys(this.jm.mind.nodes)
-                     .map((id) => {
-                       const node = this.jm.mind.nodes[id]
-                       return {
-                         NID: id,
-                         title: node.topic,
-                         direction: node.direction == -1 ? 'left' : 'right',
-                         GID: this.id,
-                         FNID: node.isroot ? 0 : node.parent.id
-                       }
-                     })
+          .map((id) => {
+            const node = this.jm.mind.nodes[id]
+            return {
+              NID: id,
+              title: node.topic,
+              direction: node.direction == -1 ? 'left' : 'right',
+              GID: this.id,
+              FNID: node.isroot ? 0 : node.parent.id
+            }
+          })
       },
-      save() {
+
+
+      async save(tipType, saveCallback) {
         this.isSaving = true
-        const nodes = Object.keys(this.jm.mind.nodes)
-                            .map((id) => {
-                              const node = this.jm.mind.nodes[id]
-                              return {
-                                NID: id,
-                                title: node.topic,
-                                direction: node.direction == -1 ? 'left' : 'right',
-                                GID: this.id,
-                                FNID: node.isroot ? 0 : node.parent.id
-                              }
-                            })
-        this.$http.post(`/api/graph`, {
-          nodes,
-          graph: {
-            GID: this.id,  //todo create or update?
-            entity: this.graph.entity,
-            company: 'company', //todo
-            author: 'author'
+        this.tipType = tipType
+        try {
+          const res = await saveCallback()
+          this.showSuccessTip = true
+          return true
+        }
+        catch (error) {
+          this.showFailedTip = true
+          throw error
+        }
+        finally {
+          if (this.timeout) {
+            clearTimeout(this.timeout)
           }
-        })
-            .then(res => {
-              if (this.timeout) {
-                clearTimeout(this.timeout)
-              }
-              this.isSaving = false
-              this.showSuccessTip = true
-              this.timeout = setTimeout(() => {
-                this.showSuccessTip = false
-                this.timeout = null
-              }, 2000)
-            })
+          this.isSaving = false
+          this.timeout = setTimeout(() => {
+            this.showSuccessTip = false
+            this.showFailedTip = false
+            this.timeout = null
+          }, 2000)
+        }
       },
       goCenter() {
         if (this.centerTimeOut) return
-        const inner = $(".jsmind-inner")
+        const inner = this.jsMindContainer.find('.jsmind-inner')
           .children()
-        inner.addClass('animation')
+
         const originTransform = inner[0].style.transform
+        inner.addClass('animation')
         inner.css(
           'transform', `translate(0px, 0px)` + originTransform.replace(/translate\(.*?\)/, ''))
-        //fixed
         this.centerTimeOut = setTimeout(() => {
           this.updateThumbnail()
           inner.removeClass('animation')
@@ -249,7 +286,7 @@
 
       toggleDrag() {
         this.isDrag = !this.isDrag
-        const inner = $(".jsmind-inner")
+        const inner = this.jsMindContainer.find('.jsmind-inner')
         if (this.isDrag) {
           let startDrag = false
           let startX, startY
@@ -263,9 +300,9 @@
           inner.mousemove((event) => {
             if (startDrag) {
               inner.children()
-                   .css(
-                     'transform', `translate(${ event.clientX + startX}px,${ event.clientY + startY}px)` + originTransform.replace(
-                     /translate\(.*?\)/, ''))
+                .css(
+                  'transform', `translate(${ event.clientX + startX}px,${ event.clientY + startY}px)` + originTransform.replace(
+                  /translate\(.*?\)/, ''))
             }
           })
           inner.mouseup((event) => {
@@ -293,12 +330,12 @@
       updateThumbnail() {
         if (this.showThumb) {
           domtoimage.toPng(this.jsMindContainer[0])
-                    .then((dataUrl) => {
-                      this.thumbSrc = dataUrl
-                    })
-                    .catch(function (error) {
-                      console.error('oops, something went wrong!', error)
-                    })
+            .then((dataUrl) => {
+              this.thumbSrc = dataUrl
+            })
+            .catch(function (error) {
+              console.error('oops, something went wrong!', error)
+            })
         }
       },
       removeNode() {
@@ -365,7 +402,8 @@
       }
     },
     watch: {
-      graphNodes(old, newNode) {
+      graphNodes(newNode, old,) {
+        console.log('node change', newNode)
         this.showGraph(newNode)
       }
     },
@@ -387,6 +425,7 @@
       this.showGraph(this.graphNodes)
       this.updateThumbnail()
 
+      const _this = this
       //fixed some jsmind features
       this.jm.begin_edit = function (node) {
         if (!jsMind.util.is_node(node)) {
@@ -399,8 +438,15 @@
           }
         }
         if (this.get_editable()) {
-          console.log(node)
-          EventBus.$emit('openModal', 'node-modal', node)
+          console.log(node, _this.editMode)
+          EventBus.$emit('openModal', 'node-modal', {
+            node: {
+              id: node.id,
+              topic: node.topic,
+              GNID: node.data.GNID
+            },
+            editMode: _this.editMode
+          })
         } else {
           logger.error('fail, this mind map is not editable.')
           return
@@ -425,8 +471,8 @@
       }
 
       //handle event from
-      EventBus.$on('nodeModalClose', (node) => {
-        this.jm.update_node(node.id, node.topic)
+      EventBus.$on('nodeModalClose', (editNode) => {
+        this.jm.update_node(editNode.id, editNode.topic)
       })
 
 //      this.jsMindContainer = $(this.$el).find('.jsmind-container')
@@ -444,8 +490,7 @@
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="less"
-       scoped>
+<style lang="less">
   #graph {
     .jsmind-container {
       width: 100%;

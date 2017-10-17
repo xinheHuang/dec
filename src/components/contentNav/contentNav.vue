@@ -20,7 +20,7 @@
                @keyup.enter="searchInContent()">
         <div class="search-img"
              @click="searchInContent()">
-          <icon name="search"/>
+          <icon name="search" />
         </div>
         <!--<i class="iconfont icon-search"></i>-->
 
@@ -87,7 +87,7 @@
     },
     mounted() {
       this.switchTab(this.menus[0])
-    }
+    },
   }
 </script>
 

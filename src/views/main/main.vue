@@ -1,13 +1,18 @@
 <template>
-  <div id="main" @click="closeMenu()">
+  <div id="main"
+       @click="closeMenu()">
     <nav-menu></nav-menu>
     <div class="content">
-      <router-view></router-view>
+      <keep-alive>
+        <router-view></router-view>
+      </keep-alive>
     </div>
     <fixed-tools></fixed-tools>
     <footer class="footer"></footer>
 
-    <component v-if="showModal" :is="modal" :modal-data="modalData"></component>
+    <component v-if="showModal"
+               :is="modal"
+               :modal-data="modalData"></component>
   </div>
 </template>
 

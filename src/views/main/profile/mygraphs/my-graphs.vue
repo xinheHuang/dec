@@ -12,16 +12,17 @@
         </div>
         <div class="op">
           <drop-down :options="graphs.options"
-                     @change="changeGraph(graphs)"
+                     @change="(newGraph)=>{changeGraph(newGraph,graphs)}"
                      :default="graphs.options[0]"></drop-down>
-          <span class="button-blue" @click="editGraph(graphs.selected)">
+          <span class="button-blue"
+                @click="editGraph(graphs.selected)">
            点击编辑
           </span>
         </div>
       </div>
       <graph :edit-mode="false"
              :nodes="graphs.selected.nodes"
-             :graph-info="{'name':entity,'author':graphs.selected.uid,'version':graphs.selected.name}"/>
+             :graph-info="{'name':entity,'author':graphs.selected.uid,'version':graphs.selected.name}" />
     </div>
   </div>
 </template>
@@ -45,21 +46,23 @@
           }
         })
       },
-      changeGraphs(graphs) {
+      changeGraph(newGraph, graphs) {
         console.log('graph change')
-        return (newGraph) => {
-          graphs.selected = newGraph.value
-        }
+        console.log(graphs.selected)
+        this.$set(graphs,'selected',newGraph.value);
+        console.log(graphs.selected)
       },
-      editGraph(graph){
-        this.$router.push({ name: 'graphEdit', params: { entity: graph.entity,graphData:graph }})
+      editGraph(graph) {
+        this.$router.push({ name: 'graphEdit', params: { entity: graph.entity, graphData: graph } })
       }
     },
     mounted() {
       this.$http.get('/api/graph')
-          .then((graphs) => {
-            graphs.forEach((graph) => {
-              const {entity} = graph
+        .then((graphs) => {
+          graphs
+          //              .filter(graph=>graph.type==1)
+            .forEach((graph) => {
+              const { entity } = graph
               let graphArr = this.graphMap[entity]
               if (graphArr == null) {
                 graphArr = []
@@ -67,12 +70,12 @@
               }
               graphArr.push(graph)
             })
-            Object.values(this.graphMap)
-                  .forEach(graphs => {
-                    graphs.options = this.getOptions(graphs)
-                    graphs.selected = graphs[0]
-                  })
-          })
+          Object.values(this.graphMap)
+            .forEach(graphs => {
+              this.$set(graphs,'options',this.getOptions(graphs))
+              this.$set(graphs,'selected',graphs[0])
+            })
+        })
     },
     components: {
       Graph,

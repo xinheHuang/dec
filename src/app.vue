@@ -9,22 +9,26 @@
 
   export default {
     mounted() {
-      EventBus.$on('errorDialog', ({title = '错误', text = ''}) => {
+      EventBus.$on('errorDialog', ({ title = '错误', text = '', callback }) => {
 
         this.swal(
           {
             title,
             text,
-            icon: "error",
+            icon: 'error',
           }
         )
+          .then(() => {
+            if (callback)
+              callback()
+          })
       })
 
       EventBus.$on('login', () => {
         this.$router.push({
-                            path: '/login',
-                            query: {redirect: this.$route.path}
-                          })
+          path: '/login',
+          query: { redirect: this.$route.path }
+        })
       })
     }
   }
@@ -34,6 +38,7 @@
   @import './assets/styles/common';
   @import './assets/styles/animate';
   @import './assets/styles/modal';
+
   #app {
     height: 100%;
   }

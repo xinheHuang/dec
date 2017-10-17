@@ -2,8 +2,7 @@
 
   <select v-model="select"
           class="button-blue"
-          @change="$emit('change',select)"
-          style="padding-left: 5px">
+          @change="$emit('change',select)">
     <option disabled v-if="hint"
             value=""> {{hint}}
     </option>
@@ -36,7 +35,6 @@
   select{
     /*appearance:none;*/
     text-align: center;
-    box-sizing: border-box;
     option{
       //todo
     }

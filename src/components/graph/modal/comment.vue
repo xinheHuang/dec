@@ -2,9 +2,9 @@
   <div>
     <div v-if=" editMode">
       <textarea class="editor"
-              style="width: 90%"
-              placeholder="输入笔记内容..."
-              autofocus></textarea>
+                style="width: 90%"
+                placeholder="输入笔记内容..."
+                autofocus></textarea>
       <div style="display: flex;flex-direction: row-reverse">
       <span style="padding: 10px;color: #2c8abf;cursor: pointer;"
             @click="save()"
@@ -20,17 +20,17 @@
         <input type="radio"
                id="all"
                value="all"
-               v-model="picked"/>
+               v-model="picked" />
         <label for="all">全部</label>
         <input type="radio"
                id="company"
                value="company"
-               v-model="picked"/>
+               v-model="picked" />
         <label for="company">只显示本公司</label>
         <input type="radio"
                id="me"
                value="me"
-               v-model="picked"/>
+               v-model="picked" />
         <label for="me">只显示自己</label>
       </div>
     </div>
@@ -39,7 +39,7 @@
       <div v-for="comment in shownComments"
            style="display: flex;">
         <span style="width: 100px">{{getTime(comment.riqi)}}</span>
-        <span style="width: 100px">{{comment.institution}}</span>
+        <span style="width: 200px">{{comment.industry}}</span>
         <span style="width: 100px">{{comment.author}}</span>
         <div style="word-break: break-all"
              v-html="comment.content"></div>
@@ -56,7 +56,8 @@
 <script>
   import Simditor from 'simditor'
   import 'simditor/styles/simditor.css'
-  import { twoDigitNumber } from '../../../utils/index'
+  import { twoDigitNumber } from 'Util'
+  import EventBus from '@/eventBus'
 
   export default {
     props: {
@@ -78,7 +79,8 @@
     mounted() {
       if (this.editMode) {
         this.editor = new Simditor({
-          textarea: $(this.$el).find('.editor'),
+          textarea: $(this.$el)
+            .find('.editor'),
           //optional options
           pasteImage: true,
           upload: {  //todo upload api
@@ -103,36 +105,51 @@
     },
     methods: {
       loadMore() {
-        this.$http.get(`/api/graph/node/${this.node.id}/comment/${this.currentFrom}`)
+        this.$http.get(`/api/node/${this.node.id}/comment/${this.currentFrom}`)
           .then((res) => {
             this.comments = [...this.comments, ...res.comments]
             this.hasMore = res.hasMore
             this.currentFrom = this.comments.length
+          })
+          .catch(({ response }) => {
+            const { status } = response
+            if (status == 417) {
+              EventBus.$emit('errorDialog', {
+                text: '请先保存图谱',
+                callback() {
+                  EventBus.$emit('closeModal')
+                }
+              })
+            }
           })
       },
       getTime(riqi) {
         const date = new Date(riqi)
         return `${twoDigitNumber(date.getHours())}：${twoDigitNumber(date.getMinutes())}`
       },
-      save() {
-        if (this.editor) {
-          const content = this.editor.getValue()
-          if (content) {
-            this.saving = true
-            this.$http.post(`/api/graph/node/${this.node.id}/comment`, {
-              author: 'author',  //todo
-              institution: 'institution',
-              content
-            })
-              .then((res) => {
-                this.saved('发表成功')
-                this.comments.unshift(res)
-                this.saving = false
+      async save() {
+        try {
+          if (this.editor) {
+            const content = this.editor.getValue()
+            if (content) {
+              this.saving = true
+              const comment = await this.$http.post(`/api/node/${this.node.id}/comment`, {
+                content
               })
+              this.saved('发表成功')
+              this.comments.unshift(comment)
+
+            }
+            else {  //comment empty
+              this.saveFailed('评论不可为空')
+            }
           }
-          else {  //comment empty
-            this.saveFailed("评论不可为空")
-          }
+        }
+        catch (error) {
+          this.saveFailed('发表失败')
+        }
+        finally {
+          this.saving = false
         }
       }
     }
