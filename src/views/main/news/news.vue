@@ -388,6 +388,17 @@
         this.showSearchBar = false
         this.currentTab = menu.key
         console.log(menu)
+
+        this.$http.get('/api/newsCategory/13/news', {
+          params: {
+            pageNumber: 1,
+            pageSize: 10,
+          }
+        }).then((res)=>{
+          console.log(res);
+        }).catch((err)=>{
+          console.log(err)
+        })
       },
       moveOnWechat(item) {
         item.showWechatQRcode = true

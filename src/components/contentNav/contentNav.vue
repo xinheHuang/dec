@@ -62,14 +62,9 @@
       }
     },
     methods: {
-      switchSubMenu(menu) {
-        if (this.selectedSubMenu === menu.key) return
-        this.selectedSubMenu = menu.key
-        this.$emit('switchTab', menu)
-      },
 
       switchTab(menu) {
-        if (this.selected === menu) return
+        if (this.selected.key === menu.key) return
         this.selected = menu
         if (this.selected.subMenus && this.selected.subMenus.length > 0) return
         this.onMenuChanged(menu)
