@@ -7,6 +7,7 @@
 
     <!--列表部分-->
     <div class="section">
+      <!--todo replace by content nav-->
       <category-menu @switchTab="switchTab"></category-menu>
       <div class="list">
         <span class="icon-angle icon-angle-left"
@@ -76,6 +77,7 @@
   import companyList from './companyList/comnpanyList.vue'
   import Slick from 'vue-slick'
   import CategoryMenu from './menu/menu.vue'
+  import ContentNav from 'Component/contentNav/contentNav.vue'
   import dateList from './dateList/dateList.vue'
   import { dateFormat } from '../../../../utils'
 
@@ -250,7 +252,8 @@
       companyList,
       Slick,
       CategoryMenu,
-      dateList
+      dateList,
+      ContentNav
     },
     mounted() {
       this.$http.get('/api/market/conclusion')

@@ -2,7 +2,7 @@
   <div>
     <content-nav :menus="calendarMenu"
                  @search="onSearch"
-                 :dataObj="calendarType=='week'?weekShownData:dayShownData"
+                 :enableSearch="true"
                  :searchMethod="searchMethod"
                  @switchTab="tabChanged"></content-nav>
     <calendar-bar @dateChange="onDateChange"
@@ -33,7 +33,9 @@
                   </div>
                   <div class="values">
                     <div><span>公布值：</span><span v-html="item.announce+item.unit"></span></div>
-                    <div><span>预测值：</span><span v-html="item.estimate=='0'?'-':item.estimate+item.unit"></span></div>
+                    <div>
+                      <span>预测值：</span><span v-html="item.estimate=='0'?'-':item.estimate+item.unit"></span>
+                    </div>
                     <div><span>前值：</span><span v-html="item.previous+item.unit"></span></div>
                   </div>
                   <div style="flex-grow: 1;text-align: right"
@@ -150,7 +152,13 @@
 <script>
   import contentNav from '../../../components/contentNav/contentNav.vue'
   import calendarBar from './calendarBar/calendarBar.vue'
-  import {dateString, twoDigitNumber, weekDay, dateFormat, checkDateEqual} from '../../../utils/index'
+  import {
+    dateString,
+    twoDigitNumber,
+    weekDay,
+    dateFormat,
+    checkDateEqual
+  } from '../../../utils/index'
   import EventBus from '../../../eventBus'
 
   export default {
@@ -190,14 +198,14 @@
         const dayData = this.shownData[dateString(this.selectedDate)]
         if (!dayData) return
         const data = Object.keys(dayData)
-                           .map((key) => {
-                             const time = new Date(key)
-                             return {
-                               time,
-                               items: dayData[key]
-                             }
-                           })
-                           .sort((a, b) => a.time > b.time ? 1 : -1)
+          .map((key) => {
+            const time = new Date(key)
+            return {
+              time,
+              items: dayData[key]
+            }
+          })
+          .sort((a, b) => a.time > b.time ? 1 : -1)
         let k = 0
         data.forEach((time) => {
           time.items.forEach(item => {
@@ -215,18 +223,18 @@
         for (let i = 0; i < 7; i++) {
           const dayData = this.shownData[dateString(weekDay)]
           const data = !dayData ? null : Object.keys(dayData)
-                                               .map((key) => {
-                                                 const time = new Date(key)
-                                                 return {
-                                                   time,
-                                                   items: dayData[key]
-                                                 }
-                                               })
-                                               .sort((a, b) => a.time > b.time ? 1 : -1)
+            .map((key) => {
+              const time = new Date(key)
+              return {
+                time,
+                items: dayData[key]
+              }
+            })
+            .sort((a, b) => a.time > b.time ? 1 : -1)
           weekData.push({
-                          day: weekDay,
-                          data
-                        })
+            day: weekDay,
+            data
+          })
           weekDay = new Date(weekDay.getTime() + 60 * 60 * 24 * 1000)
         }
         this.weekShownData = weekData
@@ -234,9 +242,11 @@
       }
     },
     methods: {
-      searchMethod(searchStr, selected, dataObj) {
-        console.log(searchStr, selected, dataObj)
-        const {calendarType, currentTab} = this
+      searchMethod(searchStr) {
+        const dataObj = (this.calendarType == 'week' ? this.weekShownData : this.dayShownData) || [];
+        console.log(searchStr, dataObj)
+        const { calendarType, currentTab } = this
+        console.log(currentTab);
         const regx = new RegExp(searchStr)
         let searchResult = []
         if (calendarType === 'day') {
@@ -245,11 +255,11 @@
             data.items.map(item => {
               let checked = []
               if (currentTab === 'schedule') {
-                  checked = ['title', 'content']
+                checked = ['title', 'content']
               }
 
               if (currentTab === 'statistic') {
-                  checked = ['indicator', 'announce', 'unit', 'estimate', 'previous', 'institution']
+                checked = ['indicator', 'announce', 'unit', 'estimate', 'previous', 'institution']
               }
 
 
@@ -261,14 +271,14 @@
                     [key]: (!item[key]) ? item[key] : String(item[key])
                       .replace(searchStr, `<span style="color: red;">${searchStr}</span>`)
                   }
-                }, {...item}))
+                }, { ...item }))
               }
             })
             if (resultItems.length > 0) {
               searchResult.push({
-                                  ...data,
-                                  items: resultItems
-                                })
+                ...data,
+                items: resultItems
+              })
             }
           })
         }
@@ -299,14 +309,14 @@
                         [key]: (!item[key]) ? item[key] : String(item[key])
                           .replace(searchStr, `<span style="color: red;">${searchStr}</span>`)
                       }
-                    }, {...item}))
+                    }, { ...item }))
                   }
                 })
                 if (resultItems.length > 0) {
                   tempResult.push({
-                                    ...data,
-                                    items: resultItems
-                                  })
+                    ...data,
+                    items: resultItems
+                  })
                 }
               })
             }
@@ -321,7 +331,7 @@
       dateFormat,
       checkDateEqual,
       showModal(schedule) {
-        EventBus.$emit('openModal', 'schedule-modal',schedule)
+        EventBus.$emit('openModal', 'schedule-modal', schedule)
       },
       getTime(date) {
         return `${twoDigitNumber(date.getHours())}:${twoDigitNumber(date.getMinutes())}`
@@ -354,35 +364,35 @@
     },
     mounted() {
       Promise.all([this.$http.get('/api/calendar/calendar1'), this.$http.get('/api/calendar/calendar2')])
-             .then(([res1, res2]) => {
-               const calendar1Data = {}
-               res1.forEach((data) => {
-                 if (!calendar1Data[data.riqi]) {
-                   calendar1Data[data.riqi] = {}
-                 }
-                 if (!calendar1Data[data.riqi][data.riqi_detail]) {
-                   calendar1Data[data.riqi][data.riqi_detail] = []
-                 }
-                 calendar1Data[data.riqi][data.riqi_detail].push(data)
-               })
-               this.calendar1Data = calendar1Data
+        .then(([res1, res2]) => {
+          const calendar1Data = {}
+          res1.forEach((data) => {
+            if (!calendar1Data[data.riqi]) {
+              calendar1Data[data.riqi] = {}
+            }
+            if (!calendar1Data[data.riqi][data.riqi_detail]) {
+              calendar1Data[data.riqi][data.riqi_detail] = []
+            }
+            calendar1Data[data.riqi][data.riqi_detail].push(data)
+          })
+          this.calendar1Data = calendar1Data
 
-               const calendar2Data = {}
-               res2.forEach((data) => {
-                 const day = new Date(data.riqi_detail)
-                 const riqi = dateString(day)
-                 if (!calendar2Data[riqi]) {
-                   calendar2Data[riqi] = {}
-                 }
-                 if (!calendar2Data[riqi][data.riqi_detail]) {
-                   calendar2Data[riqi][data.riqi_detail] = []
-                 }
-                 calendar2Data[riqi][data.riqi_detail].push(data)
-               })
-               this.calendar2Data = calendar2Data
+          const calendar2Data = {}
+          res2.forEach((data) => {
+            const day = new Date(data.riqi_detail)
+            const riqi = dateString(day)
+            if (!calendar2Data[riqi]) {
+              calendar2Data[riqi] = {}
+            }
+            if (!calendar2Data[riqi][data.riqi_detail]) {
+              calendar2Data[riqi][data.riqi_detail] = []
+            }
+            calendar2Data[riqi][data.riqi_detail].push(data)
+          })
+          this.calendar2Data = calendar2Data
 
-               this.shownData = this.currentTab === 'statistic' ? calendar1Data : calendar2Data
-             })
+          this.shownData = this.currentTab === 'statistic' ? calendar1Data : calendar2Data
+        })
     },
     components: {
       contentNav,

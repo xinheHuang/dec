@@ -2,8 +2,10 @@
   <div>
     <content-nav :menus="newsMenu"
                  @search="onSearch"
-                 :dataObj="dataObj"
+                 :enableSearch="true"
                  :searchMethod="searchMethod"
+                 :rootKey="0"
+                 :enableAll="true"
                  @switchTab="tabChanged"></content-nav>
     <table border="1"
            cellspacing="1"
@@ -89,26 +91,7 @@
     data() {
       return {
         currentTime: null,
-        newsMenu: [
-          { key: 'general', name: '综合' },
-          { key: 'social', name: '社会' ,subMenu:[
-            {
-              key:'social__house',
-              name:'房价',
-            },
-            {
-              key:'social__env',
-              name:'环境',
-            },
-            {
-              key:'social__food',
-              name:'食品安全',
-            }
-          ]},
-          { key: 'entertainment', name: '娱乐' },
-          { key: 'car', name: '汽车' },
-          { key: 'technical', name: '科技' },
-        ],
+        newsMenu: [],
         currentTab: 'general',
         dataObj: {
           'general': [
@@ -369,11 +352,12 @@
           ]
         },
         showSearchBar: false,
+        categories: [],
       }
     },
     methods: {
-      searchMethod(searchStr,selected,dataObj){
-        this.searchStr=searchStr
+      searchMethod(searchStr, selected, dataObj) {
+        this.searchStr = searchStr
         const regx = new RegExp(searchStr)
         const researchRes = []
         const currentNav = selected
@@ -401,9 +385,9 @@
         item.isShowDetails = !item.isShowDetails
       },
       tabChanged(menu) {
-        this.showSearchBar = false;
+        this.showSearchBar = false
         this.currentTab = menu.key
-        console.log(menu);
+        console.log(menu)
       },
       moveOnWechat(item) {
         item.showWechatQRcode = true
@@ -420,6 +404,22 @@
         this.dataObj.searchResult = result
         this.currentTab = 'searchResult'
       }
+    },
+    mounted() {
+      this.$http.get('/api/newsCategories')
+        .then((categories) => {
+          this.categories = categories
+          const getMenu = (categories) =>
+            (!categories) ?
+              null :
+              categories.map((category) => ({
+                key: category.CID,
+                name: category.name,
+                subMenus: getMenu(category.subs)
+              }))
+          console.log(getMenu(categories))
+          this.newsMenu = getMenu(categories)
+        })
     },
     created() {
       this.currentTime = new Date().toString()
