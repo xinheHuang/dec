@@ -16,7 +16,6 @@
   </div>
 </template>
 <script>
-  import pagination from 'vue-pagination-bootstrap'
   import Paginate from 'vuejs-paginate'
   //  Vue.component('paginate', Paginate)
   export default {
@@ -44,7 +43,6 @@
       }
     },
     components: {
-      pagination,
       Paginate
     }
   }
