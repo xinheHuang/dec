@@ -7,6 +7,40 @@
                  :rootKey="0"
                  :enableAll="true"
                  @switchTab="tabChanged"></content-nav>
+    <div class="news">
+      <div v-for="(dateNews,date) in news"
+           class="time">
+        <div class="item">
+          <icon name="clock-o"></icon>
+          {{dateFormat(new Date(date))}}
+
+        </div>
+        <div v-for="item in dateNews"
+             class="item news-content">
+          <div class="news-time"><span>{{getTime(item.date)}}</span></div>
+          <div class="news-items">
+            <span class="title">{{item.title}}</span>
+            <span>
+               <icon name="eye"></icon>
+              {{numFormat(item.num_read)}}
+            </span>
+            <span>
+              <icon name="heart"></icon>
+              {{numFormat(item.num_like)}}
+            </span>
+            <span>
+              <icon name="comment-o"></icon>
+              {{numFormat(item.num_comment)}}
+            </span>
+            <span class="source">{{item.source}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <pagination :total="pageTotal"
+                :pageSize="pageSize"
+                :changePage="onPageChange"></pagination>
     <table border="1"
            cellspacing="1"
            cellpadding="0"
@@ -85,14 +119,24 @@
 </template>
 
 <script>
-  import contentNav from '../../../components/contentNav/contentNav.vue'
+  import contentNav from 'Component/contentNav/contentNav.vue'
+  import pagination from 'Component/pagination/pagination.vue'
+  import axios from 'axios'
+  import { dateString, getTime, dateFormat } from 'Util'
+  import 'vue-awesome/icons/heart'
+  import 'vue-awesome/icons/eye'
+  import 'vue-awesome/icons/comment-o'
+  import 'vue-awesome/icons/clock-o'
+
+  const CancelToken = axios.CancelToken
 
   export default {
     data() {
       return {
+        pageSize: 10,
         currentTime: null,
         newsMenu: [],
-        currentTab: 'general',
+        currentTab: null,
         dataObj: {
           'general': [
             {
@@ -353,9 +397,55 @@
         },
         showSearchBar: false,
         categories: [],
+        pageTotal: 0,
+        source: null,
+        news: {},
       }
     },
     methods: {
+      numFormat(num) {
+        return num == -1 ? '-' : num
+      },
+      dateFormat,
+      getTime,
+      onPageChange(page) {
+        if (this.source) {
+          this.source.cancel()
+          this.source = null
+        }
+        this.source = CancelToken.source()
+        this.$http.get(`/api/newsCategory/${this.currentTab.key}/news`, {
+          cancelToken: this.source.token,
+          params: {
+            pageNumber: page,
+            pageSize: this.pageSize,
+          }
+        })
+          .then(({ news }) => {
+            this.source = null
+            console.log(news)
+            const newsMap = {}
+            news.forEach((item) => {
+              item.date = new Date(item.riqi)
+              const date = dateString(item.date)
+              let n = newsMap[date]
+              if (!n) {
+                n = []
+                newsMap[date] = n
+              }
+              n.push(item)
+            })
+            console.log('newsMap', newsMap)
+            this.news = newsMap
+
+          })
+          .catch((error) => {
+            if (axios.isCancel(error)) {
+              console.log('request cancel')
+            }
+          })
+      },
+
       searchMethod(searchStr, selected, dataObj) {
         this.searchStr = searchStr
         const regx = new RegExp(searchStr)
@@ -386,19 +476,17 @@
       },
       tabChanged(menu) {
         this.showSearchBar = false
-        this.currentTab = menu.key
-        console.log(menu)
-
-        this.$http.get('/api/newsCategory/13/news', {
+        this.currentTab = menu
+        console.log('menu:', menu)
+        this.$http.get(`/api/newsCategory/${this.currentTab.key}/pageCount`, {
           params: {
-            pageNumber: 1,
-            pageSize: 10,
+            pageSize: this.pageSize,
           }
-        }).then((res)=>{
-          console.log(res);
-        }).catch((err)=>{
-          console.log(err)
         })
+          .then(({ pageCount }) => {
+            this.pageTotal = pageCount
+            console.log(pageCount)
+          })
       },
       moveOnWechat(item) {
         item.showWechatQRcode = true
@@ -442,12 +530,89 @@
     },
     components: {
       contentNav,
+      pagination
     }
   }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style scoped
+       lang="less">
+  @import (reference) '../../../assets/styles/common';
+
+  .news {
+    .time {
+      border-left: 1px solid @border-gray;
+      border-right: 1px solid @border-gray;
+      background: #f6f6f6;
+      vertical-align: middle;
+      padding-top: 5px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .item {
+      border-bottom: 1px solid @border-gray;
+      min-height: 30px;
+      width: 100%;
+      &.news-content {
+        > div {
+          min-height: 30px;
+        }
+        .news-time {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 10px 0;
+          width: 100px;
+          background: #f6f6f6;
+        }
+        .news-items {
+          display: flex;
+          align-items: center;
+          flex-grow: 1;
+          span {
+            margin: 0 10px;
+            width: 60px;
+            &.title {
+              width: 800px;
+            }
+            &.source {
+              text-align: center;
+              flex-grow: 1;
+            }
+          }
+        }
+
+        display: flex;
+        align-items: center;
+        background: @white;
+      }
+      &.even {
+        background: #f6f6f6;
+      }
+      .values {
+        display: flex;
+        margin-left: 30px;
+        flex-shrink: 0;
+        > div {
+          width: 200px;
+          > span {
+            &:first-child {
+              color: gray;
+            }
+            &:last-child {
+              color: black;
+              font-weight: bold;
+            }
+          }
+        }
+      }
+    }
+  }
+
   .content__table {
     border-collapse: collapse;
     border-spacing: 1px;

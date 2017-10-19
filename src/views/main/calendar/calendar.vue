@@ -157,6 +157,7 @@
     twoDigitNumber,
     weekDay,
     dateFormat,
+    getTime,
     checkDateEqual
   } from '../../../utils/index'
   import EventBus from '../../../eventBus'
@@ -333,9 +334,7 @@
       showModal(schedule) {
         EventBus.$emit('openModal', 'schedule-modal', schedule)
       },
-      getTime(date) {
-        return `${twoDigitNumber(date.getHours())}:${twoDigitNumber(date.getMinutes())}`
-      },
+      getTime,
       tabChanged(menu) {
         this.searchResult = null
         if (this.currentTab === menu.key) return

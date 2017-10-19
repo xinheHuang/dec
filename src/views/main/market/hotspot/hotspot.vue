@@ -85,7 +85,7 @@
   import areachart from './areachart/areachart.vue'
   import legends from './legend/legend.vue'
   import * as d3 from 'd3'
-  import {dateString} from '../../../../utils'
+  import {dateString} from 'Util'
 
   export default {
     data() {

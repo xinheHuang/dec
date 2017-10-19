@@ -23,7 +23,11 @@
   display: inline-block;
   border: 1px solid @color;
   cursor: pointer;
-  color: @color
+  color: @color;
+  &.disabled{
+    cursor:not-allowed;
+    color: @gray;
+  }
 }
 
 .button-blue {
