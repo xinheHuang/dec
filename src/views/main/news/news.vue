@@ -7,114 +7,62 @@
                  :rootKey="0"
                  :enableAll="true"
                  @switchTab="tabChanged"></content-nav>
-    <div class="news">
+
+    <div v-if="isLoading">
+      加载中。。。
+    </div>
+    <div v-else
+         class="news">
       <div v-for="(dateNews,date) in news"
            class="time">
         <div class="item">
-          <icon name="clock-o"></icon>
-          {{dateFormat(new Date(date))}}
+          <icon name="clock-o"
+                style="margin-left: 20px"></icon>
+          <span style="margin-left: 10px">{{dateFormat(new Date(date))}}</span>
 
         </div>
         <div v-for="item in dateNews"
-             class="item news-content">
-          <div class="news-time"><span>{{getTime(item.date)}}</span></div>
-          <div class="news-items">
-            <span class="title">{{item.title}}</span>
-            <span>
+             style="width: 100%">
+          <div class="item news-content">
+            <div class="news-time"><span>{{getTime(item.date)}}</span></div>
+            <div class="news-items">
+              <span class="title"
+                    @click="showAbstract(item)" v-html="strReplace(item.title)"></span>
+              <span>
                <icon name="eye"></icon>
-              {{numFormat(item.num_read)}}
+              <span>{{numFormat(item.num_read)}}</span>
             </span>
-            <span>
+              <span>
               <icon name="heart"></icon>
-              {{numFormat(item.num_like)}}
+               <span>{{numFormat(item.num_like)}}</span>
             </span>
-            <span>
+              <span>
               <icon name="comment-o"></icon>
-              {{numFormat(item.num_comment)}}
+              <span> {{numFormat(item.num_comment)}}</span>
             </span>
-            <span class="source">{{item.source}}</span>
+              <span class="source">{{item.source}}</span>
+            </div>
+          </div>
+          <div class="item news-content"
+               v-show="item.showAbstract">
+            <div class="news-time"></div>
+            <div class="news-abstract">
+              <p>
+                <span style="font-weight: bold">摘要：</span>
+                <span  v-html="strReplace(item.abstract)"> </span>
+                <span @click="showDetail(item)"
+                      class="detail">[查看原文]</span>
+              </p>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
     <pagination :total="pageTotal"
+                ref="pagination"
                 :pageSize="pageSize"
                 :changePage="onPageChange"></pagination>
-    <table border="1"
-           cellspacing="1"
-           cellpadding="0"
-           class="content__table">
-      <tr v-if="showSearchBar"
-          style="background: #f6f6f6;">
-        <td class="search__td"
-            colspan="5">
-          <p>"<span class="searched"
-                    style="font-weight: bold;">{{ searchStr }}</span>"的搜索结果</p>
-        </td>
-      </tr>
-      <template v-for="(dateItem,i) in dataObj[currentTab]">
-        <tr class="content-time">
-          <td colspan="5"><i class="iconfont icon-timer"></i>{{ dateItem.date }}
-            <time v-if="i === 0"
-                  style="margin-left: 10px;">{{currentTime}}
-            </time>
-          </td>
-        </tr>
-        <template v-for="(item,index) in dateItem['newsItem']">
-          <tr class="news__item">
-            <td class="news__time">{{ item.time }}</td>
-            <td class="news__content"
-                @click="showDetails(item)">
-              <div v-if="showSearchBar"
-                   v-html="item.content"></div>
-              <div v-else>{{ item.content }}</div>
-            </td>
-            <td class="news__info"><i style="font-size: 21px;"
-                                      class="iconfont icon-chakan"></i> {{ item.viewer
-              }}
-              <i style="font-size: 14px; color: #b3a7a7; margin-left: 23px; margin-right: 7px;"
-                 class="iconfont icon-like"></i>{{ item.likes }}
-            </td>
-            <td class="news__from">{{ item.from }}</td>
-          </tr>
-          <tr v-show="item.isShowDetails"
-              class="news__item-details">
-            <td class="news__time"></td>
-            <td colspan="4"
-                class="news__details">
-              <transition mode="out-in"
-                          enter-active-class="animated fadeIn"
-                          leave-active-class="animated fadeOut">
-                <div class="details__wrapper"
-                     v-if="item.isShowDetails">
-                                    <span v-if="showSearchBar"
-                                          v-html="item.details">
-                                    </span>
-                  <span v-else>
-                                        {{ item.details }}
-                                    </span>
-                  <div class="details__share">
-                    <i class="iconfont icon-wechat"
-                       @mouseenter="moveOnWechat(item)"
-                       @mouseleave="moveOutWechat(item)"></i>
-                    <i class="iconfont icon-weibo"></i>
-                  </div>
-                  <transition name="fade">
-                    <div class="wechat-qrcode"
-                         v-if="item.showWechatQRcode">
-                      <img src="http://s.jiathis.com/qrcode.php?url=http://36kr.com/newsflashes/78787"
-                           alt="">
-                      <p>打开微信“扫一扫”，打开网页后点击屏幕右上角分享按钮</p>
-                    </div>
-                  </transition>
-                </div>
-              </transition>
-            </td>
-          </tr>
-        </template>
-      </template>
-    </table>
   </div>
 </template>
 
@@ -122,11 +70,12 @@
   import contentNav from 'Component/contentNav/contentNav.vue'
   import pagination from 'Component/pagination/pagination.vue'
   import axios from 'axios'
-  import { dateString, getTime, dateFormat } from 'Util'
+  import {dateString, getTime, dateFormat} from 'Util'
   import 'vue-awesome/icons/heart'
   import 'vue-awesome/icons/eye'
   import 'vue-awesome/icons/comment-o'
   import 'vue-awesome/icons/clock-o'
+  import 'vue-awesome/icons/close'
 
   const CancelToken = axios.CancelToken
 
@@ -137,396 +86,136 @@
         currentTime: null,
         newsMenu: [],
         currentTab: null,
-        dataObj: {
-          'general': [
-            {
-              'date': '09月04日',
-              'newsItem': [
-                {
-                  'time': '16:09',
-                  'content': '截至港股收盘，共有20323支股票处于上涨行情，232支跌停。港股收盘，共有20323支股票处于上涨行情，232支跌停。',
-                  'viewer': '54323',
-                  'likes': '9',
-                  'from': '澎湃新闻',
-                  'details': '截至港股收盘，共有20323支股票处于上涨行情，232支跌停。所以你以为可以投资了吗？事实上，现在加入只会让你成为资本角逐的游戏，然而媒体是不会这样告诉你的。我也不知道我在打点啥，总之这个是news的详情摘要。',
-                  'isShowDetails': false,
-                  'showWechatQRcode': false
-                }, {
-                  'time': '16:01',
-                  'content': '大陆股票全线崩盘，自从08年温家宝总理的四万亿计划之后，政府对难得的转型期没有做出及时调整，导致了这次股市黑色星期五',
-                  'viewer': '54323',
-                  'likes': '9',
-                  'from': '东方财富网',
-                  'details': '大陆股票全线崩盘大陆股票全线崩盘大陆股票全线崩盘截至港股收盘，共有20323支股票处于上涨行情，232支跌停。所以你以为可以投资了吗？事实上，现在加入只会让你成为资本角逐的游戏，然而媒体是不会这样告诉你的。我也不知道我在打点啥，总之这个是news的详情摘要。',
-                  'isShowDetails': false,
-                  'showWechatQRcode': false
-                }, {
-                  'time': '15:29',
-                  'content': '大陆股票全线崩盘，自从08年温家宝总理的四万亿计划之后，政府对难得的转型期没有做出及时调整，导致了这次股市黑色星期五',
-                  'viewer': '54323',
-                  'likes': '9',
-                  'from': '东方财富网',
-                  'details': '大陆股票全线崩盘大陆股票全线崩盘大陆股票全线崩盘截至港股收盘，共有20323支股票处于上涨行情，232支跌停。所以你以为可以投资了吗？事实上，现在加入只会让你成为资本角逐的游戏，然而媒体是不会这样告诉你的。我也不知道我在打点啥，总之这个是news的详情摘要。',
-                  'isShowDetails': false,
-                  'showWechatQRcode': false
-                }
-              ]
-            },
-            {
-              'date': '09月02日',
-              'newsItem': [
-                {
-                  'time': '16:09',
-                  'content': '截至港股收盘，共有20323支股票处于上涨行情，232支跌停。',
-                  'viewer': '54323',
-                  'likes': '9',
-                  'from': '澎湃新闻',
-                  'details': '截至港股收盘，共有20323支股票处于上涨行情，232支跌停。所以你以为可以投资了吗？事实上，现在加入只会让你成为资本角逐的游戏，然而媒体是不会这样告诉你的。我也不知道我在打点啥，总之这个是news的详情摘要。',
-                  'isShowDetails': false,
-                  'showWechatQRcode': false
-
-                }, {
-                  'time': '16:01',
-                  'content': '大陆股票全线崩盘，自从08年温家宝总理的四万亿计划之后，政府对难得的转型期没有做出及时调整，导致了这次股市黑色星期五',
-                  'viewer': '54323',
-                  'likes': '9',
-                  'from': '东方财富网',
-                  'details': '大陆股票全线崩盘大陆股票全线崩盘大陆股票全线崩盘截至港股收盘，共有20323支股票处于上涨行情，232支跌停。所以你以为可以投资了吗？事实上，现在加入只会让你成为资本角逐的游戏，然而媒体是不会这样告诉你的。我也不知道我在打点啥，总之这个是news的详情摘要。',
-                  'isShowDetails': false,
-                  'showWechatQRcode': false
-                }, {
-                  'time': '15:29',
-                  'content': '大陆股票全线崩盘，自从08年温家宝总理的四万亿计划之后，政府对难得的转型期没有做出及时调整，导致了这次股市黑色星期五',
-                  'viewer': '54323',
-                  'likes': '9',
-                  'from': '东方财富网',
-                  'details': '大陆股票全线崩盘大陆股票全线崩盘大陆股票全线崩盘截至港股收盘，共有20323支股票处于上涨行情，232支跌停。所以你以为可以投资了吗？事实上，现在加入只会让你成为资本角逐的游戏，然而媒体是不会这样告诉你的。我也不知道我在打点啥，总之这个是news的详情摘要。',
-                  'isShowDetails': false,
-                  'showWechatQRcode': false
-                }
-              ]
-            },
-            {
-              'date': '07月03日',
-              'newsItem': [
-                {
-                  'time': '16:09',
-                  'content': '截至港股收盘，共有20323支股票处于上涨行情，232支跌停。',
-                  'viewer': '54323',
-                  'likes': '9',
-                  'from': '澎湃新闻',
-                  'details': '截至港股收盘，共有20323支股票处于上涨行情，232支跌停。所以你以为可以投资了吗？事实上，现在加入只会让你成为资本角逐的游戏，然而媒体是不会这样告诉你的。我也不知道我在打点啥，总之这个是news的详情摘要。',
-                  'isShowDetails': false,
-                  'showWechatQRcode': false
-
-                }, {
-                  'time': '16:01',
-                  'content': '大陆股票全线崩盘，自从08年温家宝总理的四万亿计划之后，政府对难得的转型期没有做出及时调整，导致了这次股市黑色星期五',
-                  'viewer': '54323',
-                  'likes': '9',
-                  'from': '东方财富网',
-                  'details': '大陆股票全线崩盘大陆股票全线崩盘大陆股票全线崩盘截至港股收盘，共有20323支股票处于上涨行情，232支跌停。所以你以为可以投资了吗？事实上，现在加入只会让你成为资本角逐的游戏，然而媒体是不会这样告诉你的。我也不知道我在打点啥，总之这个是news的详情摘要。',
-                  'isShowDetails': false,
-                  'showWechatQRcode': false
-                }, {
-                  'time': '15:29',
-                  'content': '大陆股票全线崩盘，自从08年温家宝总理的四万亿计划之后，政府对难得的转型期没有做出及时调整，导致了这次股市黑色星期五',
-                  'viewer': '54323',
-                  'likes': '9',
-                  'from': '东方财富网',
-                  'details': '大陆股票全线崩盘大陆股票全线崩盘大陆股票全线崩盘截至港股收盘，共有20323支股票处于上涨行情，232支跌停。所以你以为可以投资了吗？事实上，现在加入只会让你成为资本角逐的游戏，然而媒体是不会这样告诉你的。我也不知道我在打点啥，总之这个是news的详情摘要。',
-                  'isShowDetails': false,
-                  'showWechatQRcode': false
-                }
-              ]
-            },
-            {
-              'date': '03月12日',
-              'newsItem': [
-                {
-                  'time': '16:09',
-                  'content': '截至港股收盘，共有20323支股票处于上涨行情，232支跌停。',
-                  'viewer': '54323',
-                  'likes': '9',
-                  'from': '澎湃新闻',
-                  'details': '截至港股收盘，共有20323支股票处于上涨行情，232支跌停。所以你以为可以投资了吗？事实上，现在加入只会让你成为资本角逐的游戏，然而媒体是不会这样告诉你的。我也不知道我在打点啥，总之这个是news的详情摘要。',
-                  'isShowDetails': false,
-                  'showWechatQRcode': false
-
-                }, {
-                  'time': '16:01',
-                  'content': '大陆股票全线崩盘，自从08年温家宝总理的四万亿计划之后，政府对难得的转型期没有做出及时调整，导致了这次股市黑色星期五',
-                  'viewer': '54323',
-                  'likes': '9',
-                  'from': '东方财富网',
-                  'details': '大陆股票全线崩盘大陆股票全线崩盘大陆股票全线崩盘截至港股收盘，共有20323支股票处于上涨行情，232支跌停。所以你以为可以投资了吗？事实上，现在加入只会让你成为资本角逐的游戏，然而媒体是不会这样告诉你的。我也不知道我在打点啥，总之这个是news的详情摘要。',
-                  'isShowDetails': false,
-                  'showWechatQRcode': false
-                }, {
-                  'time': '15:29',
-                  'content': '大陆股票全线崩盘，自从08年温家宝总理的四万亿计划之后，政府对难得的转型期没有做出及时调整，导致了这次股市黑色星期五',
-                  'viewer': '54323',
-                  'likes': '9',
-                  'from': '东方财富网',
-                  'details': '大陆股票全线崩盘大陆股票全线崩盘大陆股票全线崩盘截至港股收盘，共有20323支股票处于上涨行情，232支跌停。所以你以为可以投资了吗？事实上，现在加入只会让你成为资本角逐的游戏，然而媒体是不会这样告诉你的。我也不知道我在打点啥，总之这个是news的详情摘要。',
-                  'isShowDetails': false,
-                  'showWechatQRcode': false
-                }
-              ]
-            }
-          ],
-          'social': [
-            {
-              'date': '03月12日',
-              'newsItem': [
-                {
-                  'time': '14:11',
-                  'content': '社会板块',
-                  'viewer': '54323',
-                  'likes': '9',
-                  'from': '澎湃新闻',
-                  'details': '截至港股收盘，共有20323支股票处于上涨行情，232支跌停。所以你以为可以投资了吗？事实上，现在加入只会让你成为资本角逐的游戏，然而媒体是不会这样告诉你的。我也不知道我在打点啥，总之这个是news的详情摘要。',
-                  'isShowDetails': false,
-                  'showWechatQRcode': false
-                }
-              ],
-            },
-          ],
-          'entertainment': [
-            {
-              'date': '03月04日',
-              'newsItem': [
-                {
-                  'time': '11:09',
-                  'content': '娱乐板块',
-                  'viewer': '54323',
-                  'likes': '22',
-                  'from': '澎湃新闻',
-                  'details': '截至港股收盘，共有20323支股票处于上涨行情，232支跌停。所以你以为可以投资了吗？事实上，现在加入只会让你成为资本角逐的游戏，然而媒体是不会这样告诉你的。我也不知道我在打点啥，总之这个是news的详情摘要。',
-                  'isShowDetails': false,
-                  'showWechatQRcode': false
-                }
-              ]
-            },
-          ],
-          'car': [
-            {
-              'date': '09月01日',
-              'newsItem': [
-                {
-                  'time': '16:09',
-                  'content': '汽车板块',
-                  'viewer': '54323',
-                  'likes': '9',
-                  'from': '澎湃新闻',
-                  'details': '截至港股收盘，共有20323支股票处于上涨行情，232支跌停。所以你以为可以投资了吗？事实上，现在加入只会让你成为资本角逐的游戏，然而媒体是不会这样告诉你的。我也不知道我在打点啥，总之这个是news的详情摘要。',
-                  'isShowDetails': false,
-                  'showWechatQRcode': false
-                }
-              ]
-            },
-          ],
-          'technical': [
-            {
-              'date': '09月02日',
-              'newsItem': [
-                {
-                  'time': '16:09',
-                  'content': '科技板块',
-                  'viewer': '54323',
-                  'likes': '9',
-                  'from': '澎湃新闻',
-                  'details': '截至港股收盘，共有20323支股票处于上涨行情，232支跌停。所以你以为可以投资了吗？事实上，现在加入只会让你成为资本角逐的游戏，然而媒体是不会这样告诉你的。我也不知道我在打点啥，总之这个是news的详情摘要。',
-                  'isShowDetails': false,
-                  'showWechatQRcode': false
-                }
-              ]
-            },
-          ],
-          'social__house': [
-            {
-              'date': '03月12日',
-              'newsItem': [
-                {
-                  'time': '14:11',
-                  'content': '社会子版块-房价',
-                  'viewer': '54323',
-                  'likes': '9',
-                  'from': '澎湃新闻',
-                  'details': '截至港股收盘，共有20323支股票处于上涨行情，232支跌停。所以你以为可以投资了吗？事实上，现在加入只会让你成为资本角逐的游戏，然而媒体是不会这样告诉你的。我也不知道我在打点啥，总之这个是news的详情摘要。',
-                  'isShowDetails': false,
-                  'showWechatQRcode': false
-                }
-              ]
-            },
-          ],
-          'social__env': [
-            {
-              'date': '03月12日',
-              'newsItem': [
-                {
-                  'time': '14:11',
-                  'content': '社会子版块-环境',
-                  'viewer': '54323',
-                  'likes': '9',
-                  'from': '澎湃新闻',
-                  'details': '截至港股收盘，共有20323支股票处于上涨行情，232支跌停。所以你以为可以投资了吗？事实上，现在加入只会让你成为资本角逐的游戏，然而媒体是不会这样告诉你的。我也不知道我在打点啥，总之这个是news的详情摘要。',
-                  'isShowDetails': false,
-                  'showWechatQRcode': false
-                }
-              ]
-            },
-          ],
-          'social__food': [
-            {
-              'date': '03月12日',
-              'newsItem': [
-                {
-                  'time': '14:11',
-                  'content': '社会子版块-食品安全',
-                  'viewer': '54323',
-                  'likes': '9',
-                  'from': '澎湃新闻',
-                  'details': '截至港股收盘，共有20323支股票处于上涨行情，232支跌停。所以你以为可以投资了吗？事实上，现在加入只会让你成为资本角逐的游戏，然而媒体是不会这样告诉你的。我也不知道我在打点啥，总之这个是news的详情摘要。',
-                  'isShowDetails': false,
-                  'showWechatQRcode': false
-                }
-              ]
-            },
-          ]
-        },
         showSearchBar: false,
         categories: [],
         pageTotal: 0,
         source: null,
         news: {},
+        searchKey:null,
+        isLoading: false,
       }
     },
     methods: {
+      clearSearch(){
+        this.searchKey=null;
+        this.fetchNews()
+      },
+      strReplace(str){
+        if (!this.searchKey){
+          return str;
+        }
+       return str.replace(new RegExp(this.searchKey,'g'), `<span style="color: red;">${this.searchKey}</span>`)
+      },
       numFormat(num) {
         return num == -1 ? '-' : num
       },
       dateFormat,
       getTime,
       onPageChange(page) {
+        console.log('onpage change ', page)
         if (this.source) {
           this.source.cancel()
           this.source = null
         }
         this.source = CancelToken.source()
+        this.isLoading = true
         this.$http.get(`/api/newsCategory/${this.currentTab.key}/news`, {
           cancelToken: this.source.token,
           params: {
+            key:this.searchKey,
             pageNumber: page,
             pageSize: this.pageSize,
           }
         })
-          .then(({ news }) => {
-            this.source = null
-            console.log(news)
-            const newsMap = {}
-            news.forEach((item) => {
-              item.date = new Date(item.riqi)
-              const date = dateString(item.date)
-              let n = newsMap[date]
-              if (!n) {
-                n = []
-                newsMap[date] = n
-              }
-              n.push(item)
+            .then(({news}) => {
+              this.source = null
+              console.log(news)
+              const newsMap = {}
+              news.forEach((item) => {
+                item.date = new Date(item.riqi)
+                const date = dateString(item.date)
+                let n = newsMap[date]
+                if (!n) {
+                  n = []
+                  newsMap[date] = n
+                }
+                this.$set(item, 'showAbstract', false)
+                n.push(item)
+              })
+              console.log('newsMap', newsMap)
+              this.news = newsMap
+              this.isLoading = false
             })
-            console.log('newsMap', newsMap)
-            this.news = newsMap
-
-          })
-          .catch((error) => {
-            if (axios.isCancel(error)) {
-              console.log('request cancel')
-            }
-          })
+            .catch((error) => {
+              if (axios.isCancel(error)) {
+                console.log('request cancel')
+              }
+            })
       },
 
-      searchMethod(searchStr, selected, dataObj) {
-        this.searchStr = searchStr
-        const regx = new RegExp(searchStr)
-        const researchRes = []
-        const currentNav = selected
-        const results = dataObj[currentNav]
-
-        results.forEach((result) => {
-          const newsItem = result.newsItem.filter(item => item.content.search(regx) !== -1)
-            .map((item) => ({
-              ...item,
-              isShowDetails: false,
-              content: item.content.replace(searchStr, `<span style="color: red;">${searchStr}</span>`),
-              details: item.details.replace(searchStr, `<span style="color: red;">${searchStr}</span>`)
-            }))
-          const resItem = {
-            date: result.date,
-            newsItem,
-          }
-          if (resItem.newsItem.length > 0) {
-            researchRes.push(resItem)
+      searchMethod(key) {
+        this.searchKey = key
+      },
+      showAbstract(item) {
+        item.showAbstract = !item.showAbstract
+      },
+      showDetail(item) {
+        this.swal({
+                    icon: 'info',
+                    title: 'todo...'
+                  })
+      },
+      fetchNews() {
+        this.isLoading = true
+        this.$http.get(`/api/newsCategory/${this.currentTab.key}/pageCount`, {
+          params: {
+            pageSize: this.pageSize,
+            key:this.searchKey
           }
         })
-        return researchRes
-      },
-      showDetails(item) {
-        item.isShowDetails = !item.isShowDetails
+            .then(({pageCount}) => {
+              this.pageTotal = Math.max(pageCount, 1)
+              console.log(this.pageTotal)
+              this.$nextTick(() => {
+                this.$refs.pagination.setPage(0)
+                this.onPageChange(1)
+              })
+
+            })
       },
       tabChanged(menu) {
         this.showSearchBar = false
         this.currentTab = menu
         console.log('menu:', menu)
-        this.$http.get(`/api/newsCategory/${this.currentTab.key}/pageCount`, {
-          params: {
-            pageSize: this.pageSize,
-          }
-        })
-          .then(({ pageCount }) => {
-            this.pageTotal = pageCount
-            console.log(pageCount)
-          })
+        this.fetchNews()
       },
-      moveOnWechat(item) {
-        item.showWechatQRcode = true
-      },
-      moveOutWechat(item) {
-        item.showWechatQRcode = false
-      },
-      onSearch(result) {
-        this.tabChanged({
-          key: 'researchRes'
-        })
-        console.log(result)
-        this.showSearchBar = true
-        this.dataObj.searchResult = result
-        this.currentTab = 'searchResult'
+      onSearch() {
+        this.fetchNews()
       }
     },
     mounted() {
       this.$http.get('/api/newsCategories')
-        .then((categories) => {
-          this.categories = categories
-          const getMenu = (categories) =>
-            (!categories) ?
+          .then((categories) => {
+            this.categories = categories
+            const getMenu = (categories) =>
+              (!categories) ?
               null :
               categories.map((category) => ({
                 key: category.CID,
                 name: category.name,
                 subMenus: getMenu(category.subs)
               }))
-          console.log(getMenu(categories))
-          this.newsMenu = getMenu(categories)
-        })
+            console.log(getMenu(categories))
+            this.newsMenu = getMenu(categories)
+          })
     },
     created() {
-      this.currentTime = new Date().toString()
-        .split(' ')[4]
-      setInterval(() => {
-        this.currentTime = new Date().toString()
-          .split(' ')[4]
-      }, 1000)
+//      this.currentTime = new Date().toString()
+//                                   .split(' ')[4]
+//      setInterval(() => {
+//        this.currentTime = new Date().toString()
+//                                     .split(' ')[4]
+//      }, 1000)
     },
     components: {
       contentNav,
@@ -546,7 +235,6 @@
       border-right: 1px solid @border-gray;
       background: #f6f6f6;
       vertical-align: middle;
-      padding-top: 5px;
       display: flex;
       flex-direction: column;
       align-items: flex-start;
@@ -554,36 +242,67 @@
       flex-shrink: 0;
     }
     .item {
+      display: flex;
+      align-items: center;
       border-bottom: 1px solid @border-gray;
-      min-height: 30px;
+      min-height: 50px;
       width: 100%;
       &.news-content {
         > div {
-          min-height: 30px;
+          min-height: 50px;
         }
+
         .news-time {
+          min-height: 50px;
           display: flex;
           align-items: center;
           justify-content: center;
           padding: 10px 0;
           width: 100px;
           background: #f6f6f6;
+          flex-shrink: 0;
         }
+
+        .news-abstract {
+          flex-grow: 1;
+          p {
+            font-size: 14px;
+            line-height: 28px;
+            margin: 0 10px;
+            .detail {
+              margin-left: 10px;
+              color: @blue;
+              cursor: pointer;
+              text-decoration: underline;
+            }
+          }
+        }
+
         .news-items {
           display: flex;
           align-items: center;
           flex-grow: 1;
-          span {
+          > span {
+            display: flex;
+            align-items: center;
             margin: 0 10px;
             width: 60px;
+            span {
+              margin-left: 10px;
+            }
             &.title {
               width: 800px;
+              cursor: pointer;
+              &:hover {
+                color: @blue;
+              }
             }
             &.source {
               text-align: center;
               flex-grow: 1;
             }
           }
+
         }
 
         display: flex;

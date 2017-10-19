@@ -1,20 +1,29 @@
 <template>
   <div class="pagination">
-    <pagination :total="total"
-                :page-size="pageSize"
-                :callback="changePage"
-                :options="paginationOptions">
-    </pagination>
+    <paginate :page-count="total"
+              :page-range="3"
+              :margin-pages="2"
+              :prev-text="'上一页'"
+              :next-text="'下一页'"
+              :click-handler="changePage"
+              page-link-class="item"
+              prev-link-class="item"
+              next-link-class="item"
+              :no-li-surround="true"
+              ref="paginate"
+              >
+    </paginate>
   </div>
 </template>
 <script>
   import pagination from 'vue-pagination-bootstrap'
-
+  import Paginate from 'vuejs-paginate'
+  //  Vue.component('paginate', Paginate)
   export default {
     props: {
       changePage: Function,
-      total:Number,
-      pageSize:Number,
+      total: Number,
+      pageSize: Number,
     },
     data() {
       return {
@@ -29,10 +38,14 @@
     methods: {
       pageChanged(page) {
         console.log(page)
+      },
+      setPage(page){
+        this.$refs.paginate.selected=page;
       }
     },
     components: {
-      pagination
+      pagination,
+      Paginate
     }
   }
 </script>
@@ -44,10 +57,10 @@
     align-items: center;
     justify-content: space-between;
 
-    li {
+    .item {
       .button-blue;
       border-radius: 0;
-      margin: 10px ;
+      margin: 10px;
       &.disabled {
         color: @gray;
       }

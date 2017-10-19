@@ -72,8 +72,8 @@
       onMenuChanged(menu) {
         this.$emit('switchTab', menu)
       },
-      searchInContent(searchStr = '') {
-        const researchRes = this.searchMethod(searchStr)
+      async searchInContent(searchStr = '') {
+        const researchRes = await this.searchMethod(searchStr)
         this.$emit('search', researchRes)
       },
     },
