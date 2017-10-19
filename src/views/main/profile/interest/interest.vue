@@ -53,8 +53,8 @@
 </template>
 
 <script>
-  import SearchBar from '../../../../components/searchBar/searchBar.vue'
-  import EventBus from '../../../../eventBus'
+  import SearchBar from 'Component/searchBar/searchBar.vue'
+  import EventBus from '@/eventBus'
 
   export default {
     data() {

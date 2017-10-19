@@ -23,7 +23,7 @@
       :rootKey="selected.key"
       @switchTab="onMenuChanged"
       :enableAll="true"
-
+      :allNames="this.allNames?this.allNames.slice(1):null"
     ></content-nav>
   </div>
 </template>
@@ -42,6 +42,7 @@
       enableAll: Boolean,
       rootKey: Number,
       searchMethod: Function,
+      allNames:Array,
     },
     computed: {
       navMenus() {
@@ -49,7 +50,7 @@
         if (this.enableAll) {
           navs.unshift({
             key: this.rootKey,
-            name: '全部'
+            name: this.allNames?this.allNames[0]:'全部',
           })
         }
         return navs
@@ -113,7 +114,7 @@
       > * {
         padding: 10px 40px;
         cursor: pointer;
-        font-size: 14px;
+        font-size: 16px;
         text-align: center;
         &.selected, &:hover {
           .nav-selected

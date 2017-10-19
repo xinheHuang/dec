@@ -6,10 +6,11 @@
                  :searchMethod="searchMethod"
                  :rootKey="0"
                  :enableAll="true"
+                 :allNames="menuAllNames"
                  @switchTab="tabChanged"></content-nav>
 
     <div v-if="isLoading">
-      加载中。。。
+      加载中.......
     </div>
     <div v-else
          class="news">
@@ -27,7 +28,8 @@
             <div class="news-time"><span>{{getTime(item.date)}}</span></div>
             <div class="news-items">
               <span class="title"
-                    @click="showAbstract(item)" v-html="strReplace(item.title)"></span>
+                    @click="showAbstract(item)"
+                    v-html="strReplace(item.title)"></span>
               <span>
                <icon name="eye"></icon>
               <span>{{numFormat(item.num_read)}}</span>
@@ -40,7 +42,8 @@
               <icon name="comment-o"></icon>
               <span> {{numFormat(item.num_comment)}}</span>
             </span>
-              <span class="source">{{item.source}}</span>
+              <span class="source"
+                    >{{item.source + ' ' + item.author}}</span>
             </div>
           </div>
           <div class="item news-content"
@@ -49,9 +52,9 @@
             <div class="news-abstract">
               <p>
                 <span style="font-weight: bold">摘要：</span>
-                <span  v-html="strReplace(item.abstract)"> </span>
-                <span @click="showDetail(item)"
-                      class="detail">[查看原文]</span>
+                <span v-html="strReplace(item.abstract)"> </span>
+                <span class="detail"><a target="_blank"
+                                        :href="item.link">[查看原文]</a></span>
               </p>
             </div>
           </div>
@@ -91,20 +94,21 @@
         pageTotal: 0,
         source: null,
         news: {},
-        searchKey:null,
+        searchKey: null,
         isLoading: false,
+        menuAllNames: ['全部一级行业', '全部二级行业', '全部三级行业',]
       }
     },
     methods: {
-      clearSearch(){
-        this.searchKey=null;
+      clearSearch() {
+        this.searchKey = null
         this.fetchNews()
       },
-      strReplace(str){
-        if (!this.searchKey){
-          return str;
+      strReplace(str) {
+        if (!this.searchKey) {
+          return str
         }
-       return str.replace(new RegExp(this.searchKey,'g'), `<span style="color: red;">${this.searchKey}</span>`)
+        return str.replace(new RegExp(this.searchKey, 'g'), `<span style="color: red;">${this.searchKey}</span>`)
       },
       numFormat(num) {
         return num == -1 ? '-' : num
@@ -122,7 +126,7 @@
         this.$http.get(`/api/newsCategory/${this.currentTab.key}/news`, {
           cancelToken: this.source.token,
           params: {
-            key:this.searchKey,
+            key: this.searchKey,
             pageNumber: page,
             pageSize: this.pageSize,
           }
@@ -170,7 +174,7 @@
         this.$http.get(`/api/newsCategory/${this.currentTab.key}/pageCount`, {
           params: {
             pageSize: this.pageSize,
-            key:this.searchKey
+            key: this.searchKey
           }
         })
             .then(({pageCount}) => {
@@ -230,6 +234,7 @@
   @import (reference) '../../../assets/styles/common';
 
   .news {
+    font-size: 14px;
     .time {
       border-left: 1px solid @border-gray;
       border-right: 1px solid @border-gray;
@@ -245,19 +250,19 @@
       display: flex;
       align-items: center;
       border-bottom: 1px solid @border-gray;
-      min-height: 50px;
+      min-height: 40px;
       width: 100%;
       &.news-content {
         > div {
-          min-height: 50px;
+          /*min-height: 30px;*/
         }
 
         .news-time {
-          min-height: 50px;
+          min-height: 40px;
+         align-self: stretch;
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 10px 0;
           width: 100px;
           background: #f6f6f6;
           flex-shrink: 0;
@@ -291,7 +296,7 @@
               margin-left: 10px;
             }
             &.title {
-              width: 800px;
+              width: 650px;
               cursor: pointer;
               &:hover {
                 color: @blue;
