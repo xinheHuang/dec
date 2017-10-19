@@ -42,15 +42,14 @@
               <icon name="comment-o"></icon>
               <span> {{numFormat(item.num_comment)}}</span>
             </span>
-              <span class="source"
-                    >{{item.source + ' ' + item.author}}</span>
+              <span class="source"><span style="color: darkgray;margin-right: 10px"> {{item.source }}</span>{{item.author}}</span>
             </div>
           </div>
           <div class="item news-content"
                v-show="item.showAbstract">
             <div class="news-time"></div>
             <div class="news-abstract">
-              <p>
+              <p style="color: gray">
                 <span style="font-weight: bold">摘要：</span>
                 <span v-html="strReplace(item.abstract)"> </span>
                 <span class="detail"><a target="_blank"
@@ -85,7 +84,7 @@
   export default {
     data() {
       return {
-        pageSize: 10,
+        pageSize: 20,
         currentTime: null,
         newsMenu: [],
         currentTab: null,

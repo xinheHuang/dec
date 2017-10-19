@@ -112,7 +112,8 @@
       display: flex;
       align-items: center;
       > * {
-        padding: 10px 40px;
+        padding: 10px 0px;
+        margin: 0 20px;
         cursor: pointer;
         font-size: 16px;
         text-align: center;
