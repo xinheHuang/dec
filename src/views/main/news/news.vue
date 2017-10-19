@@ -27,9 +27,9 @@
           <div class="item news-content">
             <div class="news-time"><span>{{getTime(item.date)}}</span></div>
             <div class="news-items">
-              <span class="title"
+              <p class="title"
                     @click="showAbstract(item)"
-                    v-html="strReplace(item.title)"></span>
+                    v-html="strReplace(item.title)"></p>
               <span>
                <icon name="eye"></icon>
               <span>{{numFormat(item.num_read)}}</span>
@@ -294,16 +294,18 @@
             span {
               margin-left: 10px;
             }
-            &.title {
-              width: 650px;
-              cursor: pointer;
-              &:hover {
-                color: @blue;
-              }
-            }
+
             &.source {
               text-align: center;
               flex-grow: 1;
+            }
+          }
+          .title {
+            margin: 0 10px;
+            width: 650px;
+            cursor: pointer;
+            &:hover {
+              color: @blue;
             }
           }
 
