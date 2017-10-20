@@ -116,10 +116,7 @@
   </div>
 </template>
 <script>
-  import 'vue-awesome/icons/save'
-  import 'vue-awesome/icons/bell'
-  import 'vue-awesome/icons/download'
-  import 'vue-awesome/icons/trash'
+
   import SearchBar from '../../searchBar/searchBar.vue'
 
   export default {

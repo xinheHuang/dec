@@ -22,18 +22,20 @@
              style="margin: 0 10px"></div>
         <div>
           <div style="display: flex;align-items: center">
-            <!--<div>-->
-            <!--<icon name="plus-circle" class="iconplus"></icon>-->
-            <!--</div>-->
-            <span class="iconplus icon-plus-circle">     </span>
+            <div>
+              <icon name="plus-circle"
+                    class="iconplus"></icon>
+            </div>
             <span style="margin-left: 20px;flex-grow: 1;word-break: break-all"
                   ref="title">
               {{article.plus}}
             </span>
           </div>
           <div style="display: flex;align-items: center">
-            <!--<icon name="minus-circle" class="iconminus"></icon>-->
-            <span class="iconplus icon-minus-circle">     </span>
+            <div>
+              <icon name="minus-circle"
+                    class="iconminus"></icon>
+            </div>
             <p style="margin-left: 20px;flex-grow: 1;word-break: break-all"
                ref="title">
               {{article.minus}}
@@ -47,16 +49,10 @@
 </template>
 
 <script>
-  import Vue from 'vue'
-  import '../../../../../assets/font/plus/style.css'
-  import EventBus from '../../../../../eventBus'
-  import { dateFormat, dotString } from '../../../../../utils'
-  import '../../../../../utils/clamp.min'
-  import VTooltip from 'v-tooltip'
-  import 'vue-awesome/icons/plus-circle'
-  import 'vue-awesome/icons/minus-circle'
+  import EventBus from '@/eventBus'
+  import { dateFormat, dotString } from 'Util'
+  import 'Util/clamp.min'
 
-  Vue.use(VTooltip)
   export default {
     props: {
       companyList: {
@@ -143,9 +139,8 @@
   .iconplus, .iconminus {
     padding: 10px;
     color: #6b6868;
-    font-size: 20px;
-    /*height: 20px;*/
-    /*width: 20px;*/
+    height: 20px;
+    width: 20px;
   }
 
   .key {

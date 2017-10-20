@@ -23,8 +23,7 @@
 </template>
 
 <script>
-  import 'vue-awesome/icons/qrcode'
-  import 'vue-awesome/icons/angle-up'
+
 
   export default {
     data() {

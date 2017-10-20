@@ -53,9 +53,12 @@
     <!--列表部分-->
     <div class="section">
       <div class="list">
-        <span class="icon-angle icon-angle-left"
-              :class="{'disable':slickLeftDisable}"
-              @click="onLeft"></span>
+        <div @click="onLeft"
+             :class="{'disable':slickLeftDisable}"
+             class="icon-angle"
+        >
+          <icon name="angle-left"></icon>
+        </div>
 
         <slick class="slick"
                ref="slick"
@@ -69,9 +72,13 @@
                          :keyWordList="keyWordList"></key-word-list>
         </slick>
 
-        <span class="icon-angle icon-angle-right"
-              :class="{'disable':slickRightDisable}"
-              @click="onRight"></span>
+        <div @click="onRight"
+             :class="{'disable':slickRightDisable}"
+             class="icon-angle"
+        >
+          <icon name="angle-right"></icon>
+        </div>
+
       </div>
     </div>
   </div>
@@ -291,7 +298,7 @@
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style scoped lang="less">
   .section {
     background: white;
     border: 2px solid #e2dddd;
@@ -337,11 +344,6 @@
     justify-content: space-between
   }
 
-  .list span {
-    font-size: 80px;
-    font-weight: lighter;
-    color: #6b6868;
-  }
 
   .slick {
     overflow: hidden;
@@ -356,11 +358,14 @@
 
   .icon-angle {
     cursor: pointer;
+    >*{
+      width: 80px;
+      height: 80px;
+    }
+    color: #6b6868;
+    &.disable{
+      color: #e2dddd;
+    }
   }
-
-  .icon-angle.disable {
-    color: #e2dddd;
-  }
-
 
 </style>

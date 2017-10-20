@@ -17,7 +17,7 @@
 </template>
 
 <script>
-  import EventBus from '../../eventBus'
+  import EventBus from '@/eventBus'
 
   import navMenu from 'Component/nav/nav.vue'
   import fixedTools from 'Component/fixedTools/fixedTools.vue'
@@ -25,7 +25,8 @@
   import articleModal from 'View/main/market/modal/modal.vue'
   import scheduleModal from 'View/main/calendar/modal/modal.vue'
   import nodeModal from 'Component/graph/modal/modal.vue'
-
+  import * as MutationTypes from 'Store/mutation-types'
+  import { mapMutations } from 'vuex'
 
   export default {
     data() {
@@ -53,6 +54,14 @@
           callback(this.modalData)
         }
       })
+      this.$http.get('/api/userInfo')
+        .then((info) => {
+          const userInfo = {
+            ...info,
+            headPic: require('../../assets/images/headPic.jpg')
+          }
+          this.$store.commit(MutationTypes.SET_USERINFO,userInfo)
+        })
     },
 
     components: {

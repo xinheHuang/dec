@@ -8,10 +8,9 @@
 </template>
 
 <script>
-  import contentNav from '../../../components/contentNav/contentNav.vue'
+  import contentNav from 'Component/contentNav/contentNav.vue'
   import hotspot from './hotspot/hotspot.vue'
   import recommend from './recommend/recommend.vue'
-  import '../../../assets/font/angle/style.css'
 
   export default {
     data() {

@@ -4,26 +4,19 @@ import Vue from 'vue'
 import router from './router'
 import store from './store'
 import App from './app.vue'
-import httpUtil from './utils/httpUtil'
 import './assets/styles/main.css'
-import './assets/font/iconfont.css'
-// import './assets/styles/animate.css'
-// import './assets/styles/common.less'
-import $ from 'jquery'
-import swal from 'sweetalert'
-import Icon from 'vue-awesome/components/Icon.vue'
+import 'Asset/icon'
+import HttpUtil from 'Util/httpUtil'
+import Swal from 'sweetalert'
 import Button from './directives/button'
 import VTooltip from 'v-tooltip'
 
-Vue.prototype.swal = swal
-Vue.prototype.$http = httpUtil
+Vue.prototype.swal = Swal;
+Vue.prototype.$http = HttpUtil
 Vue.config.productionTip = false
 
 Vue.directive('button', Button)
 Vue.use(VTooltip)
-
-Vue.component('icon', Icon)
-
 
 new Vue({
   el: '#app',

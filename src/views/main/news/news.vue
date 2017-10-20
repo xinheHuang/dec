@@ -73,11 +73,6 @@
   import pagination from 'Component/pagination/pagination.vue'
   import axios from 'axios'
   import {dateString, getTime, dateFormat} from 'Util'
-  import 'vue-awesome/icons/heart'
-  import 'vue-awesome/icons/eye'
-  import 'vue-awesome/icons/comment-o'
-  import 'vue-awesome/icons/clock-o'
-  import 'vue-awesome/icons/close'
 
   const CancelToken = axios.CancelToken
 

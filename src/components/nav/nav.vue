@@ -1,6 +1,7 @@
 <template>
   <div style="position: relative">
     <div class="header">
+
       <div class="logo">
         <img :src="require('../../assets/images/navLogo.png')">
       </div>
@@ -12,7 +13,7 @@
                :class="{'selected':currentNav==nav.key}">
 
             <icon class='icon'
-                  :name="nav.icon"/>
+                  :name="nav.icon" />
             <span>
             {{nav.name}}
           </span>
@@ -21,12 +22,12 @@
         <div class="user">
           <div class="message">
             <icon class='icon'
-                  name="bell"/>
+                  name="bell" />
           </div>
 
           <img :src="userInfo.headPic"
                @click.stop="showUserMenu = !showUserMenu"
-               class="profile"/>
+               class="profile" />
 
         </div>
       </div>
@@ -56,25 +57,8 @@
 </template>
 
 <script>
-  import 'vue-awesome/icons/cog'
-  import 'vue-awesome/icons/user'
-  import 'vue-awesome/icons/power-off'
-  import 'vue-awesome/icons/home'
-  import 'vue-awesome/icons/newspaper-o'
-  import 'vue-awesome/icons/calendar'
-  import 'vue-awesome/icons/bell'
-  import Icon from 'vue-awesome/components/Icon.vue'
   import EventBus from '../../eventBus'
-
-  Icon.register(
-    {
-      hot: {
-        width: 32,
-        height: 32,
-        d: "M10.031 32c-2.133-4.438-0.997-6.981 0.642-9.376 1.795-2.624 2.258-5.221 2.258-5.221s1.411 1.834 0.847 4.703c2.493-2.775 2.963-7.196 2.587-8.889 5.635 3.938 8.043 12.464 4.798 18.783 17.262-9.767 4.294-24.38 2.036-26.027 0.753 1.646 0.895 4.433-0.625 5.785-2.573-9.759-8.937-11.759-8.937-11.759 0.753 5.033-2.728 10.536-6.084 14.648-0.118-2.007-0.243-3.392-1.298-5.312-0.237 3.646-3.023 6.617-3.777 10.27-1.022 4.946 0.765 8.568 7.555 12.394z"
-      }
-    }
-  )
+  import { mapState } from 'vuex'
 
   export default {
     data() {
@@ -100,15 +84,15 @@
             name: '热点',
             icon: 'hot',
           },
-//        {
-//          key: 'graph',
-//          name: '思维导图'
-//        }
         ],
         currentNav: 'home',
         showUserMenu: false,
-        userInfo: {},
       }
+    },
+    computed: {
+      ...mapState({
+        userInfo: state => state.user.userInfo
+      })
     },
     methods: {
       switchNav(nav) {
@@ -121,22 +105,15 @@
       },
       logout() {
         this.$http.post('/api/auth/logout')
-            .then(() => {
-              this.$router.push('/login')
-            })
+          .then(() => {
+            this.$router.push('/login')
+          })
       },
       goProfile() {
         this.$router.push('/profile')
       }
     },
     mounted() {
-      this.$http.get('/api/userInfo')
-          .then((info) => {
-            this.userInfo = {
-              ...info,
-              headPic: require('../../assets/images/headPic.jpg')
-            }
-          })
       EventBus.$on('menuClose', () => {
         this.showUserMenu = false
       })

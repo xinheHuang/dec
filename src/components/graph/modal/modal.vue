@@ -56,9 +56,6 @@
   import comment from './comment.vue'
   import indicator from './indicator.vue'
   import {dateFormat} from 'Util'
-  import 'vue-awesome/icons/save'
-  import 'vue-awesome/icons/close'
-  import 'vue-awesome/icons/check-circle'
   import EventBus from '@/eventBus'
 
   export default {

@@ -22,18 +22,17 @@
              style="margin: 0 10px"></div>
         <div style="display: flex;justify-content: space-around">
           <div class="item-detail">
-            <div class="icon iconcalendar icon-calendar-o"></div>
+            <icon name="calendar-o"></icon>
             <div>{{dateFormat(item.date)}}</div>
           </div>
 
           <div class="item-detail">
-            <div class="icon iconcalendar icon-eye"
-                 style="font-size: 20px"></div>
+            <icon name="eye"></icon>
             <div>{{item.num_read}}</div>
           </div>
 
           <div class="item-detail">
-            <div class=" icon icon-like iconfont"></div>
+            <icon name="heart"/>
             <div>{{item.num_like}}</div>
           </div>
 
@@ -46,10 +45,9 @@
 
 <script>
   import Vue from 'vue'
-  import '../../../../../assets/font/calendar/style.css'
-  import EventBus from '../../../../../eventBus'
-  import {  dateFormat } from '../../../../../utils'
-  import '../../../../../utils/clamp.min'
+  import EventBus from '@/eventBus'
+  import {  dateFormat } from 'Util'
+  import 'Util/clamp.min'
   export default {
     props: {
       keyWordList: {

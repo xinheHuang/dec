@@ -22,7 +22,7 @@
 </template>
 
 <script>
-  import 'vue-awesome/icons/times-circle'
+
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

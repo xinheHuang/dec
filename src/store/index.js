@@ -3,13 +3,14 @@
  */
 import Vue from 'vue'
 import Vuex from 'vuex'
-import * as modules from './modules'
-
+import user from './modules/user'
 Vue.use(Vuex)
 
 const debug = process.env.NODE_ENV !== 'production'
 
 export default new Vuex.Store({
-  modules,
+  modules:{
+    user
+  },
   strict: debug,
 })

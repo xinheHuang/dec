@@ -18,9 +18,6 @@
 </template>
 
 <script>
-  import Vue from 'vue'
-  import '../../../../../assets/font/plus/style.css'
-
   export default {
     props: {
       dateList: {

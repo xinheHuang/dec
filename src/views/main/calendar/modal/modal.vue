@@ -23,8 +23,7 @@
 
 <script>
   import modal from 'Component/modal/modal.vue'
-  import 'vue-awesome/icons/user'
-  import 'vue-awesome/icons/calendar-o'
+
   import { dateFormat } from 'Util'
   import EventBus from '@/eventBus'
 

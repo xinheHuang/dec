@@ -25,10 +25,7 @@
 </template>
 
 <script>
-  import 'vue-awesome/icons/eye'
-  import 'vue-awesome/icons/calendar-o'
-  import 'vue-awesome/icons/user'
-  import 'vue-awesome/icons/heart'
+
   import { dateFormat } from 'Util'
   import modal from 'Component/modal/modal.vue'
   import EventBus from '@/eventBus'

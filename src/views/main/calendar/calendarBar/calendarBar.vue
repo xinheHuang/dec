@@ -29,8 +29,7 @@
   </div>
 </template>
 <script>
-  import { weekDayFormat, checkDateEqual } from '../../../../utils/index'
-  import '../../../../assets/font/arrow/style.css'
+  import { weekDayFormat, checkDateEqual } from 'Util'
 
   export default {
     data() {

@@ -10,10 +10,13 @@
       <!--todo replace by content nav-->
       <category-menu @switchTab="switchTab"></category-menu>
       <div class="list">
-        <span class="icon-angle icon-angle-left"
-              :class="{'disable':companySlickLeftDisable}"
-              @click="onLeft($refs.companySlick)"></span>
-        <!--{{data.companyList[currentTab]}}-->
+        <div @click="onLeft($refs.companySlick)"
+             :class="{'disable':companySlickLeftDisable}"
+             class="icon-angle"
+        >
+          <icon name="angle-left"></icon>
+        </div>
+
         <slick class="slick"
                ref="companySlick"
                v-if="companyLists.length>0"
@@ -31,9 +34,12 @@
           </company-list>
         </slick>
 
-        <span class="icon-angle icon-angle-right"
-              :class="{'disable':companySlickRightDisable}"
-              @click="onRight($refs.companySlick)"></span>
+        <div @click="onRight($refs.companySlick)"
+             :class="{'disable':companySlickRightDisable}"
+             class="icon-angle"
+        >
+          <icon name="angle-right"></icon>
+        </div>
       </div>
     </div>
 
@@ -44,9 +50,13 @@
         <h3>{{currentSelect.group}}</h3>
       </div>
       <div class="list">
-        <span class="icon-angle icon-angle-left"
-              :class="{'disable':slickLeftDisable}"
-              @click="onLeft($refs.slick)"></span>
+        <div @click="onLeft($refs.slick)"
+             :class="{'disable':slickLeftDisable}"
+             class="icon-angle"
+        >
+          <icon name="angle-left"></icon>
+        </div>
+
         <slick class="slick"
                ref="slick"
                v-if="selectDateList.length>0"
@@ -64,9 +74,13 @@
           </date-list>
         </slick>
 
-        <span class="icon-angle icon-angle-right"
-              :class="{'disable':slickRightDisable}"
-              @click="onRight($refs.slick)"></span>
+        <div @click="onRight($refs.slick)"
+             :class="{'disable':slickRightDisable}"
+             class="icon-angle"
+        >
+          <icon name="angle-right"></icon>
+        </div>
+
       </div>
     </div>
   </div>
@@ -270,11 +284,8 @@
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-
-  .icon-angle.disable {
-    color: #e2dddd;
-  }
+<style scoped
+       lang="less">
 
   .section {
     background: white;
@@ -321,10 +332,16 @@
     justify-content: space-between
   }
 
-  .list span {
-    font-size: 80px;
-    font-weight: lighter;
+  .list .icon-angle {
+    cursor: pointer;
+    > * {
+      width: 80px;
+      height: 80px;
+    }
     color: #6b6868;
+    &.disable {
+      color: #e2dddd;
+    }
   }
 
   .slick {
@@ -336,10 +353,6 @@
     display: inline-block;
     vertical-align: top;
     outline: none;
-  }
-
-  .icon-angle {
-    cursor: pointer;
   }
 
 </style>
