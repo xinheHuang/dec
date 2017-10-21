@@ -1,5 +1,6 @@
 <template>
   <div id="main"
+       :style="{overflow:showModal?'hidden':'auto'}"
        @click="closeMenu()">
     <nav-menu></nav-menu>
     <div class="content">
@@ -28,7 +29,7 @@
   import nodeModal from 'Component/graph/modal/modal.vue'
   import imageModal from 'View/main/home/image-modal.vue'
   import * as MutationTypes from 'Store/mutation-types'
-  import { mapMutations } from 'vuex'
+  import {mapMutations} from 'vuex'
 
   export default {
     data() {
@@ -57,13 +58,13 @@
         }
       })
       this.$http.get('/api/userInfo')
-        .then((info) => {
-          const userInfo = {
-            ...info,
-            headPic: require('../../assets/images/headPic.jpg')
-          }
-          this.$store.commit(MutationTypes.SET_USERINFO,userInfo)
-        })
+          .then((info) => {
+            const userInfo = {
+              ...info,
+              headPic: require('../../assets/images/headPic.jpg')
+            }
+            this.$store.commit(MutationTypes.SET_USERINFO, userInfo)
+          })
     },
 
     components: {
@@ -79,7 +80,8 @@
   }
 </script>
 
-<style lang="less" scoped="">
+<style lang="less"
+       scoped="">
   @import (reference) '../../assets/styles/common';
 
   #main {

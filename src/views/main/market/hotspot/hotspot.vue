@@ -249,7 +249,8 @@
 //            this.$refs.slick.reSlick()
 //            this.changeSlick(null, null, 0)
             this.$nextTick(() => {
-              this.$refs.slick.reSlick()
+              if (this.$refs.slick)
+                  this.$refs.slick.reSlick()
               this.changeSlick(null, null, 0)
             })
 

@@ -48,10 +48,12 @@
   .close {
     display: flex;
     flex-direction: row-reverse;
-    font-size: 18px;
-    color: #6b6868;
-    cursor: pointer;
-    top: 0;
+    >div{
+      cursor: pointer;
+      >*{
+        color: #6b6868;
+      }
+    }
     margin-bottom: 5px
   }
 

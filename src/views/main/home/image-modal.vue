@@ -37,9 +37,9 @@
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less"
        scoped>
-  .img{
-    width: auto;
-    height: 390px;
+  .image{
+    width: 100%;
+    height:auto;
   }
 
 </style>
