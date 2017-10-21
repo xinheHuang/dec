@@ -3,7 +3,7 @@
     <div class="header">
 
       <div class="logo">
-        <img :src="require('../../assets/images/navLogo.png')">
+        <img :src="require('../../assets/images/navLogo.png')" style="margin-right: 100px">
         <search-bar v-show="this.currentNav=='home'" :search="onSearch"></search-bar>
       </div>
       <div class="nav">
@@ -147,7 +147,6 @@
     img {
       height: 30px;
       width: auto;
-      margin-right: 100px;
     }
     .logo {
       flex-shrink: 1;
