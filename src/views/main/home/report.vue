@@ -9,9 +9,7 @@
       <!--<span>{{data.author}}</span>-->
     </div>
     <div class="content">
-      <div class="graph">
-        graph here
-      </div>
+      <img class="graph" :src="imgSrc"/>
       <div class="comment">
         <p>
           <span style="font-weight: bold">简评：</span>
@@ -30,6 +28,11 @@
   export default {
     props: {
       data: Object
+    },
+    computed:{
+      imgSrc(){
+        return `http://valuesimplex.com/dev/wash_manual/report_images/${this.data.fileID}_${this.data.sequence}.png`
+      }
     },
     methods:{
       openReport() {
@@ -52,11 +55,12 @@
     display: flex;
     align-items: flex-start;
     .graph{
-      width: 600px;
-      height: 300px;
+      width: 500px;
+      height: auto;
       text-align: center;
     }
     .comment{
+      margin-left: 20px;
       flex-grow: 1;
     }
   }
