@@ -25,7 +25,7 @@
            v-for="time in calendarTime">
         <span class="event-time">{{time}}</span>
         <div v-for="event in calendars[time]">
-          <span class="event-title">{{event.title}}</span>
+          <span class="event-title"><span style="margin-right: 10px">[{{event.status}}]</span>{{event.title}}</span>
           <p>
             <span>地点：</span>
             <span>{{event.location}}</span>
@@ -45,7 +45,7 @@
 </template>
 
 <script>
-  import {dateFormat, getTime} from 'Util'
+  import {dateFormat, getTime, dateString} from 'Util'
   import news from './news.vue'
   import indicator from './indicator.vue'
   import report from './report.vue'
@@ -55,12 +55,15 @@
   export default {
     data() {
       return {
+        oneHour: 60 * 60 * 1000,
         calendars: {},
         items: [],
         isLoading: false,
         currentPage: 0,
         pageSize: 20,
-        currentKey:null
+        currentKey: null,
+        currentTime: null,
+        timer: null,
       }
     },
     computed: {
@@ -70,6 +73,7 @@
       }
     },
     methods: {
+      dateString,
       getTime,
       dateFormat,
       fetch() {
@@ -79,7 +83,7 @@
           params: {
             pageSize: this.pageSize,
             pageNumber: this.currentPage + 1,
-            key:this.currentKey
+            key: this.currentKey
           }
         })
             .then(res => {
@@ -96,22 +100,43 @@
       }
     },
     mounted() {
+      //timer
+//      this.timer=setInterval(()=>{
+//        this.currentTime=new Date();
+//      },1000)
+
       EventBus.$on('homeSearch', (key) => {
         this.items = []
-        this.currentPage=0;
-        this.currentKey=key;
+        this.currentPage = 0
+        this.currentKey = key
         this.fetch()
       })
       this.fetch()
+      const current = new Date()
+      const today=new Date(dateString(current));
+      const utc = today.getTime() + today.getTimezoneOffset()*60000; //utc即GMT时间
       this.$http.get('/api/calendar/calendar2', {
         params: {
-          date: new Date('2017-09-11'),
+          date: new Date(utc),
+//          date: new Date('2017-09-11')
         }
       })
           .then((calendars) => {
             this.calendars = {}
+
             calendars.forEach((calendar) => {
-              const time = getTime(new Date(calendar.riqi_detail))
+              calendar.date = new Date(calendar.riqi_detail)
+              const diff = calendar.date-current
+              console.log(calendar.date,diff)
+              if (diff < -this.oneHour) {
+                calendar.status = '已经结束'
+              } else if (diff <= 0) {
+                calendar.status = '正在进行'
+              } else {
+                calendar.status = '还未开始'
+              }
+
+              const time = getTime(calendar.date)
               let arr = this.calendars[time]
               if (!arr) {
                 arr = []
@@ -120,8 +145,16 @@
               arr.push(calendar)
             })
           })
+      const ele = $(this.$el)
+      const calendar = ele.find('.calendar')
       const doc = $(document)
       const win = $(window)
+      const onResize = () => {
+        calendar.css('right', ele.offset().left)
+        calendar.css('max-height', win.height() - 90)
+      }
+      win.resize(onResize)
+      onResize()
       win.scroll(() => {
         const scrollTop = win.scrollTop()
         const scrollHeight = doc.height()
@@ -129,7 +162,15 @@
         if (scrollTop + windowHeight >= scrollHeight) {   //距离顶部+当前高度 >=文档总高度 即代表滑动到底部 count++;         //每次滑动count加1
           this.fetch()
         }
+        const top = scrollTop > 50 ? 0 : 50 - scrollTop
+        calendar.css('top', top)
+        calendar.css('max-height', win.height() - 40 - top)
       })
+    },
+    destroy() {
+      if (this.timer) {
+        clearInterval(this.timer)
+      }
     },
     components: {
       news,
@@ -147,6 +188,7 @@
   .home {
     display: flex;
     .search {
+      margin-right: 340px;
       flex-grow: 1;
       .section {
         display: flex;
@@ -160,21 +202,25 @@
       }
     }
     .calendar {
-      flex-shrink: 0;
+      /*flex-shrink: 0;*/
+      top: 50px;
+      position: fixed;
       align-self: flex-start;
       .section;
-      width: 250px;
+      width: 300px;
       padding-left: 20px;
       padding-right: 20px;
       display: flex;
       flex-direction: column;
       align-items: stretch;
       overflow: auto;
+      box-sizing: border-box;
       .title {
         text-align: center;
         border-bottom: solid 3px @gray;
       }
       .event {
+        flex-shrink: 0;
         border-bottom: solid 3px @gray;
         display: flex;
         flex-direction: column;
@@ -183,13 +229,14 @@
           color: darkgray;
           font-size: 20px;
           font-weight: bold;
-          margin: 10px 0;
+          margin: 10px 0 0 0;
         }
         .event-title {
           color: @blue;
           margin-bottom: 10px;
         }
         > div {
+          margin-top: 20px;
           display: flex;
           flex-direction: column;
         }

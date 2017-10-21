@@ -1,6 +1,6 @@
 <template>
   <div id="main"
-       :style="{overflow:showModal?'hidden':'auto'}"
+       :style="{overflow:showModal?'hidden':'visible'}"
        @click="closeMenu()">
     <nav-menu></nav-menu>
     <div class="content">
@@ -92,6 +92,5 @@
   .content {
     max-width: 1280px;
     margin: 0 auto;
-    margin-top: .6rem;
   }
 </style>
