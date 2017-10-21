@@ -1,6 +1,6 @@
 <!--第三列日期列表-->
 <template>
-  <div style="width:150px;padding: 16px 15px 0">
+  <div style="">
     <div class="key">
       <div>
         {{dateList.date}}

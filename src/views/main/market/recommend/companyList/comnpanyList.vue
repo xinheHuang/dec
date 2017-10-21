@@ -1,5 +1,5 @@
 <template>
-  <div style="width:200px;padding: 16px 50px 0">
+  <div >
     <div class="key"
          v-tooltip.right="{content:toolTipText}"
          @click="$emit('companySelect',companyList)"

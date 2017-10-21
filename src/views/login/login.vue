@@ -184,9 +184,9 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      /*justify-content: center;*/
+      justify-content: center;
       .logo {
-        margin-top: 50%;
+        margin-top: -200px;
         display: flex;
         align-items: center;
         justify-content: center;

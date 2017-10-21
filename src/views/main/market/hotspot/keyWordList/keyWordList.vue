@@ -1,6 +1,6 @@
 <!--关键字文章列表-->
 <template>
-  <div style="width:200px;padding: 16px 50px 0">
+  <div >
     <div class="key">
       <div>
         {{keyWordList.key}}

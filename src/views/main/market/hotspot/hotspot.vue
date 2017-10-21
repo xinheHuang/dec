@@ -61,6 +61,7 @@
         </div>
 
         <slick class="slick"
+               v-if="articleData.length>0"
                ref="slick"
                v-on:afterChange="changeSlick"
                :options="slickOptions"
@@ -245,6 +246,8 @@
                                      .sort(
                                        (a, b) => b.readNumber - a.readNumber)
 
+//            this.$refs.slick.reSlick()
+//            this.changeSlick(null, null, 0)
             this.$nextTick(() => {
               this.$refs.slick.reSlick()
               this.changeSlick(null, null, 0)
@@ -345,15 +348,12 @@
   }
 
 
-  .slick {
-    overflow: hidden;
-    width: 900px;
-  }
-
   .list-item {
     display: inline-block;
     vertical-align: top;
     outline: none;
+    width:200px !important;
+    padding: 16px 50px 0
   }
 
   .icon-angle {

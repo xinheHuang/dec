@@ -29,8 +29,6 @@
                         :selected="currentSelect==companyList"
                         class="list-item"
                         :companyList="companyList">
-
-
           </company-list>
         </slick>
 
@@ -65,7 +63,7 @@
                v-on:afterChange="changeSlick"
                style="width:900px">
           <date-list v-for="dateList in selectDateList"
-                     class="list-item"
+                     class="data-list-item"
                      :key="currentSelect.group+dateList.date"
                      @select="selectDateItem"
                      :selected="currentSelectRecommend"
@@ -93,7 +91,7 @@
   import CategoryMenu from './menu/menu.vue'
   import ContentNav from 'Component/contentNav/contentNav.vue'
   import dateList from './dateList/dateList.vue'
-  import { dateFormat } from '../../../../utils'
+  import {dateFormat} from '../../../../utils'
 
   export default {
     data() {
@@ -143,66 +141,68 @@
         this.currentSelect = null
         Promise.all(
           [this.$http.get(`/api/market/industry/${menu.name}/articles`),
-            this.$http.get(`/api/market/industry/${menu.name}/people`)])
-          .then(([articleRes, peopleRes]) => {
-            const companies = {}
-            articleRes.filter((article) => article.broker)
-              .forEach(article => {
-                if (!companies[article.broker]) {
-                  companies[article.broker] = {
-                    articles: [],
-                    people: [],
-                  }
-                }
-                article.date = new Date(article.riqi)
-                companies[article.broker].articles.push(article)
-              })
+           this.$http.get(`/api/market/industry/${menu.name}/people`)])
+               .then(([articleRes, peopleRes]) => {
+                 const companies = {}
+                 articleRes.filter((article) => article.broker)
+                           .forEach(article => {
+                             if (!companies[article.broker]) {
+                               companies[article.broker] = {
+                                 articles: [],
+                                 people: [],
+                               }
+                             }
+                             article.date = new Date(article.riqi)
+                             companies[article.broker].articles.push(article)
+                           })
 
-            peopleRes.forEach(people => {
-              if (!companies[people.broker]) {
-                companies[people.broker] = {
-                  articles: [],
-                  people: [],
-                }
-              }
-              companies[people.broker].people.push(people)
-            })
-            this.companyLists = []
-            this.$nextTick(() => {
-              this.companyLists = Object.keys(companies)
-                .map((company) => ({
-                  group: `${company}公司${menu.name}组`,
-                  articles: this.getDiffArticles(companies[company].articles),
-                  people: companies[company].people
-                }))
-              this.$nextTick(() => {
-                if (this.$refs.slick)
-                  this.$refs.companySlick.reSlick()
-                this.changeCompanySlick(null, null, 0)
-              })
-            })
+                 peopleRes.forEach(people => {
+                   if (!companies[people.broker]) {
+                     companies[people.broker] = {
+                       articles: [],
+                       people: [],
+                     }
+                   }
+                   companies[people.broker].people.push(people)
+                 })
+                 this.companyLists = []
+                 this.$nextTick(() => {
+                   this.companyLists = Object.keys(companies)
+                                             .map((company) => ({
+                                               group: `${company}公司${menu.name}组`,
+                                               articles: this.getDiffArticles(companies[company].articles),
+                                               people: companies[company].people
+                                             }))
+                   this.$nextTick(() => {
+                     if (this.$refs.slick)
+                       this.$refs.companySlick.reSlick()
+                     this.changeCompanySlick(null, null, 0)
+                   })
+                 })
 
 
-          })
+               })
 
       },
 
       getDiffArticles(articles) {
         return articles.map((article, index, arr) => {
           const currentSet = new Set(article.recommends.filter(recommend => recommend.relation)
-            .map((recommend) => recommend.relation.name))
+                                            .map((recommend) => recommend.relation.name))
           const prevSet = index === arr.length - 1 ? new Set() : new Set(arr[index + 1].recommends
-            .filter(recommend => recommend.relation)
-            .map((recommend) => recommend.relation.name))
+                                                                                       .filter(
+                                                                                         recommend => recommend.relation)
+                                                                                       .map(
+                                                                                         (recommend) => recommend.relation.name))
           return {
             ...article,
             plus: [...currentSet].filter(x => !prevSet.has(x))
-              .reduce((prev, x) => `${prev}${prev && ','}${x}`, ''),
+                                 .reduce((prev, x) => `${prev}${prev && ','}${x}`, ''),
             minus: [...prevSet].filter(x => !currentSet.has(x))
-              .reduce((prev, x) => `${prev}${prev && ','}${x}`, '')
+                               .reduce((prev, x) => `${prev}${prev && ','}${x}`, '')
           }
         })
-          .filter((article) => article.plus || article.minus)
+                       .filter((article) => article.plus || article.minus)
       },
 
       onLeft(ref) {  //左箭头点击
@@ -224,20 +224,20 @@
             selectDateList[dateFormat(article.date)] = new Set()
           }
           article.recommends.filter(recommend => recommend.relation)
-            .forEach(recommend => {
-              selectDateList[dateFormat(article.date)].add(recommend)
-            })
+                 .forEach(recommend => {
+                   selectDateList[dateFormat(article.date)].add(recommend)
+                 })
         })
         this.selectDateList = []
 
         this.$nextTick(() => {
           this.selectDateList = Object.keys(selectDateList)
-            .map(date => {
-              return {
-                date,
-                recommends: [...selectDateList[date]]
-              }
-            })
+                                      .map(date => {
+                                        return {
+                                          date,
+                                          recommends: [...selectDateList[date]]
+                                        }
+                                      })
           this.$nextTick(() => {
             if (this.$refs.slick)
               this.$refs.slick.reSlick()
@@ -271,21 +271,20 @@
     },
     mounted() {
       this.$http.get('/api/market/conclusion')
-        .then(res => {
-          this.conclusions = res.content2
-        })
+          .then(res => {
+            this.conclusions = res.content2
+          })
       this.$http.get('/api/market/categories')
-        .then(res => {
-          this.menu = res
-        })
+          .then(res => {
+            this.menu = res
+          })
     },
 
   }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped
-       lang="less">
+<style lang="less" scoped>
 
   .section {
     background: white;
@@ -344,15 +343,19 @@
     }
   }
 
-  .slick {
-    overflow: hidden;
-    width: 900px;
-  }
-
   .list-item {
     display: inline-block;
     vertical-align: top;
     outline: none;
+    padding: 16px 50px 0;
+    //todo fixed
+    width: 200px !important;
+  }
+
+  .data-list-item {
+    .list-item;
+      width: 150px !important;
+      padding: 16px 15px 0
   }
 
 </style>
