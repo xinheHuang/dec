@@ -24,7 +24,7 @@
                    v-model="loginPwd"
                    type="password">
             <button type="submit"
-                    @click="login()">登录
+                    @click="login()">登录{{isPost?'中...':''}}
             </button>
           </div>
           <div v-if="current=='register'"
@@ -54,7 +54,7 @@
                    type="password">
 
             <button type="submit"
-                    @click="register()">注册熵简
+                    @click="register()">注册熵简{{isPost?'中...':''}}
             </button>
           </div>
 
@@ -80,7 +80,8 @@
         registerPosition: "",
         registerMobile: null,
         registerPwd: null,
-        positions: ['研究员', '基金经理']
+        positions: ['研究员', '基金经理'],
+        isPost: false
       }
     },
     methods: {
@@ -97,6 +98,7 @@
           })
           return
         }
+        this.isPost = true
         const hash = crypto.createHash('md5')
         hash.update(loginPwd)
         this.$http.post('/api/auth/login', {
@@ -104,7 +106,11 @@
           password: hash.digest('hex')
         })
             .then(res => {
+              this.isPost = false
               this.$router.push(this.$route.query.redirect || '/')
+            })
+            .catch((err) => {
+              this.isPost = false
             })
       },
 
@@ -140,7 +146,7 @@
           })
           return
         }
-
+        this.isPost = true
         const hash = crypto.createHash('md5')
         hash.update(registerPwd)
         this.$http.post('/api/auth/register', {
@@ -152,7 +158,11 @@
           password: hash.digest('hex')
         })
             .then(res => {
+              this.isPost = false
               this.$router.push(this.$route.query.redirect || '/')
+            })
+            .catch(err => {
+              this.isPost = false
             })
       }
     }
@@ -225,7 +235,7 @@
               background: white;
               color: black;
             }
-            &.selected{
+            &.selected {
               color: rgba(255, 255, 255, 0.5);
             }
             white-space: normal;
@@ -234,7 +244,7 @@
             background: rgba(255, 255, 255, 0.1);
             padding: 10px;
             /*color: rgba(255,255,255,0.5);*/
-            color: rgba(255, 255, 255,1);
+            color: rgba(255, 255, 255, 1);
             &::placeholder {
               color: rgba(255, 255, 255, 0.5);
             }

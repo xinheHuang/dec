@@ -4,6 +4,7 @@
 
       <div class="logo">
         <img :src="require('../../assets/images/navLogo.png')">
+        <search-bar v-show="this.currentNav=='home'" :search="onSearch"></search-bar>
       </div>
       <div class="nav">
         <div class="menu">
@@ -57,10 +58,11 @@
 </template>
 
 <script>
-  import EventBus from '../../eventBus'
+  import EventBus from '@/eventBus'
   import { mapState } from 'vuex'
-
+  import SearchBar from 'Component/searchBar/searchBar.vue'
   export default {
+
     data() {
       return {
         navs: [
@@ -87,6 +89,7 @@
         ],
         currentNav: 'home',
         showUserMenu: false,
+
       }
     },
     computed: {
@@ -95,6 +98,9 @@
       })
     },
     methods: {
+      onSearch(key){
+        EventBus.$emit('homeSearch',key);
+      },
       switchNav(nav) {
         if (nav.key == this.currentNav) return
         this.currentNav = nav.key
@@ -112,6 +118,9 @@
       goProfile() {
         this.$router.push('/profile')
       }
+    },
+    components:{
+      SearchBar
     },
     mounted() {
       EventBus.$on('menuClose', () => {
@@ -138,6 +147,7 @@
     img {
       height: 30px;
       width: auto;
+      margin-right: 100px;
     }
     .logo {
       flex-shrink: 1;

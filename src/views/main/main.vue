@@ -24,6 +24,7 @@
 
   import articleModal from 'View/main/market/modal/modal.vue'
   import scheduleModal from 'View/main/calendar/modal/modal.vue'
+  import reportModal from 'View/main/home/report-modal.vue'
   import nodeModal from 'Component/graph/modal/modal.vue'
   import * as MutationTypes from 'Store/mutation-types'
   import { mapMutations } from 'vuex'
@@ -71,11 +72,12 @@
       articleModal,
       scheduleModal,
       nodeModal,
+      reportModal
     },
   }
 </script>
 
-<style lang="less">
+<style lang="less" scoped="">
   @import (reference) '../../assets/styles/common';
 
   #main {

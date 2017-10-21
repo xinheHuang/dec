@@ -385,6 +385,13 @@
           'data': nodes
         }
         this.jm.show(mind)
+        const scale=this.jsMindContainer.width()/this.jsMindContainer.find('canvas').width()
+        if (scale<1) {
+          this.currentZoom = Math.floor(scale*10)/10;
+          console.log(scale,this.currentZoom);
+          this.changeZoom();
+        }
+
       }
     },
     watch: {
@@ -394,7 +401,7 @@
       }
     },
     mounted() {
-
+    console.log('graph info ',this.graphInfo)
       this.jsMindContainer = $(this.$el)
         .find('.jsmind-container')
       console.log(this.jsMindContainer)

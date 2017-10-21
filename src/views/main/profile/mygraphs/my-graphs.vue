@@ -22,7 +22,7 @@
       </div>
       <graph :edit-mode="false"
              :nodes="graphs.selected.nodes"
-             :graph-info="{'name':entity,'author':graphs.selected.uid,'version':graphs.selected.name}" />
+             :graph-info="{'name':entity,'author':graphs.selected.UID,'version':graphs.selected.name}" />
     </div>
   </div>
 </template>

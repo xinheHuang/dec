@@ -20,17 +20,17 @@
         <input type="radio"
                id="all"
                value="all"
-               v-model="picked" />
+               v-model="picked"/>
         <label for="all">全部</label>
         <input type="radio"
                id="company"
                value="company"
-               v-model="picked" />
+               v-model="picked"/>
         <label for="company">只显示本公司</label>
         <input type="radio"
                id="me"
                value="me"
-               v-model="picked" />
+               v-model="picked"/>
         <label for="me">只显示自己</label>
       </div>
     </div>
@@ -56,8 +56,9 @@
 <script>
   import Simditor from 'simditor'
   import 'simditor/styles/simditor.css'
-  import { twoDigitNumber } from 'Util'
+  import {twoDigitNumber} from 'Util'
   import EventBus from '@/eventBus'
+  import {mapState} from 'vuex'
 
   export default {
     props: {
@@ -79,49 +80,56 @@
     mounted() {
       if (this.editMode) {
         this.editor = new Simditor({
-          textarea: $(this.$el)
-            .find('.editor'),
-          //optional options
-          pasteImage: true,
-          upload: {  //todo upload api
-            url: '',
-            params: null,
-            fileKey: 'upload_file',
-            connectionCount: 3,
-            leaveConfirm: 'Uploading is in progress, are you sure to leave this page?'
-          },
-          //todo default image
+                                     textarea: $(this.$el)
+                                       .find('.editor'),
+                                     //optional options
+                                     pasteImage: true,
+                                     upload: {  //todo upload api
+                                       url: '',
+                                       params: null,
+                                       fileKey: 'upload_file',
+                                       connectionCount: 3,
+                                       leaveConfirm: 'Uploading is in progress, are you sure to leave this page?'
+                                     },
+                                     //todo default image
 
-        })
+                                   })
       }
       this.loadMore()
     },
     computed: {
       shownComments() {
-        return this.comments.filter(() => {
-          return true
-        }) //todo me ,comment
-      }
+        return this.comments.filter((comment) => {
+          switch (this.picked){
+            case 'all':return true;
+            case 'company': return comment.industry==this.userInfo.industry
+            case 'me': return comment.UID==this.userInfo.UID;
+          }
+        })
+      },
+      ...mapState({
+                    userInfo: state => state.user.userInfo
+                  })
     },
     methods: {
       loadMore() {
         this.$http.get(`/api/node/${this.node.id}/comment/${this.currentFrom}`)
-          .then((res) => {
-            this.comments = [...this.comments, ...res.comments]
-            this.hasMore = res.hasMore
-            this.currentFrom = this.comments.length
-          })
-          .catch(({ response }) => {
-            const { status } = response
-            if (status == 417) {
-              EventBus.$emit('errorDialog', {
-                text: '请先保存图谱',
-                callback() {
-                  EventBus.$emit('closeModal')
-                }
-              })
-            }
-          })
+            .then((res) => {
+              this.comments = [...this.comments, ...res.comments]
+              this.hasMore = res.hasMore
+              this.currentFrom = this.comments.length
+            })
+            .catch(({response}) => {
+              const {status} = response
+              if (status == 417) {
+                EventBus.$emit('errorDialog', {
+                  text: '请先保存图谱',
+                  callback() {
+                    EventBus.$emit('closeModal')
+                  }
+                })
+              }
+            })
       },
       getTime(riqi) {
         const date = new Date(riqi)

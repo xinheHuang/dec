@@ -51,6 +51,7 @@
 <style lang="less"
        scoped>
   .search {
+    background: white;
     border-radius: 5px;
     border: solid 1px black;
     padding: 5px ;
