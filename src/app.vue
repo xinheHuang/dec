@@ -9,7 +9,7 @@
 
   export default {
     mounted() {
-      EventBus.$on('errorDialog', ({ title = '错误', text = '', callback }) => {
+      EventBus.$on('errorDialog', ({title = '错误', text = '', callback}) => {
 
         this.swal(
           {
@@ -18,17 +18,21 @@
             icon: 'error',
           }
         )
-          .then(() => {
-            if (callback)
-              callback()
-          })
+            .then(() => {
+              if (callback)
+                callback()
+            })
       })
 
       EventBus.$on('login', () => {
+
+        if (this.$route.name == 'login') {
+          return
+        }
         this.$router.push({
-          path: '/login',
-          query: { redirect: this.$route.path }
-        })
+                            path: '/login',
+                            query: {redirect: this.$route.path}
+                          })
       })
     }
   }
