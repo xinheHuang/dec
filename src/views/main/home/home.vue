@@ -98,6 +98,7 @@
     mounted() {
       EventBus.$on('homeSearch', (key) => {
         this.items = []
+        this.currentPage=0;
         this.currentKey=key;
         this.fetch()
       })
