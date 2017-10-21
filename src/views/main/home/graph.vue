@@ -5,8 +5,8 @@
   <div>
     <div class="info">
       <div class="graph-info">
-        <span class="entity">{{this.data.entity}}</span>
-        <span class="author">{{this.data.UID}}</span>
+        <span class="entity">{{this.data.entity}}<span style="margin-left: 20px">{{'版本名称：'+this.data.name}}</span></span>
+        <span class="author">{{this.data.user.name}}</span>
       </div>
       <span class="detail">点击查看</span>
     </div>
@@ -59,6 +59,7 @@
       flex-direction: column;
       .author{
         font-size:20px;
+        margin: 10px 0;
       }
       .entity{
         font-size: 26px;

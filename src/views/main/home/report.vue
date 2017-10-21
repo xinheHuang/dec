@@ -9,7 +9,7 @@
       <!--<span>{{data.author}}</span>-->
     </div>
     <div class="content">
-      <img class="graph" :src="imgSrc"/>
+      <img class="graph" :src="imgSrc" @click="openImage()"/>
       <div class="comment">
         <p>
           <span style="font-weight: bold">简评：</span>
@@ -38,6 +38,9 @@
       openReport() {
         EventBus.$emit('openModal', 'report-modal', `http://valuesimplex.com/dev/spider/kanyanbao_reports/${this.data.fileID}.pdf`)
       },
+      openImage() {
+        EventBus.$emit('openModal', 'image-modal', this.imgSrc)
+      },
     }
   }
 </script>
@@ -58,6 +61,7 @@
       width: 500px;
       height: auto;
       text-align: center;
+      cursor: pointer;
     }
     .comment{
       margin-left: 20px;
