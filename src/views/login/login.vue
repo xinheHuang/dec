@@ -154,7 +154,6 @@
           name: registerName,
           position: registerPosition,
           broker: registerCompany,
-          industry: '',
           password: hash.digest('hex')
         })
             .then(res => {

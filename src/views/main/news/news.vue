@@ -102,6 +102,7 @@
         if (!this.searchKey) {
           return str
         }
+        //todo 大小写
         return str.replace(new RegExp(this.searchKey, 'g'), `<span style="color: red;">${this.searchKey}</span>`)
       },
       numFormat(num) {
@@ -117,7 +118,7 @@
         }
         this.source = CancelToken.source()
         this.isLoading = true
-        this.$http.get(`/api/newsCategory/${this.currentTab.key}/news`, {
+        this.$http.get(`/api/industry/${this.currentTab.key}/news`, {
           cancelToken: this.source.token,
           params: {
             key: this.searchKey,
@@ -130,7 +131,7 @@
               console.log(news)
               const newsMap = {}
               news.forEach((item) => {
-                item.date = new Date(item.riqi)
+                item.date = new Date(item.time)
                 const date = dateString(item.date)
                 let n = newsMap[date]
                 if (!n) {
@@ -165,7 +166,7 @@
       },
       fetchNews() {
         this.isLoading = true
-        this.$http.get(`/api/newsCategory/${this.currentTab.key}/pageCount`, {
+        this.$http.get(`/api/industry/${this.currentTab.key}/pageCount`, {
           params: {
             pageSize: this.pageSize,
             key: this.searchKey
@@ -192,19 +193,19 @@
       }
     },
     mounted() {
-      this.$http.get('/api/newsCategories')
-          .then((categories) => {
-            this.categories = categories
-            const getMenu = (categories) =>
-              (!categories) ?
+      this.$http.get('/api/industries')
+          .then((industries) => {
+            this.categories = industries
+            const getMenu = (industries) =>
+              (!industries) ?
               null :
-              categories.map((category) => ({
-                key: category.CID,
-                name: category.name,
-                subMenus: getMenu(category.subs)
+              industries.map((industry) => ({
+                key: industry.industry_id,
+                name: industry.name,
+                subMenus: getMenu(industry.subs)
               }))
-            console.log(getMenu(categories))
-            this.newsMenu = getMenu(categories)
+            console.log(getMenu(industries))
+            this.newsMenu = getMenu(industries)
           })
     },
     created() {
@@ -285,7 +286,7 @@
             display: flex;
             align-items: center;
             margin: 0 10px;
-            width: 60px;
+            width: 80px;
             span {
               margin-left: 10px;
             }
