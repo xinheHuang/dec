@@ -88,7 +88,7 @@
         })
             .then(res => {
               res.forEach((item) => {
-                item.date = new Date(item.riqi)
+                item.date = new Date(item.time)
               })
               this.items.push(...res)
               this.isLoading = false
@@ -113,21 +113,17 @@
       })
       this.fetch()
       const current = new Date()
-      const today=new Date(dateString(current));
-      const utc = today.getTime() + today.getTimezoneOffset()*60000; //utc即GMT时间
-      this.$http.get('/api/calendar/calendar2', {
+      this.$http.get('/api/calendar/schedule', {
         params: {
-          date: new Date(utc),
-//          date: new Date('2017-09-11')
+          time: current.getTime(),
         }
       })
           .then((calendars) => {
             this.calendars = {}
 
             calendars.forEach((calendar) => {
-              calendar.date = new Date(calendar.riqi_detail)
+              calendar.date = new Date(calendar.time)
               const diff = calendar.date-current
-              console.log(calendar.date,diff)
               if (diff < -this.oneHour) {
                 calendar.status = '已经结束'
               } else if (diff <= 0) {

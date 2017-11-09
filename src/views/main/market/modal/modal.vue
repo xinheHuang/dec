@@ -10,7 +10,7 @@
           </h3>
         </div>
         <div class="info">
-          <span><icon name="calendar-o"/><span>{{dateFormat(new Date(article.riqi))}}</span></span>
+          <span><icon name="calendar-o"/><span>{{dateFormat(new Date(article.time))}}</span></span>
           <span><icon name="user"/><span>{{article.author}}</span></span>
           <span><icon name="eye"/><span>{{article.num_read}}</span></span>
           <span><icon name="heart"/><span>{{article.num_like}}</span></span>
@@ -49,7 +49,7 @@
       dateFormat,
     },
     mounted() {
-      this.$http.get(`/api/market/article/${this.modalData}`)
+      this.$http.get(`/api/article/${this.modalData}`)
         .then(res => {
           this.article = res
         })

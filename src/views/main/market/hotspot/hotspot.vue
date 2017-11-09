@@ -139,7 +139,7 @@
         }
         this.barChartData = data.map((d) => {
           return {
-            x: d['relation.name'],
+            x: d['name'],
             y: Number(d['sum'])
           }
         })
@@ -171,6 +171,7 @@
                      })
 
         const parseTime = d3.timeParse('%Y-%m-%d')
+        console.log('data',data,category)
         this.areaChartData = data.map((d) => {
           const total = Object.values(d.group)
                               .reduce((prev, s) => prev + s, 0)
@@ -218,15 +219,16 @@
       legends
     },
     mounted() {
-      this.$http.get('/api/market/articles')  //获取所有文章
+      this.$http.get('/api/articles')  //获取所有文章
           .then(res => {
             const articleData = {}
+            //todo
             res.filter(article => article.relation)
                .forEach((article) => {
                  if (!articleData[article.relation.name]) {
                    articleData[article.relation.name] = []
                  }
-                 article.date = new Date(article.riqi)
+                 article.date = new Date(article.time)
                  articleData[article.relation.name].push(article)
                })
             this.articleData = Object.keys(articleData)
@@ -256,21 +258,22 @@
 
           })
 
-      this.$http.get('/api/market/conclusion')  //获取所有结论
+      this.$http.get('/api/conclusions/key')  //获取所有结论
           .then(res => {
-            this.conclusions = res.content1
+            this.conclusions = res
           })
 
 
       //获取过去7天阅读总量 根据topic 行业
-      Promise.all([this.$http.get('/api/market/readNumbersLast7Days'), this.$http.get('api/market/articleRelations'),
-                   this.$http.get('/api/market/categories')])
+      // todo industries
+      Promise.all([this.$http.get('/api/stock/articles/readNumbers'), this.$http.get('api/stock/articles'),
+                   this.$http.get('/api/industries/0')])
              .then(([res1, res2, res3]) => {
                this.readNumberData = res1
 
                const data = {}
                res2.forEach(d => {
-                 const date = new Date(d.riqi)
+                 const date = new Date(d.time)
                  const day = date.getDay()
                  const sunday = new Date(date.getTime() + (day === 0 ? 0 :
                                                            (7 - day)) * 60 * 60 * 24 * 1000)
@@ -284,7 +287,7 @@
                this.categories = res3
                //获取所有二级行业
                return Promise.all(
-                 this.categories.map((category) => this.$http.get(`/api/market/categories/${category.CID}`)))
+                 this.categories.map(({industry_id}) => this.$http.get(`/api/industries/${industry_id}`)))
              })
              .then(arr => {
                arr.forEach((res, index) => {

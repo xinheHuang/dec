@@ -362,31 +362,32 @@
       }
     },
     mounted() {
-      Promise.all([this.$http.get('/api/calendar/calendar1'), this.$http.get('/api/calendar/calendar2')])
+      Promise.all([this.$http.get('/api/calendar/statistic'), this.$http.get('/api/calendar/schedule')])
         .then(([res1, res2]) => {
           const calendar1Data = {}
           res1.forEach((data) => {
-            if (!calendar1Data[data.riqi]) {
-              calendar1Data[data.riqi] = {}
+            const date=dateString(new Date(data.time))
+            if (!calendar1Data[date]) {
+              calendar1Data[date] = {}
             }
-            if (!calendar1Data[data.riqi][data.riqi_detail]) {
-              calendar1Data[data.riqi][data.riqi_detail] = []
+            if (!calendar1Data[date][data.time]) {
+              calendar1Data[date][data.time] = []
             }
-            calendar1Data[data.riqi][data.riqi_detail].push(data)
+            calendar1Data[date][data.time].push(data)
           })
           this.calendar1Data = calendar1Data
 
           const calendar2Data = {}
           res2.forEach((data) => {
-            const day = new Date(data.riqi_detail)
-            const riqi = dateString(day)
-            if (!calendar2Data[riqi]) {
-              calendar2Data[riqi] = {}
+            const day = new Date(data.time)
+            const date = dateString(day)
+            if (!calendar2Data[date]) {
+              calendar2Data[date] = {}
             }
-            if (!calendar2Data[riqi][data.riqi_detail]) {
-              calendar2Data[riqi][data.riqi_detail] = []
+            if (!calendar2Data[date][data.time]) {
+              calendar2Data[date][data.time] = []
             }
-            calendar2Data[riqi][data.riqi_detail].push(data)
+            calendar2Data[date][data.time].push(data)
           })
           this.calendar2Data = calendar2Data
 

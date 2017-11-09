@@ -135,13 +135,13 @@
         console.log('destroy')
       },
       switchTab(menu) {
-        if (this.currentTab === menu.CID)
+        if (this.currentTab === menu.industry_id)
           return
-        this.currentTab = menu.CID
+        this.currentTab = menu.industry_id
         this.currentSelect = null
         Promise.all(
-          [this.$http.get(`/api/market/industry/${menu.name}/articles`),
-           this.$http.get(`/api/market/industry/${menu.name}/people`)])
+          [this.$http.get(`/api/industry/${menu.industry_id}/articles`),
+           this.$http.get(`/api/industry/${menu.industry_id}/analyst`)])
                .then(([articleRes, peopleRes]) => {
                  const companies = {}
                  articleRes.filter((article) => article.broker)
@@ -152,7 +152,7 @@
                                  people: [],
                                }
                              }
-                             article.date = new Date(article.riqi)
+                             article.date = new Date(article.time)
                              companies[article.broker].articles.push(article)
                            })
 
@@ -270,14 +270,11 @@
       ContentNav
     },
     mounted() {
-      this.$http.get('/api/market/conclusion')
+      this.$http.get('/api/conclusions/hotspot')
           .then(res => {
-            this.conclusions = res.content2
+            this.conclusions = res
           })
-      this.$http.get('/api/market/categories')
-          .then(res => {
-            this.menu = res
-          })
+
     },
 
   }

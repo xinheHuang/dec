@@ -12,14 +12,12 @@
                style="display:flex;flex-direction: column;justify-content: center">
             <template v-if="!isEdit">
               <span class="name">{{profile.name}}</span>
-              <span>{{profile.industry}}</span>
               <span>{{profile.broker}}</span>
               <span>{{profile.position}}</span>
             </template>
             <template v-else>
               <input class="name"
                      v-model="tempProfile.name" />
-              <input v-model="tempProfile.industry" />
               <input v-model="tempProfile.broker" />
               <input v-model="tempProfile.position" />
             </template>

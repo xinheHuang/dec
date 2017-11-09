@@ -24,8 +24,13 @@
     </div>
 
     <div style="display: flex;align-items: center;justify-content: space-between">
+      <div style="display: flex;align-items: center;">
       <search-bar :search="search"
                   placeHolder="搜索行业或个股"/>
+        <span v-show="isSearching" style="margin-left: 10px">
+          搜索中
+        </span>
+      </div>
       <span class="button-blue"
             @click="interest()">
           点击关注
@@ -59,6 +64,7 @@
   export default {
     data() {
       return {
+        isSearching:false,
         stocks: [],
         industries: [],
         searchedStocksSet: new Set(),
@@ -99,17 +105,15 @@
         }
         switch (this.selectedType) {
           case 'stock':
-            this.$http.post('api/interests/stock', {SID: this.selected.ID})
+            this.$http.post('api/interests/stock', {stockId: this.selected.stock_id})
                 .then((res) => {
-                  console.log('added', res)
                   this.stocks.push(this.selected)
                   this.clearSelect()
                 })
             break
           case 'industry':
-            this.$http.post('api/interests/industry', {CID: this.selected.CID})
+            this.$http.post('api/interests/industry', {industryId: this.selected.industry_id})
                 .then((res) => {
-                  console.log('added', res)
                   this.industries.push(this.selected)
                   this.clearSelect()
                 })
@@ -117,12 +121,17 @@
         }
       },
       search(key) {
+        this.isSearching=true;
         this.$http.get(`/api/interests?key=${key || ''}`)
             .then((searchRes) => {
               console.log(searchRes)
+              this.isSearching=false;
               this.searchedStocksSet = new Set(searchRes.stocks)
               this.searchedIndustriesSet = new Set(searchRes.industries)
             })
+          .catch(()=>{
+            this.isSearching=false;
+          })
       }
     },
     mounted() {

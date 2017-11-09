@@ -8,7 +8,7 @@
         </h3>
       </div>
       <div class="info">
-        <span><icon name="calendar-o" /><span>{{dateFormat(new Date(modalData.riqi_detail))}}</span></span>
+        <span><icon name="calendar-o" /><span>{{dateFormat(new Date(modalData.time))}}</span></span>
         <span><icon name="user"/><span>{{modalData.author}}</span></span>
       </div>
       <div class="divider"></div>

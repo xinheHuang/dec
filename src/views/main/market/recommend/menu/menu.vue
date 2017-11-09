@@ -5,8 +5,8 @@
         <!-- 推荐后期用json导入，v-for循环 -->
         <li v-for="menu in menus"
             @click="switchMenu(menu)"
-            :key="menu.CID"
-            :class="{'selected':selected==menu.CID}">
+            :key="menu.industry_id"
+            :class="{'selected':selected==menu.industry_id}">
           {{menu.name}}
         </li>
       </ul>
@@ -16,8 +16,8 @@
       <ul>
         <li v-for="subMenu in subMenus"
             @click="switchSubMenu(subMenu)"
-            :key="subMenu.CID"
-            :class="{'selected':selectedSubMenu==subMenu.CID}">{{subMenu.name}}
+            :key="subMenu.industry_id"
+            :class="{'selected':selectedSubMenu==subMenu.industry_id}">{{subMenu.name}}
         </li>
       </ul>
     </nav>
@@ -36,12 +36,12 @@
     },
     methods: {
       switchSubMenu(menu) {
-        this.selectedSubMenu = menu.CID
+        this.selectedSubMenu = menu.industry_id
         this.$emit('switchTab', menu)
       },
 
       switchMenu(menu) {
-        this.selected = menu.CID
+        this.selected = menu.industry_id
         this.getSubMenu(this.selected)
           .then(subMenus => {
             this.subMenus = subMenus
@@ -50,11 +50,11 @@
       },
 
       getSubMenu(CID) {
-        return this.$http.get(`/api/market/categories/${CID}`)
+        return this.$http.get(`/api/industries/${CID}`)
       }
     },
     mounted() {
-      this.$http.get('/api/market/categories')
+      this.$http.get('/api/industries/0')
         .then(res => {
           this.menus = res
           this.switchMenu(this.menus[0])
