@@ -38,9 +38,9 @@
     <div class="comments">
       <div v-for="comment in shownComments"
            style="display: flex;">
-        <span style="width: 100px">{{getTime(comment.riqi)}}</span>
-        <span style="width: 200px">{{comment.industry}}</span>
-        <span style="width: 100px">{{comment.author}}</span>
+        <span style="width: 100px">{{getTime(comment.time)}}</span>
+        <span style="width: 200px">{{comment.user.broker}}</span>
+        <span style="width: 200px">{{comment.user.name}}</span>
         <div style="word-break: break-all"
              v-html="comment.content"></div>
       </div>
@@ -74,7 +74,8 @@
         picked: 'all',
         hasMore: false,
         comments: [],
-        currentFrom: 0,
+        currentPage: 1,
+        pageSize:10,
       }
     },
     mounted() {
@@ -113,11 +114,11 @@
     },
     methods: {
       loadMore() {
-        this.$http.get(`/api/node/${this.node.id}/comment/${this.currentFrom}`)
+        this.$http.get(`/api/node/${this.node.id}/comments?pageSize=${this.pageSize}&pageNumber=${this.currentPage}`)
             .then((res) => {
               this.comments = [...this.comments, ...res.comments]
               this.hasMore = res.hasMore
-              this.currentFrom = this.comments.length
+              this.currentPage = this.currentPage+1;
             })
             .catch(({response}) => {
               const {status} = response

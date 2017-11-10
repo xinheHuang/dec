@@ -22,7 +22,7 @@
     },
     data() {
       return {
-        graph: this.graphData
+        graph:null,
       }
     },
     methods: {
@@ -42,7 +42,7 @@
         })
       },
       getGraphData() {
-        this.$http.get(`/api/graph/draft?entity=${this.entity}`)
+        this.$http.get(`/api/draftGraph?entity=${this.entity}`)
           .then(graph => {
             this.graph = graph
           })
@@ -51,11 +51,15 @@
     components: {
       Graph
     },
-    mounted() {
+    activated() {
+      console.log('mounted',this.graphData)
       if (!this.graphData) {
         this.getGraphData()
+      }else{
+        this.graph=this.graphData
       }
-    }
+    },
+
   }
 </script>
 

@@ -22,7 +22,7 @@
       </div>
       <graph :edit-mode="false"
              :nodes="graphs.selected.nodes"
-             :graph-info="{'name':entity,'author':graphs.selected.UID,'version':graphs.selected.name}" />
+             :graph-info="{'name':entity,'author':graphs.selected.userId,'version':graphs.selected.name}" />
     </div>
   </div>
 </template>
@@ -53,18 +53,19 @@
         console.log(graphs.selected)
       },
       editGraph(graph) {
+        console.log('graph edit',graph)
         this.$router.push({ name: 'graphEdit', params: { entity: graph.entity, graphData: graph } })
       }
     },
     mounted() {
-      this.$http.get('/api/graph')
+      this.$http.get('/api/graphs')
         .then((graphs) => {
           graphs
           //              .filter(graph=>graph.type==1)
             .forEach((graph) => {
               const { entity } = graph
               let graphArr = this.graphMap[entity]
-              if (graphArr == null) {
+              if (!graphArr) {
                 graphArr = []
                 this.$set(this.graphMap, entity, graphArr)
               }

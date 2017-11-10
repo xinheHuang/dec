@@ -145,11 +145,11 @@
     },
     computed: {
       graphNodes() {
-        return this.nodes.map(({ title, FNID, direction, NID, GNID }) => ({
-          GNID,
-          id: NID,
-          isroot: FNID == 0,
-          parentid: FNID,
+        return this.nodes.map(({ title, parent_node_id, direction, nodeId, graphNodeId }) => ({
+          graphNodeId,
+          id: nodeId,
+          isroot: parent_node_id == 0,
+          parentid: parent_node_id,
           topic: title,
           direction
         }))
@@ -436,7 +436,7 @@
             node: {
               id: node.id,
               topic: node.topic,
-              GNID: node.data.GNID
+              graphNodeId: node.data.graphNodeId
             },
             editMode: _this.editMode
           })

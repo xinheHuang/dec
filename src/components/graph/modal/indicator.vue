@@ -1,9 +1,16 @@
 <template>
   <div id="indicators">
     <div v-if="editMode">
-      <div style="display: flex;flex-direction: row-reverse">
+      <div style="display: flex;align-items: center;justify-content: space-between;flex-direction: row-reverse">
         <search-bar :search="search"
                     placeHolder="搜索指标" />
+        <div v-if="currentSelectIndicator">
+          <span style="border: none;margin-right: 10px">已选中指标：{{currentSelectIndicator.name}}</span>
+          <span style="cursor: pointer;color: #2c8abf;border: none"
+                v-if="!warningIDs.includes(currentSelectIndicator.ID)"
+                @click="addIndicator(currentSelectIndicator)">添加关联</span>
+          <span v-else>已添加</span>
+        </div>
       </div>
 
       <div class="indicator-table">
@@ -14,45 +21,32 @@
             <span class="unit">单位</span>
             <span class="source">来源</span>
           </div>
-          <div v-for="indicator in currentPageIndicators"
+          <div v-for="indicator in currentIndicators"
                @click="clickIndicator(indicator)"
                class="indicator"
-               :key="indicator.IID"
+               :key="indicator.ID"
                :class="{selected:currentSelectIndicator==indicator}">
-            <span class="name">{{indicator.title}}</span>
+            <span class="name">{{indicator.name}}</span>
             <span class="frequency">{{indicator.frequency}}</span>
             <span class="unit">{{indicator.unit}}</span>
             <span class="source">{{indicator.source}}</span>
           </div>
         </div>
         <div class="op">
-          <div class="pagination">
-            <div @click="clickPrev()"
-                 :class="{disabled:currentPage<=1}"><span>上一页</span></div>
-            <div v-for="page in totalPage"
-                 :class="{selected:currentPage===page}"
-                 @click="clickPage(page)">
-              <span>{{page}}</span>
-            </div>
-            <div @click="clickNext()"
-                 :class="{disabled:currentPage>=totalPage}"><span>下一页</span></div>
-          </div>
-          <div v-if="currentSelectIndicator">
-            <span style="border: none;margin-right: 10px">已选中指标：{{currentSelectIndicator.title}}</span>
-            <span style="cursor: pointer;color: #2c8abf;border: none"
-                  v-if="!warningIDs.includes(currentSelectIndicator.IID)"
-                  @click="addIndicator(currentSelectIndicator)">添加关联</span>
-            <span v-else>已添加</span>
-          </div>
+          <pagination :total="totalPage"
+                      ref="pagination"
+                      :pageSize="pageSize"
+                      :changePage="onPageChange"></pagination>
+
         </div>
       </div>
     </div>
 
     <div class="warning-graphs">
       <div v-for="(warning,index) in indicatorWarnings"
-           :key="warning.ID">
+           :key="warning.indicatorId">
         <div class="title-row">
-          <h5 class="title">{{warning.title}}</h5>
+          <h5 class="title">{{warning.name}}</h5>
           <div class="op">
             <div class="icon"
                  @click="editMode && clickWarn(warning)"
@@ -118,6 +112,7 @@
 <script>
 
   import SearchBar from '../../searchBar/searchBar.vue'
+  import pagination from 'Component/pagination/pagination.vue'
 
   export default {
     props: {
@@ -125,6 +120,7 @@
       editMode: Boolean,
       saved: Function,
       saving: Function,
+      saveFailed:Function,
     },
     data() {
       return {
@@ -134,37 +130,28 @@
         currentIndicators: [],
         currentSelectIndicator: null,
         indicatorWarnings: [],
+        pageSize:5,
+        totalPage:0,
+        searchKey:null,
       }
     },
     computed: {
       GNID() {
-        return this.node.GNID
-      },
-      currentPageIndicators() {
-        return this.currentIndicators.slice((this.currentPage - 1) * 5, (this.currentPage) * 5)
-      },
-      totalPage() {
-        return Math.ceil(this.currentIndicators.length / 5)
+        return this.node.graphNodeId
       },
       warningIDs() {
-        return this.indicatorWarnings.map((warning) => warning.IID)
+        return this.indicatorWarnings.map((warning) => warning.indicatorId)
       }
     },
     methods: {
       addIndicator(indicator) {
-        if (this.warningIDs.includes(indicator.IID)) {
+        if (this.warningIDs.includes(indicator.ID)) {
           return
         }
-        console.log('GNID',this.GNID);
-        this.$http.post(`/api/graphNode/${this.GNID}/indicators/`, {
-          IID: indicator.IID,
+        this.$http.post(`/api/graphNode/${this.GNID}/indicator/`, {
+          indicatorId: indicator.ID,
         })
-          .then(res => {
-            const warning = {
-              ...res,
-              indicator
-
-            }
+          .then(warning => {
             this.indicatorWarnings.unshift(warning)
           })
       },
@@ -179,7 +166,9 @@
         })
           .then(res => {
             this.saved('设置成功')
-          })
+          }).catch(()=>{
+          this.saveFailed('设置失败')
+        })
       },
       clickDownload(warning) {
         console.log('download')
@@ -201,7 +190,7 @@
           },
         })
         if (r) {
-          this.$http.delete(`/api/graphIndicator/${warning.ID}`)
+          this.$http.delete(`/api/graphIndicator/${warning.graphNodeIndicatorId}`)
             .then((res) => {
               this.indicatorWarnings.splice(index, 1)
             })
@@ -221,10 +210,20 @@
         warning.warnType2 = 0
       },
       search(key) {
+        this.searchKey=key;
+        this.$nextTick(() => {
+          this.$refs.pagination.setPage(0)
+          this.onPageChange(1)
+        })
+      },
+
+      onPageChange(page){
         this.saving('搜索中...')
-        this.$http.get(`/api/indicator?key=${key || ''}`)
-          .then((res) => {
-            this.currentIndicators = res
+        this.currentPage=page;
+        this.$http.get(`/api/indicator?pageSize=${this.pageSize}&pageNumber=${this.currentPage}&key=${this.searchKey || ''}`)
+          .then(({indicators,total}) => {
+            this.currentIndicators = indicators
+            this.totalPage=total
             this.saved()
           })
       },
@@ -234,21 +233,6 @@
         }
         else {
           this.currentSelectIndicator = indicator
-        }
-      },
-      clickPage(page) {
-        if (page >= 1 && page <= this.totalPage && page !== this.currentPage) {
-          this.currentPage = page
-        }
-      },
-      clickNext() {
-        if (this.currentPage < this.totalPage) {
-          this.currentPage++
-        }
-      },
-      clickPrev() {
-        if (this.currentPage > 1) {
-          this.currentPage--
         }
       },
       setWarnType(warn) {
@@ -264,7 +248,7 @@
         .then((res) => {
           this.indicatorWarnings = res
           console.log(this.indicatorWarnings)
-          this.indicatorWarnings.forEach(warn => {
+          this.indicatorWarnings.forEach((warn) => {
             this.setWarnType(warn)
           })
         })
@@ -282,7 +266,8 @@
 
     },
     components: {
-      SearchBar
+      SearchBar,
+      pagination
     }
   }
 </script>
@@ -319,37 +304,6 @@
           border: 1px solid lightgray;
           padding: 10px;
         }
-      }
-      .op {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        .pagination {
-          display: flex;
-          align-items: center;
-          div {
-            border: 1px solid lightgray;
-            height: 30px;
-            width: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            &:first-child, &:last-child {
-              width: 60px;
-              text-align: center;
-              &.disabled {
-                color: lightgrey;
-                cursor: not-allowed;
-              }
-            }
-            &.selected {
-              background: #2c8abf;
-              cursor: not-allowed;
-            }
-          }
-        }
-        margin-top: 15px;
       }
     }
 
