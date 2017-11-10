@@ -2,13 +2,15 @@
 <template>
 
   <modal @close="close()">
-    <div slot="title"style="text-align: center;position: relative">
+    <div slot="title"
+         style="text-align: center;position: relative">
       <h3 style="color:black;"
           @dblclick="titleEdit()"
           v-show="!modalData.editMode || !editTopic">
         {{modalData.node.topic}}
       </h3>
-      <div v-if="modalData.editMode" v-show="editTopic"
+      <div v-if="modalData.editMode"
+           v-show="editTopic"
            class="edit-topic">
         <input v-model="tempTopic">
         <div class="icon"
@@ -28,7 +30,8 @@
             <icon v-if="tipType=='error'"
                   name="close"
                   style="color:red"/>
-            <span style="margin-left: 20px" v-html="saveText"></span>
+            <span style="margin-left: 20px"
+                  v-html="saveText"></span>
           </div>
         </transition>
         <div v-show="isSaving">
@@ -89,16 +92,17 @@
       }
     },
     methods: {
-      titleEdit(){
-        if (this.modalData.editMode){
-          this.editTopic=true;
-          this.tempTopic=this.modalData.node.topic
+      titleEdit() {
+        if (this.modalData.editMode) {
+          this.editTopic = true
+          this.tempTopic = this.modalData.node.topic
         }
       },
-      close(){
-        EventBus.$emit('closeModal',(modalData)=>{
-          EventBus.$emit('nodeModalClose',modalData.node);
-        });
+      close() {
+        EventBus.$emit('closeModal', (modalData) => {
+          console.log(modalData)
+          EventBus.$emit('nodeModalClose', modalData.node,modalData.jm)
+        })
       },
       tabChanged(menu) {
         this.currentTab = menu.key
@@ -126,10 +130,11 @@
           return
         }
         this.tipType = 'succ'
-        console.log('text',text);
+        console.log('text', text)
         this.showTip(text)
       },
       saveFailed(text) {
+        this.isSaving = false
         this.tipType = 'error'
         this.showTip(text)
       },
@@ -145,8 +150,8 @@
       }
 
     },
-    mounted(){
-      console.log(this.modalData);
+    mounted() {
+      console.log(this.modalData)
     },
     beforeDestroy() {
       if (this.timeout) {

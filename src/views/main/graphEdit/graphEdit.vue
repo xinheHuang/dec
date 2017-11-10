@@ -27,7 +27,7 @@
     },
     methods: {
       saveDraft(nodes) {
-        return this.$http.post(`/api/graph/draft?entity=${this.entity}`, {
+        return this.$http.post(`/api/draftGraph?entity=${this.entity}`, {
           nodes,
         })
           .then((res) => {
@@ -35,8 +35,7 @@
           })
       },
       saveFinal(nodes, name) {
-        return this.$http.post(`/api/graph/final`,{
-          entity:this.entity,
+        return this.$http.post(`/api/finalGraph?entity=${this.entity}`,{
           name,
           nodes,
         })
@@ -56,7 +55,12 @@
       if (!this.graphData) {
         this.getGraphData()
       }else{
-        this.graph=this.graphData
+        this.graph={
+          ...this.graphData,
+          nodes:this.graphData.nodes.map(node=> ({
+            ...node
+          }))
+        }
       }
     },
 

@@ -145,11 +145,11 @@
     },
     computed: {
       graphNodes() {
-        return this.nodes.map(({ title, parent_node_id, direction, nodeId, graphNodeId }) => ({
+        return this.nodes.map(({ title, parentNodeId, direction, nodeId, graphNodeId }) => ({
           graphNodeId,
           id: nodeId,
-          isroot: parent_node_id == 0,
-          parentid: parent_node_id,
+          isroot: parentNodeId == 0,
+          parentid: parentNodeId,
           topic: title,
           direction
         }))
@@ -218,11 +218,11 @@
           .map((id) => {
             const node = this.jm.mind.nodes[id]
             return {
-              NID: id,
+              nodeId: id,
               title: node.topic,
               direction: node.direction == -1 ? 'left' : 'right',
-              GID: this.id,
-              FNID: node.isroot ? 0 : node.parent.id
+              graphId: this.id,
+              parentNodeId: node.isroot ? 0 : node.parent.id
             }
           })
       },
@@ -438,7 +438,8 @@
               topic: node.topic,
               graphNodeId: node.data.graphNodeId
             },
-            editMode: _this.editMode
+            editMode: _this.editMode,
+            jm:_this.jm
           })
         } else {
           logger.error('fail, this mind map is not editable.')
@@ -464,8 +465,10 @@
       }
 
       //handle event from
-      EventBus.$on('nodeModalClose', (editNode) => {
-        this.jm.update_node(editNode.id, editNode.topic)
+      EventBus.$on('nodeModalClose', (editNode,jm) => {
+        console.log(jm)
+        if (jm===this.jm)
+          this.jm.update_node(editNode.id, editNode.topic)
       })
 
 //      this.jsMindContainer = $(this.$el).find('.jsmind-container')

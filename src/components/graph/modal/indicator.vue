@@ -155,11 +155,10 @@
             this.indicatorWarnings.unshift(warning)
           })
       },
-      saveWarnChange({ warn_type, warnType1, warnType2, ID, upper_limit, lower_limit }) {
+      saveWarnChange({ warn_type, warnType1, warnType2, graphNodeIndicatorId, upper_limit, lower_limit }) {
         this.saving('设置中...')
-//        const {warn_type,warnType1,warnType2,IID,ID,upper_limit,lower_limit}=warning
         const warnType = warn_type == 0 ? 0 : (+warnType1) + (+warnType2)
-        this.$http.put(`/api/graphIndicator/${ID}`, {
+        this.$http.put(`/api/graphIndicator/${graphNodeIndicatorId}`, {
           upper_limit,
           lower_limit,
           warn_type: warnType

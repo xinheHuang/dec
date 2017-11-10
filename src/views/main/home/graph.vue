@@ -6,7 +6,7 @@
     <div class="info">
       <div class="graph-info">
         <span class="entity">{{this.data.entity}}<span style="margin-left: 20px">{{'版本名称：'+this.data.name}}</span></span>
-        <span class="author">{{this.data.user.name}}</span>
+        <span class="author">{{this.data.USER.name}}</span>
       </div>
       <span class="detail">点击查看</span>
     </div>
@@ -22,13 +22,14 @@
     },
     computed:{
       nodes(){
-        return this.data.graph_nodes.map(({NID, title,graph_node_relation})=>{
-          const { GNID, FNID, direction } = graph_node_relation
+        //todo
+        return this.data.GRAPH_NODEs.map(({node_id, title,GRAPH_NODE_RELATION})=>{
+          const { id, parent_node_id, direction } = GRAPH_NODE_RELATION
           return {
-            NID,
+            nodeId:node_id,
             title,
-            GNID,
-            FNID,
+            graphNodeId:id,
+            parentNodeId:parent_node_id,
             direction
           }
         })
