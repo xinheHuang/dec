@@ -5,7 +5,7 @@
   <div>
     <h2>{{data.title}}</h2>
     <div class="author">
-      <span style="margin-right: 10px">{{data.REPORT.title}}</span>
+      <span style="margin-right: 10px">{{data.REPORT && data.REPORT.title}}</span>
       <!--<span>{{data.author}}</span>-->
     </div>
     <div class="content">
