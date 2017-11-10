@@ -6,6 +6,7 @@
     <div class="search">
       <div v-for="item in items"
            :key="item.ID"
+           @mouseover
            class="section">
         <component :is="item.type"
                    :data="item.data"></component>
@@ -190,6 +191,10 @@
         display: flex;
         flex-direction: column;
         /*align-items: center;*/
+        &:hover{
+          /*display: none;*/
+          box-shadow:1px 1px 3px #292929;
+        }
         .time {
           margin-top: 10px;
           align-self: flex-end;

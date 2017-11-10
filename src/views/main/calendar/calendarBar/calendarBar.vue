@@ -58,7 +58,8 @@
         this.$emit('typeChange', type)
       },
       selectDate(date) {
-        if (this.checkDateEqualdate, this.selectecDate) return
+        console.log(date);
+        if (this.checkDateEqual(date, this.selectedDate)) return
         this.selectedDate = date
         this.$emit('dateChange', date)
       },

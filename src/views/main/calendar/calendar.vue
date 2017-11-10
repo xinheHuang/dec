@@ -6,6 +6,7 @@
                  :searchMethod="searchMethod"
                  @switchTab="tabChanged"></content-nav>
     <calendar-bar @dateChange="onDateChange"
+                  ref="calendarBar"
                   @typeChange="onCalendarTypeChange"></calendar-bar>
     <div class="content">
       <!--日历-->
@@ -64,7 +65,7 @@
         <div v-for="(day,index) in weekShown"
              class="day"
              :key="day.day.toISOString()">
-          <div style="text-align: center;padding: 10px 0">
+          <div style="text-align: center;padding: 10px 0;cursor: pointer" @click="changeDate(day)">
             <span>{{'星期' + weekDay[day.day.getDay()]}}</span>
           </div>
           <div class="border"
@@ -359,6 +360,9 @@
       onCalendarTypeChange(type) {
         this.searchResult = null
         this.calendarType = type
+      },
+      changeDate({day}){
+        this.$refs.calendarBar.selectDate(day);
       }
     },
     mounted() {

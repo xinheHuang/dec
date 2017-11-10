@@ -283,14 +283,7 @@
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
 
-  .section {
-    background: white;
-    border: 2px solid #e2dddd;
-    margin: 20px;
-    padding: 20px 60px;
-  }
-
-  .charts {
+    .charts {
     margin-top: 20px;
     display: flex;
 

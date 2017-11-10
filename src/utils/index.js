@@ -70,7 +70,12 @@ const weekDayFormat = (date) => {
 const dateString = (date) => date.toISOString()
   .split('T')[0]
 
-const checkDateEqual = (date1, date2) => new Date(date1.toDateString()).valueOf() === new Date(date2.toDateString()).valueOf()
+const checkDateEqual = (date1, date2) => {
+    if (!date1 || !date2){
+      return false
+    }
+    return new Date(date1.toDateString()).valueOf() === new Date(date2.toDateString()).valueOf()
+  }
 
 const checkMobile = (mobile) => /^1\d{10}$/.test(mobile)
 

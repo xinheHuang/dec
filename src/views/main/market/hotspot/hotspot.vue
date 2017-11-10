@@ -306,12 +306,6 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="less">
-  .section {
-    background: white;
-    border: 2px solid #e2dddd;
-    margin: 20px;
-    padding: 20px 60px;
-  }
 
   .charts {
     margin-top: 20px;
