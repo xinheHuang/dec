@@ -1,6 +1,5 @@
 <template>
   <div id="main"
-       :style="{overflow:showModal?'hidden':'visible'}"
        @click="closeMenu()">
     <nav-menu></nav-menu>
     <div class="content">
@@ -49,10 +48,12 @@
         this.modal = modalName
         this.showModal = true
         this.modalData = data
+        $('body').css('overflow','hidden')
       })
 
       EventBus.$on('closeModal', (callback) => {
         this.showModal = false
+        $('body').css('overflow','visible')
         if (callback) {
           callback(this.modalData)
         }
