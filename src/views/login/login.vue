@@ -171,6 +171,13 @@
        scoped>
   @blue: rgb(91, 155, 213);
   @gray: rgb(217, 217, 217);
+  @-webkit-keyframes autofill {
+    to {
+      color: rgba(255, 255, 255, 1);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+  }
   #login {
     height: 100%;
     width: 100%;
@@ -183,9 +190,9 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      /*justify-content: center;*/
       .logo {
-        margin-top: -200px;
+        margin-top: 200px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -252,6 +259,11 @@
             border-top: none;
             &:first-child {
               border-top: solid 1px @gray;
+            }
+
+            &:-webkit-autofill {
+              -webkit-animation-name: autofill;
+              -webkit-animation-fill-mode: both;
             }
           }
           button {
