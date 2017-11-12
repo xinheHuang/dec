@@ -1,11 +1,15 @@
 <template>
   <div id="login">
+    <video autoplay  class="bg-video" loop muted>
+      <source :src="require('../../assets/video/bg-video.mp4')" type="video/mp4"/>
+      <img :src="require('../../assets/images/login_bg.jpg')"/>
+    </video>
     <div class="center">
       <div class="logo">
-        <img src="../../../static/logo.png"/>
-        <h3 class="text"><span>熵</span><span style="margin-left: 20px">简</span></h3>
+        <img :src="require('../../assets/images/title.png')"/>
+        <!--<h3 class="text"><span>熵</span><span style="margin-left: 20px">简</span></h3>-->
       </div>
-      <h3 style="text-align: center;color: rgb(217,217,217);font-weight: normal;font-size: 40dpx">专注智能投研辅助决策工具</h3>
+      <h3 style="text-align: center;color: rgb(217,217,217);font-weight: normal;font-size: 24px">专注智能投研辅助决策工具</h3>
       <div class="table">
         <div class="tab">
           <span :class="{selected:current=='login'}"
@@ -181,8 +185,17 @@
   #login {
     height: 100%;
     width: 100%;
-    background: url("../../assets/images/login_bg.jpg");
-    background-size: 100% 100%;
+    .bg-video{
+      height: 100%;
+      width: 100%;
+      z-index: -9999;
+      object-fit: fill;
+      top: 0;
+      left: 0;
+      position: absolute;
+    }
+    /*background: url("../../assets/images/login_bg.jpg");*/
+    /*background-size: 100% 100%;*/
     display: flex;
     /*align-items: center;*/
     justify-content: center;
@@ -203,6 +216,7 @@
         .text {
           font-size: 80px;
           margin: 0 0 0 20px;
+
           color: @blue;
         }
       }
@@ -248,7 +262,7 @@
             width: 100%;
             box-sizing: border-box;
             background: rgba(255, 255, 255, 0.1);
-            padding: 10px;
+            padding: 14px 10px;
             /*color: rgba(255,255,255,0.5);*/
             color: rgba(255, 255, 255, 1);
             &::placeholder {
