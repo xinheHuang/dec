@@ -93,7 +93,7 @@
   import areachart from './areachart/areachart.vue'
   import legends from './legend/legend.vue'
   import * as d3 from 'd3'
-  import {dateString} from 'Util'
+  import { dateString } from 'Util'
 
   export default {
     data() {
@@ -123,7 +123,7 @@
     },
     computed: {
       chartTypes() {
-        return [{name: '全部'}, ...this.categories]
+        return [{ name: '全部' }, ...this.categories]
       }
     },
     methods: {
@@ -143,50 +143,50 @@
             y: Number(d['sum'])
           }
         })
-                                .sort((a, b) => b.y - a.y)  //barchart 数据
+          .sort((a, b) => b.y - a.y)  //barchart 数据
       },
       changeAreaChart(type) {
         let category  //分类
         category = (type.name === '全部' ? this.categories : type.subCategories).map((c) => c.name)
         let data
         data = Object.keys(this.articleRelations)
-                     .map((key) => {
-                       const articles = this.articleRelations[key]
-                       const group = category.reduce((prev, c) => ({
-                         ...prev,
-                         [c]: 0
-                       }), {})
-                       articles.filter((article) => article.industry)
-                               .forEach((article) => {
-                                 const industry = type.name === '全部' ? this.subCategory[article.industry].name :
-                                                  article.industry
-                                 if (category.includes(industry)) {
-                                   group[industry] += article.num_read  //统计该分类下那一周的阅读量
-                                 }
-                               })
-                       return {
-                         date: key,
-                         group
-                       }
-                     })
+          .map((key) => {
+            const articles = this.articleRelations[key]
+            const group = category.reduce((prev, c) => ({
+              ...prev,
+              [c]: 0
+            }), {})
+            articles.filter((article) => article.industry)
+              .forEach((article) => {
+                const industry = type.name === '全部' ? this.subCategory[article.industry].name :
+                  article.industry
+                if (category.includes(industry)) {
+                  group[industry] += article.num_read  //统计该分类下那一周的阅读量
+                }
+              })
+            return {
+              date: key,
+              group
+            }
+          })
 
         const parseTime = d3.timeParse('%Y-%m-%d')
-        console.log('data',data,category)
+        console.log('data', data, category)
         this.areaChartData = data.map((d) => {
           const total = Object.values(d.group)
-                              .reduce((prev, s) => prev + s, 0)
+            .reduce((prev, s) => prev + s, 0)
           return {
             date: parseTime(d.date),
             ...Object.keys(d.group)
-                     .reduce((prev, key) => {
-                       return {
-                         ...prev,
-                         [key]: total === 0 ? 1 / Object.keys(d.group).length : d.group[key] / total  //计算百分比
-                       }
-                     }, {})
+              .reduce((prev, key) => {
+                return {
+                  ...prev,
+                  [key]: total === 0 ? 1 / Object.keys(d.group).length : d.group[key] / total  //计算百分比
+                }
+              }, {})
           }
         })
-                                 .sort((a, b) => a.date > b.date ? 1 : -1) //按时间排序
+          .sort((a, b) => a.date > b.date ? 1 : -1) //按时间排序
         this.areaChartKeys = category
       },
 
@@ -219,93 +219,98 @@
       legends
     },
     mounted() {
-      this.$http.get('/api/articles')  //获取所有文章
-          .then(res => {
-            const articleData = {}
-            //todo
-            res.filter(article => article.relation)
-               .forEach((article) => {
-                 if (!articleData[article.relation.name]) {
-                   articleData[article.relation.name] = []
-                 }
-                 article.date = new Date(article.time)
-                 articleData[article.relation.name].push(article)
-               })
-            this.articleData = Object.keys(articleData)
-                                     .map((topic) => {
-                                       const articles = articleData[topic]
-                                       const readNumber = articles.reduce(
-                                         (prev, article) => prev + article.num_read,
-                                         0)
-                                       articles.sort(
-                                         (a, b) => a.date > b.date ? -1 : 1)
-                                       return {
-                                         key: topic,
-                                         readNumber,
-                                         items: articles
-                                       }
-                                     })
-                                     .sort(
-                                       (a, b) => b.readNumber - a.readNumber)
+      this.$http.get('/api/stock/articles')  //获取七天内所有文章
+        .then(articles => {
+          const articleData = {}
+          // 根据文章对应的股票进行分组
+          articles.forEach((article) => {
+            const { stock } = article
+            const { stockId } = stock
+            if (!articleData[stockId]) {
+              articleData[stockId] = {
+                stock,
+                articles:[],
+              }
+            }
+            article.date = new Date(article.time)
+            articleData[stockId].articles.push(article)
+          })
+
+          this.articleData = Object.keys(articleData)
+            .map((stockId) => {
+              const articles = articleData[stockId].articles
+              const readNumber = articles.reduce(
+                (prev, article) => prev + article.readNumber,
+                0)
+              articles.sort((a, b) => a.date > b.date ? -1 : 1)
+              return {
+                key: articleData[stockId].stock.name,
+                readNumber,
+                items: articles
+              }
+            })
+            .sort(
+              (a, b) => b.readNumber - a.readNumber)
 
 //            this.$refs.slick.reSlick()
 //            this.changeSlick(null, null, 0)
-            this.$nextTick(() => {
-              if (this.$refs.slick)
-                  this.$refs.slick.reSlick()
-              this.changeSlick(null, null, 0)
-            })
-
+          this.$nextTick(() => {
+            if (this.$refs.slick)
+              this.$refs.slick.reSlick()
+            this.changeSlick(null, null, 0)
           })
+
+        })
 
       this.$http.get('/api/conclusions/key')  //获取所有结论
-          .then(res => {
-            this.conclusions = res
-          })
+        .then(res => {
+          this.conclusions = res
+        })
 
 
       //获取过去7天阅读总量 根据topic 行业
       // todo industries
       Promise.all([this.$http.get('/api/stock/articles/readNumbers'), this.$http.get('api/stock/articles'),
-                   this.$http.get('/api/industries/0')])
-             .then(([res1, res2, res3]) => {
-               this.readNumberData = res1
+        this.$http.get('/api/industries/0')])
+        .then(([res1, res2, res3]) => {
+          this.readNumberData = res1
 
-               const data = {}
-               res2.forEach(d => {
-                 const date = new Date(d.time)
-                 const day = date.getDay()
-                 const sunday = new Date(date.getTime() + (day === 0 ? 0 :
-                                                           (7 - day)) * 60 * 60 * 24 * 1000)
-                 const stringSunday = dateString(sunday)  //计算那一周的周日
-                 if (!data[stringSunday]) {
-                   data[stringSunday] = []
-                 }
-                 data[stringSunday].push(d)
-               })
-               this.articleRelations = data
-               this.categories = res3
-               //获取所有二级行业
-               return Promise.all(
-                 this.categories.map(({industry_id}) => this.$http.get(`/api/industries/${industry_id}`)))
-             })
-             .then(arr => {
-               arr.forEach((res, index) => {
-                 const category = this.categories[index]
-                 category.subCategories = res
-                 res.forEach((c) => {
-                   this.subCategory[c.name] = category
-                 })
-               })
-               //图表默认全部
-               this.changeChartType({name: '全部'})
-             })
+          const data = {}
+          res2.forEach(d => {
+            const date = new Date(d.time)
+            const day = date.getDay()
+            const sunday = new Date(date.getTime() + (day === 0 ? 0 :
+              (7 - day)) * 60 * 60 * 24 * 1000)
+            const stringSunday = dateString(sunday)  //计算那一周的周日
+            if (!data[stringSunday]) {
+              data[stringSunday] = []
+            }
+            data[stringSunday].push(d)
+          })
+          this.articleRelations = data
+          this.categories = res3
+          //获取所有二级行业
+          return Promise.all(
+            this.categories.map(({ industry_id }) => this.$http.get(`/api/industries/${industry_id}`)))
+        })
+        .then(arr => {
+          arr.forEach((res, index) => {
+            const category = this.categories[index]
+            category.subCategories = res
+            res.forEach((c) => {
+              this.subCategory[c.name] = category
+            })
+          })
+          //图表默认全部
+          this.changeChartType({ name: '全部' })
+        })
     },
   }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="less">
+<style scoped
+       lang="less">
 
   .charts {
     margin-top: 20px;
@@ -345,23 +350,22 @@
     justify-content: space-between
   }
 
-
   .list-item {
     display: inline-block;
     vertical-align: top;
     outline: none;
-    width:200px !important;
+    width: 200px !important;
     padding: 16px 50px 0
   }
 
   .icon-angle {
     cursor: pointer;
-    >*{
+    > * {
       width: 80px;
       height: 80px;
     }
     color: #6b6868;
-    &.disable{
+    &.disable {
       color: #e2dddd;
     }
   }

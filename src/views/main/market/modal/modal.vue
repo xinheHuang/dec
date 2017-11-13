@@ -12,8 +12,8 @@
         <div class="info">
           <span><icon name="calendar-o"/><span>{{dateFormat(new Date(article.time))}}</span></span>
           <span><icon name="user"/><span>{{article.author}}</span></span>
-          <span><icon name="eye"/><span>{{article.num_read}}</span></span>
-          <span><icon name="heart"/><span>{{article.num_like}}</span></span>
+          <span><icon name="eye"/><span>{{article.readNumber}}</span></span>
+          <span><icon name="heart"/><span>{{article.likeNumber}}</span></span>
         </div>
         <div class="divider"></div>
       </div>

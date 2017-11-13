@@ -28,12 +28,12 @@
 
           <div class="item-detail">
             <icon name="eye"></icon>
-            <div>{{item.num_read}}</div>
+            <div>{{item.readNumber}}</div>
           </div>
 
           <div class="item-detail">
             <icon name="heart"/>
-            <div>{{item.num_like}}</div>
+            <div>{{item.likeNumber}}</div>
           </div>
 
 
@@ -56,8 +56,8 @@
       }
     },
     methods: {
-      openModal(item) {  //
-        EventBus.$emit('openModal','article-modal', item.YID)
+      openModal({articleId}) {  //
+        EventBus.$emit('openModal','article-modal', articleId)
       },
       dateFormat
     },
